@@ -19,10 +19,8 @@ class Kernel extends ConsoleKernel
         $email_logging = env("EMAIL_CRON_LOGGING", "benedictusradyan@gmail.com");
 
         // create bill notification
-        // $schedule->command('test:cron')->everyTwoMinutes()->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
        
-        $schedule->command('spp:cron')->dailyAt('11:59')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
-        // $schedule->command('spp:cron')->monthlyOn(19, '06:35')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
+        $schedule->command('spp:cron')->monthlyOn(1, '06:35')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
        
         // $schedule->command('capital-fee:cron')->dailyAt('14:52')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
         $schedule->command('capital-fee:cron')->dailyAt('09:33')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);

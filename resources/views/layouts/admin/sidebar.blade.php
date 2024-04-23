@@ -226,39 +226,35 @@
                 </li>
 
                 <li
-                    class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Income' ? 'menu-open' : '') : '' }}">
+                    class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'menu-open' : '') : '' }}">
                     <a href="#"
-                        class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Income' ? 'active' : '') : '' }}">
+                        class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'active' : '') : '' }}">
                         <i class="nav-icon fa-solid fa-credit-card-alt"></i>
                         <p>
-                            Income
+                            Financial
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        {{-- <li class="nav-item">
-                            <a href="/admin/bills/create"
-                                class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'create bills' ? 'active' : '') : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Create</p>
-                            </a>
-                        </li> --}}
-                        <li class="nav-item">
+                        <li
+                            class="nav-item">
                             <a href="{{ route('income.index') }}"
-                                class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'database income' ? 'active' : '') : '' }}">
+                                class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database income' ? 'active' : '') : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Data</p>
+                                <p>Income</p>
                             </a>
                         </li>
-                        {{-- <li class="nav-item">
-                            <a href="/admin/bills/status"
-                                class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'status bills' ? 'active' : '') : '' }}">
+                        <li
+                            class="nav-item">
+                            <a href="{{ route('expenditure.index') }}"
+                                class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'database expenditure' ? 'active' : '') : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Status</p>
+                                <p>Expenditure</p>
                             </a>
-                        </li> --}}
+                        </li>
                     </ul>
                 </li>
+
 
 
                 @if (session('role') !== 'admin')

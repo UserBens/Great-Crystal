@@ -3,18 +3,22 @@
 use App\Http\Controllers\Admin\{
    AdminController,
    BillController,
-    BookController,
-    DashboardController,
+   BookController,
+   DashboardController,
    GradeController,
-    PaymentBookController,
-    PaymentGradeController,
-    PaymentStudentController,
-    RegisterController,
+   PaymentBookController,
+   PaymentGradeController,
+   PaymentStudentController,
+   RegisterController,
    StudentController,
    TeacherController,
+   // FinancialController,
 };
 use App\Http\Controllers\Excel\Report;
 use App\Http\Controllers\Excel\Import;
+use App\Http\Controllers\ExpenditureController;
+// use App\Http\Controllers\FinancialController as ControllersFinancialController;
+use App\Http\Controllers\Admin\FinancialController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Notification\NotificationBillCreated;
@@ -65,12 +69,12 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::get('/change-password', [AdminController::class, 'changeMyPassword']);
       Route::put('/change-password', [AdminController::class, 'actionChangeMyPassword']);
    });
-   
+
    Route::prefix('/detail')->group(function () {
       Route::get('/{id}', [StudentController::class, 'detail']);
    });
 
-   Route::prefix('/bills')->group(function() {
+   Route::prefix('/bills')->group(function () {
       Route::get('/', [BillController::class, 'index']);
       Route::get('/create', [BillController::class, 'chooseStudent']);
       Route::get('/create-bills/{id}', [BillController::class, 'pageCreateBill']);
@@ -91,11 +95,16 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
    });
 
-   Route::prefix('/income')->group(function() {
-      Route::get('/', [IncomeController::class, 'index'])->name('income.index');
-  });
+   Route::prefix('/income')->group(function () {
+      Route::get('/', [FinancialController::class, 'indexIncome'])->name('income.index');
+   });
 
-   Route::prefix('/reports')->group(function() {
+   Route::prefix('/expenditure')->group(function () {
+      Route::get('/', [FinancialController::class, 'indexExpenditure'])->name('expenditure.index');
+      Route::get('/create', [FinancialController::class, 'createExpenditure'])->name('expenditure.create');
+   });
+
+   Route::prefix('/reports')->group(function () {
       Route::get('/', [Report::class, 'index']);
       Route::post('/exports', [Report::class, 'export']);
    });
@@ -117,7 +126,7 @@ Route::middleware(['admin'])->prefix('/admin')->group(function () {
       Route::get('/', [StudentController::class, 'index']);
    });
 
-   
+
    Route::prefix('/update')->group(function () {
       Route::put('/{id}', [StudentController::class, 'actionEdit'])->name('student.update');
       Route::get('/{id}', [StudentController::class, 'edit']);
@@ -142,9 +151,9 @@ Route::middleware(['admin'])->prefix('/admin')->group(function () {
       Route::post('/', [GradeController::class, 'actionPost'])->name('actionCreateGrade');
       Route::put('/{id}', [GradeController::class, 'actionPut'])->name('actionUpdateGrade');
    });
-   
 
-   Route::prefix('/books')->group(function() {
+
+   Route::prefix('/books')->group(function () {
       Route::get('/', [BookController::class, 'index']);
       Route::get('/create', [BookController::class, 'pageCreate']);
       Route::get('/edit/{id}', [BookController::class, 'pageEdit']);
@@ -164,7 +173,7 @@ Route::middleware(['admin'])->prefix('/admin')->group(function () {
 
 Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
-   Route::prefix('/spp-students')->group(function() {
+   Route::prefix('/spp-students')->group(function () {
       Route::get('/', [PaymentStudentController::class, 'index']);
       Route::get('/create/{id}', [PaymentStudentController::class, 'createPage']);
       Route::get('/detail/{id}', [PaymentStudentController::class, 'pageDetailSpp']);
@@ -173,7 +182,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::put('/actionEdit/{id}/{id_student_payment}', [PaymentStudentController::class, 'actionEditStaticPayment'])->name('update.payment.student-static');
    });
 
-   Route::prefix('/payment-grades')->group(function() {
+   Route::prefix('/payment-grades')->group(function () {
       Route::get('/', [PaymentGradeController::class, 'index']);
       Route::get('/{id}', [PaymentGradeController::class, 'pageById']);
       Route::get('/{id}/choose-type', [PaymentGradeController::class, 'chooseSection']);
@@ -184,7 +193,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::delete('/{id}', [PaymentGradeController::class, 'deletePayment']);
    });
 
-   Route::prefix('payment-books')->group(function(){
+   Route::prefix('payment-books')->group(function () {
       Route::get('/', [PaymentBookController::class, 'index']);
       Route::get('/{id}', [PaymentBookController::class, 'studentBook']);
       Route::get('/{id}/add-books', [PaymentBookController::class, 'pageAddBook']);
@@ -193,13 +202,13 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 });
 
 Route::middleware(['superadmin'])->prefix('admin')->group(function () {
-   
+
    Route::prefix('/user')->group(function () {
       Route::get('/', [SuperAdminController::class, 'getUser']);
       Route::get('/register-user', [SuperAdminController::class, 'registerUser']);
       Route::get('/{id}', [SuperAdminController::class, 'getById']);
       Route::post('/register-action', [SuperAdminController::class, 'registerUserAction']);
-      Route::put('/change-password/commit/{id}',[SuperAdminController::class, 'changePassword'])->name('user.editPassword');
+      Route::put('/change-password/commit/{id}', [SuperAdminController::class, 'changePassword'])->name('user.editPassword');
       Route::delete('{id}', [SuperAdminController::class, 'deleteUser']);
    });
 
@@ -213,6 +222,4 @@ Route::middleware(['superadmin'])->prefix('admin')->group(function () {
       Route::put('/deactivated/{id}', [TeacherController::class, 'deactivated']);
       Route::put('/activated/{id}', [TeacherController::class, 'activated']);
    });
-
 });
-

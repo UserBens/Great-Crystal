@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('expenditures', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('income_id');
-            $table->foreign('income_id')->references('id')->on('incomes')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->enum('type', ['inside the school', 'out of school'])->default('inside the school');
             $table->string('description');
             $table->bigInteger('amount_spent');
             $table->dateTime('spent_at')->default(now());

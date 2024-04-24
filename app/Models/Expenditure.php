@@ -10,12 +10,7 @@ class Expenditure extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'income_id',
-        'description',
-        'amount_spent',
-        'spent_at',
-    ];
+    protected $guarded = ['id'];
 
     public function income()
     {

@@ -225,7 +225,33 @@
                     </ul>
                 </li>
 
-                <li
+               
+
+
+
+                @if (session('role') !== 'admin')
+                    <li
+                        class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Report' ? 'menu-open' : '') : '' }}">
+                        <a href="#"
+                            class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Report' ? 'active' : '') : '' }}">
+                            <i class="nav-icon fa-solid fa-receipt"></i>
+                            <p>
+                                Report
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/admin/reports"
+                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'report bills' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Bills</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li
                     class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'menu-open' : '') : '' }}">
                     <a href="#"
                         class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'active' : '') : '' }}">
@@ -254,30 +280,6 @@
                         </li>
                     </ul>
                 </li>
-
-
-
-                @if (session('role') !== 'admin')
-                    <li
-                        class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Report' ? 'menu-open' : '') : '' }}">
-                        <a href="#"
-                            class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Report' ? 'active' : '') : '' }}">
-                            <i class="nav-icon fa-solid fa-receipt"></i>
-                            <p>
-                                Report
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="/admin/reports"
-                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'report bills' ? 'active' : '') : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Bills</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
                 @endif
 
                 @if (session('role') == 'superadmin')

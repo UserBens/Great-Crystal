@@ -95,18 +95,7 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
    });
 
-   Route::prefix('/income')->group(function () {
-      Route::get('/', [FinancialController::class, 'indexIncome'])->name('income.index');
-   });
 
-   Route::prefix('/expenditure')->group(function () {
-      Route::get('/', [FinancialController::class, 'indexExpenditure'])->name('expenditure.index');
-      Route::get('/create', [FinancialController::class, 'createExpenditure'])->name('expenditure.create');
-      Route::post('/store', [FinancialController::class, 'storeExpenditure'])->name('expenditure.store');
-      Route::get('/{id}/edit', [FinancialController::class, 'editExpenditure'])->name('expenditure.edit');
-      Route::put('/{id}', [FinancialController::class, 'updateExpenditure'])->name('expenditure.update');
-      Route::delete('/{id}', [FinancialController::class, 'destroyExpenditure'])->name('expenditure.destroy');
-   });
 
    Route::prefix('/reports')->group(function () {
       Route::get('/', [Report::class, 'index']);
@@ -202,6 +191,19 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/{id}', [PaymentBookController::class, 'studentBook']);
       Route::get('/{id}/add-books', [PaymentBookController::class, 'pageAddBook']);
       Route::post('/{id}/add-books-action', [PaymentBookController::class, 'actionAddBook'])->name('action.add.book');
+   });
+
+   Route::prefix('/income')->group(function () {
+      Route::get('/', [FinancialController::class, 'indexIncome'])->name('income.index');
+   });
+
+   Route::prefix('/expenditure')->group(function () {
+      Route::get('/', [FinancialController::class, 'indexExpenditure'])->name('expenditure.index');
+      Route::get('/create', [FinancialController::class, 'createExpenditure'])->name('expenditure.create');
+      Route::post('/store', [FinancialController::class, 'storeExpenditure'])->name('expenditure.store');
+      Route::get('/{id}/edit', [FinancialController::class, 'editExpenditure'])->name('expenditure.edit');
+      Route::put('/{id}', [FinancialController::class, 'updateExpenditure'])->name('expenditure.update');
+      Route::delete('/{id}', [FinancialController::class, 'destroyExpenditure'])->name('expenditure.destroy');
    });
 });
 

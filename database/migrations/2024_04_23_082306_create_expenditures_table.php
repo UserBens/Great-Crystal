@@ -18,6 +18,8 @@ return new class extends Migration
             $table->bigInteger('amount_spent');
             $table->dateTime('spent_at')->default(now());
             $table->timestamps();
+            $table->softDeletes(); // Tambahkan kolom soft delete
+
         });
     }
 

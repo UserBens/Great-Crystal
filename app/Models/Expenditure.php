@@ -5,15 +5,18 @@ namespace App\Models;
 use App\Models\Income;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Expenditure extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
 
-    public function income()
-    {
-        return $this->belongsTo(Income::class);
-    }
+    protected $dates = ['deleted_at'];
+
+    // public function income()
+    // {
+    //     return $this->belongsTo(Income::class);
+    // }
 }

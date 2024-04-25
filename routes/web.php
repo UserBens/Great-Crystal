@@ -105,7 +105,7 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::post('/store', [FinancialController::class, 'storeExpenditure'])->name('expenditure.store');
       Route::get('/{id}/edit', [FinancialController::class, 'editExpenditure'])->name('expenditure.edit');
       Route::put('/{id}', [FinancialController::class, 'updateExpenditure'])->name('expenditure.update');
-
+      Route::delete('/{id}', [FinancialController::class, 'destroyExpenditure'])->name('expenditure.destroy');
    });
 
    Route::prefix('/reports')->group(function () {

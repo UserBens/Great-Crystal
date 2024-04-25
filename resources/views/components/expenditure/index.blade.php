@@ -4,15 +4,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
 
-        {{-- @if ($totalExpenditure)
-            <div class="mt-3">
-                <h4>Total Expenditure: Rp.{{ number_format($totalExpenditure, 0, ',', '.') }}</h4>
-            </div>
-        @endif --}}
         <h2 class="text-center display-4 mb-3">Expenditure Search</h2>
-        {{-- <form class="mt-5" action="/admin/teachers">
-            <!-- Form input fields -->
-        </form> --}}
 
         <!-- Conditional rendering based on data availability -->
         @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
@@ -46,19 +38,9 @@
                 </div>
             </form>
 
-
-
             <a type="button" href="/admin/expenditure/create" class="btn btn-success btn mt-5 mx-2">
                 <i class="fa-solid fa-plus"></i> Create Expenditure
             </a>
-
-            {{-- Notifikasi Success
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif --}}
 
             <!-- Display expenditure data in a table -->
             <div class="card card-dark mt-5">
@@ -90,54 +72,55 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $expenditure->type }}</td>
-                                    <td>{{ $expenditure->description }}</td>
+                                    <td style="max-width: 200px;">{{ $expenditure->description }}</td>
                                     <td>Rp.{{ number_format($expenditure->amount_spent, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($expenditure->spent_at)->format('Y-m-d') }}</td>
                                     <td class="project-actions text-right">
                                         <!-- Add action buttons here (view, edit, delete, etc.) -->
-                                        {{-- <td class="project-actions text-right toastsDefaultSuccess">
-                                            <a class="btn btn-primary {{ session('role') == 'admin' ? 'btn' : 'btn-sm' }}"
-                                                href="">
-                                                <i class="fas fa-folder">
-                                                </i>
-                                                View
+
+                                        <div class="btn-group">
+                                            <a class="btn btn-info btn-sm"
+                                                href="/admin/expenditure/{{ $expenditure->id }}/edit"
+                                                style="margin-right: 5px;">
+                                                <i class="fas fa-pencil-alt"></i> Edit
                                             </a>
-                                            @if ($el->is_active)
-                                                <a class="btn btn-info {{ session('role') == 'admin' ? 'btn' : 'btn-sm' }}"
-                                                    href="update/{{ $el->unique_id }}">
-                                                    <i class="fas fa-pencil-alt">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            @endif
-                                            @if (session('role') == 'superadmin' && $el->is_active)
-                                                <a href="javascript:void(0)" id="delete-student" data-id="{{ $el->id }}"
-                                                    data-name="{{ $el->name }}" class="btn btn-danger btn-sm">
-                                                    <i class="fas fa fa-ban">
-                                                    </i>
-                                                    Deactive
-                                                </a>
-                                            @elseif ($el->is_graduate && sizeof($grades) > $el->grade_id)
-                                                <a href="/admin/student/re-registration/{{ $el->unique_id }}"
-                                                    class="btn btn-dark btn-sm">
-                                                    <i class="fas fa fa-register">
-                                                    </i>
-                                                    Re-registration
-                                                </a>
-                                            @elseif (session('role') == 'superadmin' && !$el->is_graduate)
-                                                <a href="javascript:void(0)" id="active-student"
-                                                    data-id="{{ $el->id }}" data-name="{{ $el->name }}"
-                                                    class="btn btn-success btn-sm">
-                                                    <i class="fas fa fa-register">
-                                                    </i>
-                                                    Activate
-                                                </a>
-                                            @endif
-                                        </td> --}}
-                                        <a class="btn btn-info btn-sm"
-                                            href="/admin/expenditure/{{ $expenditure->id }}/edit">
-                                            <i class="fas fa-pencil-alt"></i> Edit
-                                        </a>
+                                            
+
+                                            <button class="btn btn-danger btn-sm delete-btn"
+                                                data-id="{{ $expenditure->id }}" style="margin-right: 5px;">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+
+                                        <!-- Modal Konfirmasi Penghapusan -->
+                                        <div id="deleteModal{{ $expenditure->id }}" class="modal fade" tabindex="-1"
+                                            role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Konfirmasi Penghapusan</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Anda yakin ingin menghapus data ini?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Batal</button>
+                                                        <form action="{{ route('expenditure.destroy', $expenditure->id) }}"
+                                                            method="POST" style="display: inline;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /Modal Konfirmasi Penghapusan -->
                                     </td>
                                 </tr>
                             @endforeach
@@ -145,7 +128,7 @@
                     </table>
                     <!-- Pagination with adjusted layout -->
                     <div class="d-flex justify-content-between mt-4 px-3">
-                        <div>
+                        <div class="mb-3">
                             Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }} results
                         </div>
                         <div>
@@ -162,18 +145,6 @@
 
     </div>
 
-    {{-- @if (session('success'))
-        <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
-            });
-        </script>
-    @endif
-     --}}
-
     {{-- SweetAlert --}}
     @if (session('success'))
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -187,6 +158,7 @@
         </script>
     @endif
 
+    {{-- search button --}}
     <script>
         // Tangani klik tombol pencarian
         document.getElementById('searchButton').addEventListener('click', function() {
@@ -195,6 +167,22 @@
 
             // Redirect ke halaman pencarian dengan parameter 'search'
             window.location.href = '/admin/expenditure?search=' + searchValue;
+        });
+    </script>
+
+    {{-- delete button --}}
+    <script>
+        // Tangani klik tombol delete
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                let expenditureId = this.getAttribute('data-id');
+
+                // Tampilkan modal konfirmasi penghapusan
+                $('#deleteModal' + expenditureId).modal('show');
+
+                // Hentikan tindakan default penghapusan
+                return false;
+            });
         });
     </script>
 @endsection

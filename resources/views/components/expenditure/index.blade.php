@@ -84,12 +84,19 @@
                                                 style="margin-right: 5px;">
                                                 <i class="fas fa-pencil-alt"></i> Edit
                                             </a>
-                                            
 
-                                            <button class="btn btn-danger btn-sm delete-btn"
+
+                                            {{-- <button class="btn btn-danger btn-sm delete-btn"
                                                 data-id="{{ $expenditure->id }}" style="margin-right: 5px;">
                                                 <i class="fas fa-trash"></i> Delete
-                                            </button>
+                                            </button> --}}
+
+                                            @can('delete-expenditure')
+                                                <button class="btn btn-danger btn-sm delete-btn"
+                                                    data-id="{{ $expenditure->id }}" style="margin-right: 5px;">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            @endcan
                                         </div>
 
                                         <!-- Modal Konfirmasi Penghapusan -->

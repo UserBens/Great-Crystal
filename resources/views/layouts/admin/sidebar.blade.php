@@ -225,7 +225,7 @@
                     </ul>
                 </li>
 
-               
+
 
 
 
@@ -251,35 +251,65 @@
                         </ul>
                     </li>
 
+                    {{-- financial page --}}
                     <li
-                    class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'menu-open' : '') : '' }}">
-                    <a href="#"
-                        class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'active' : '') : '' }}">
-                        <i class="nav-icon fa-solid fa-credit-card-alt"></i>
-                        <p>
-                            Financial
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li
-                            class="nav-item">
-                            <a href="{{ route('income.index') }}"
-                                class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database income' ? 'active' : '') : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Income</p>
-                            </a>
-                        </li>
-                        <li
-                            class="nav-item">
-                            <a href="{{ route('expenditure.index') }}"
-                                class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'database expenditure' ? 'active' : '') : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Expenditure</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                        class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'menu-open' : '') : '' }}">
+                        <a href="#"
+                            class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Financial' ? 'active' : '') : '' }}">
+                            <i class="nav-icon fa-solid fa-credit-card-alt"></i>
+                            <p>
+                                Financial
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('income.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database income' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Income</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('expenditure.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'database expenditure' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Expenditure</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Transaction Page --}}
+                    <li
+                        class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Transaction' ? 'menu-open' : '') : '' }}">
+                        <a href="#"
+                            class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Transaction' ? 'active' : '') : '' }}">
+                            <i class="nav-icon fa-solid fa-comments-dollar"></i> 
+                            <p>
+                                Transaction
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('cash.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Cash' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Cash</p>
+                                </a>
+                            </li>
+                          
+                            <li class="nav-item">
+                                <a href="{{ route('bank.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Bank' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Bank</p>
+                                </a>
+                            </li>
+                           
+                        </ul>
+                    </li>
                 @endif
 
                 @if (session('role') == 'superadmin')

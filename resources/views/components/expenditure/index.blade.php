@@ -78,7 +78,7 @@
                                     <td class="project-actions text-right">
                                         <!-- Add action buttons here (view, edit, delete, etc.) -->
 
-                                        <div class="btn-group">
+                                        <div class="btn-group"  >
                                             <a class="btn btn-info btn-sm"
                                                 href="/admin/expenditure/{{ $expenditure->id }}/edit"
                                                 style="margin-right: 5px;">

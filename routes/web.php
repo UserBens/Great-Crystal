@@ -12,7 +12,8 @@ use App\Http\Controllers\Admin\{
    RegisterController,
    StudentController,
    TeacherController,
-   // FinancialController,
+    TransactionController,
+// FinancialController,
 };
 use App\Http\Controllers\Excel\Report;
 use App\Http\Controllers\Excel\Import;
@@ -205,6 +206,16 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::put('/{id}', [FinancialController::class, 'updateExpenditure'])->name('expenditure.update');
       Route::delete('/{id}', [FinancialController::class, 'destroyExpenditure'])->name('expenditure.destroy');
    });
+
+   Route::prefix('/cash')->group(function () {
+      Route::get('/', [TransactionController::class, 'indexCash'])->name('cash.index');
+   });
+
+   Route::prefix('/bank')->group(function () {
+      Route::get('/', [TransactionController::class, 'indexBank'])->name('bank.index');
+   });
+
+
 });
 
 Route::middleware(['superadmin'])->prefix('admin')->group(function () {

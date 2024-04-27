@@ -209,10 +209,18 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
    Route::prefix('/cash')->group(function () {
       Route::get('/', [TransactionController::class, 'indexCash'])->name('cash.index');
+      Route::get('/create-account', [TransactionController::class, 'createAccount'])->name('create-account.create');
+      Route::post('/create-account/store', [TransactionController::class, 'storeAccount'])->name('create-account.store');
+      Route::get('/create-transaction', [TransactionController::class, 'createTransaction'])->name('create-transaction.create');
+      Route::post('/create-transaction/store', [TransactionController::class, 'storeTransaction'])->name('create-transaction.store');
    });
 
    Route::prefix('/bank')->group(function () {
       Route::get('/', [TransactionController::class, 'indexBank'])->name('bank.index');
+   });
+
+   Route::prefix('/journal')->group(function () {
+      Route::get('/', [TransactionController::class, 'indexJournal'])->name('journal.index');
    });
 
 

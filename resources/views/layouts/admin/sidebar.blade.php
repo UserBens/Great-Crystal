@@ -307,6 +307,14 @@
                                     <p>Bank</p>
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('journal.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Journal' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Journal</p>
+                                </a>
+                            </li>
                            
                         </ul>
                     </li>

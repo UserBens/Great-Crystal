@@ -4,17 +4,16 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
 
-        <h2 class="text-center display-4 mb-3">Cash Search</h2>
+        <h2 class="text-center display-4 mb-3">Account Number Search</h2>
 
-{{-- code here       --}}
+        {{-- code here --}}
 
-
-  <!-- Conditional rendering based on data availability -->
+        <!-- Conditional rendering based on data availability -->
         @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
             <!-- Display message when no data found based on search criteria -->
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
-                    <h3>No Cash or Bank found based on your search criteria!</h3>
+                    <h3>No Account Number found based on your search criteria!</h3>
                 </div>
             </div>
         @elseif (sizeof($data) == 0)
@@ -22,24 +21,29 @@
 
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
-                    <h3>No Cash or Bank has been created yet. Click the button below to create Account or Transaction!</h3>
-                    <div class="btn-group mt-5">
-                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa-solid fa-plus"></i> Create Account/Transaction
+                    <h3>No Account Number has been created yet. Click the button below to create Account Number!</h3>
+                    {{-- <div class="btn-group mt-5">
+                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-solid fa-plus"></i> Create Account
                         </button>
                         <div class="dropdown-menu" style="min-width: 100%";>
-                            <a class="dropdown-item"href="/admin/cash/create-account">Create New Account</a>
-                            <a class="dropdown-item" href="/admin/cash/create-transaction">Create Transaction</a> <!-- Example of another option -->
+                            <a class="dropdown-item"href="/admin/account/create-account">Create New Account</a>
+                            <!-- Example of another option -->
                         </div>
-                    </div>
+                    </div> --}}
+                    <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-5 mx-2">
+                        <i class="fa-solid fa-plus"></i> Create Account
+                    </a>
+        
                 </div>
             </div>
         @else
             <!-- Display data when expenditure data is available -->
             <!-- Add button to register new expenditure -->
-            <form action="/admin/expenditure" method="GET" class="input-group input-group-lg">
+            <form action="/admin/account" method="GET" class="input-group input-group-lg">
                 <input name="search" type="search" value="{{ $form->search }}" class="form-control form-control-lg"
-                    placeholder="Type Expenditure here">
+                    placeholder="Type Account Number here">
                 <div class="input-group-append">
                     <button type="submit" class="btn btn-lg btn-default">
                         <i class="fa fa-search"></i>
@@ -47,31 +51,19 @@
                 </div>
             </form>
 
-            <div class="row h-100 my-5">
-                <div class="col-sm-12 my-auto text-center">
-                    <h3>No Cash or Bank has been created yet. Click the button below to create Account or Transaction!</h3>
-                    <div class="btn-group mt-5">
-                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa-solid fa-plus"></i> Create Account/Transaction
-                        </button>
-                        <div class="dropdown-menu" style="min-width: 100%";>
-                            <a class="dropdown-item" href="/admin/cash/create-account">Create New Account</a>
-                            <a class="dropdown-item" href="/admin/cash/create-transaction">Create Transaction</a> <!-- Example of another option -->
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-5 mx-2">
+                <i class="fa-solid fa-plus"></i> Create Account
+            </a>
 
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-5">
                 <div class="card-header">
-                    <h3 class="card-title">Total Expenditure : Rp.{{ number_format($totalExpenditure, 0, ',', '.') }}</h3>
+                    {{-- <h3 class="card-title">Total Expenditure : Rp.{{ number_format($totalExpenditure, 0, ',', '.') }}</h3> --}}
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
                         </button>
                     </div>
-
                 </div>
 
                 <div class="card-body p-0">
@@ -79,48 +71,47 @@
                         <thead>
                             <tr>
                                 <th style="width: 3%">#</th>
+                                <th>Name</th>
+                                <th>Account Number</th>
                                 <th>Type</th>
+                                <th>Bank Name</th>
+                                <th>Amount</th>
                                 <th>Description</th>
-                                <th>Amount Spent</th>
-                                <th>Spent At</th>
                                 <th style="width: 8%;" class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <!-- Loop through expenditure data -->
-                            @foreach ($data as $expenditure)
+                            @foreach ($data as $account)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $expenditure->type }}</td>
-                                    <td style="max-width: 200px;">{{ $expenditure->description }}</td>
-                                    <td>Rp.{{ number_format($expenditure->amount_spent, 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($expenditure->spent_at)->format('Y-m-d') }}</td>
+                                    <td>{{ $account->name }}</td>
+                                    <td>{{ $account->account_no }}</td>
+                                    <td>{{ $account->type }}</td>
+                                    <td>{{ $account->bank_name }}</td>
+                                    <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
+                                    <td style="max-width: 200px;">{{ $account->description }}</td>
+                                    {{-- <td>{{ \Carbon\Carbon::parse($account->spent_at)->format('Y-m-d') }}</td> --}}
                                     <td class="project-actions text-right">
                                         <!-- Add action buttons here (view, edit, delete, etc.) -->
 
-                                        <div class="btn-group"  >
+                                        <div class="btn-group">
                                             <a class="btn btn-info btn-sm"
-                                                href="/admin/expenditure/{{ $expenditure->id }}/edit"
+                                                href="/admin/account/{{ $account->id }}/edit"
                                                 style="margin-right: 5px;">
                                                 <i class="fas fa-pencil-alt"></i> Edit
                                             </a>
 
-
-                                            {{-- <button class="btn btn-danger btn-sm delete-btn"
-                                                data-id="{{ $expenditure->id }}" style="margin-right: 5px;">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button> --}}
-
-                                            @can('delete-expenditure')
+                                            {{-- @can('delete-account') --}}
                                                 <button class="btn btn-danger btn-sm delete-btn"
-                                                    data-id="{{ $expenditure->id }}" style="margin-right: 5px;">
+                                                    data-id="{{ $account->id }}" style="margin-right: 5px;">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </button>
-                                            @endcan
+                                            {{-- @endcan --}}
                                         </div>
 
                                         <!-- Modal Konfirmasi Penghapusan -->
-                                        <div id="deleteModal{{ $expenditure->id }}" class="modal fade" tabindex="-1"
+                                        <div id="deleteModal{{ $account->id }}" class="modal fade" tabindex="-1"
                                             role="dialog">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
@@ -137,7 +128,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-dismiss="modal">Batal</button>
-                                                        <form action="{{ route('expenditure.destroy', $expenditure->id) }}"
+                                                        <form action="{{ route('account.store', $account->id) }}"
                                                             method="POST" style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')
@@ -165,11 +156,10 @@
 
                 </div>
             </div>
-
-            <!-- Pagination links -->
-            <!-- Include pagination logic here -->
+            <!-- /Display Cash or Bank data in a table -->
         @endif
 
+    </div>
 
     {{-- SweetAlert --}}
     @if (session('success'))

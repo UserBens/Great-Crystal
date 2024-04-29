@@ -23,7 +23,7 @@
                                             <th>Account Number</th>
                                             <th>Debit</th>
                                             <th>Kredit</th>
-                                            {{-- <th>Paid Date</th> --}}
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>

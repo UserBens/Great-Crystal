@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\{
+   AccountingController,
    AdminController,
    BillController,
    BookController,
@@ -12,8 +13,8 @@ use App\Http\Controllers\Admin\{
    RegisterController,
    StudentController,
    TeacherController,
-    TransactionController,
-// FinancialController,
+   TransactionController,
+   // FinancialController,
 };
 use App\Http\Controllers\Excel\Report;
 use App\Http\Controllers\Excel\Import;
@@ -208,22 +209,30 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
    });
 
    Route::prefix('/cash')->group(function () {
-      Route::get('/', [TransactionController::class, 'indexCash'])->name('cash.index');
-      Route::get('/create-account', [TransactionController::class, 'createAccount'])->name('create-account.create');
-      Route::post('/create-account/store', [TransactionController::class, 'storeAccount'])->name('create-account.store');
-      Route::get('/create-transaction', [TransactionController::class, 'createTransaction'])->name('create-transaction.create');
-      Route::post('/create-transaction/store', [TransactionController::class, 'storeTransaction'])->name('create-transaction.store');
+      Route::get('/', [AccountingController::class, 'indexCash'])->name('cash.index');
+
+      Route::get('/transaction-transfer', [AccountingController::class, 'createTransactionTransfer'])->name('transaction-transfer.create');
+      Route::post('/transaction-transfer', [AccountingController::class, 'storeTransactionTransfer'])->name('transaction-transfer.store');
+
+      Route::get('/transaction-send', [AccountingController::class, 'createTransactionSend'])->name('transaction-send.create');
+
+      Route::get('/transaction-receive', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
+      
    });
 
-   Route::prefix('/bank')->group(function () {
-      Route::get('/', [TransactionController::class, 'indexBank'])->name('bank.index');
-   });
+   // Route::prefix('/bank')->group(function () {
+   //    Route::get('/', [AccountingController::class, 'indexBank'])->name('bank.index');
+   // });
 
    Route::prefix('/journal')->group(function () {
-      Route::get('/', [TransactionController::class, 'indexJournal'])->name('journal.index');
+      Route::get('/', [AccountingController::class, 'indexJournal'])->name('journal.index');
    });
 
-
+   Route::prefix('/account')->group(function () {
+      Route::get('/', [AccountingController::class, 'indexAccount'])->name('account.index');
+      Route::get('/create-account', [AccountingController::class, 'createAccount'])->name('create-account.create');
+      Route::post('/create-account/store', [AccountingController::class, 'storeAccount'])->name('account.store');
+   });
 });
 
 Route::middleware(['superadmin'])->prefix('admin')->group(function () {

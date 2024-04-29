@@ -7,12 +7,12 @@
                 <div class="col-md-6">
                     <!-- general form elements -->
                     <div>
-                        <form id="expenditureForm" method="POST" action="{{ route('expenditure.store') }}"
+                        <form id="sendForm" method="POST" action="{{ route('create-transaction.store') }}"
                             onsubmit="submitForm()">
                             @csrf
                             <div class="card card-dark">
                                 <div class="card-header">
-                                    <h3 class="card-title">Create Transaction</h3>
+                                    <h3 class="card-title">Transaction Send</h3>
                                 </div>
                                 <!-- /.card-header -->
                                 <!-- form start -->
@@ -20,42 +20,29 @@
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="subject">Name<span style="color: red">*</span> :</label>
-                                            <input name="subject" type="text" class="form-control" id="subject"
-                                                placeholder="Enter subject" value="{{ old('subject') }}" autocomplete="off"
-                                                required>
-
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('subject') }}</p>
-                                            @endif
+                                            <label>Pay From : <span style="color: red">*</span></label>
+                                            <select name="account_no" class="form-control">
+                                                @foreach ($accountNumbers as $accountNumber)
+                                                    <option value="{{ $accountNumber->id }}">
+                                                        {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="subject">Account Number<span style="color: red">*</span> :</label>
-                                            <input name="subject" type="text" class="form-control" id="subject"
-                                                placeholder="Enter subject" value="{{ old('subject') }}" autocomplete="off"
-                                                required>
-
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('subject') }}</p>
-                                            @endif
+                                            <label>To : <span style="color: red">*</span></label>
+                                            <select name="account_no" class="form-control">
+                                                @foreach ($accountNumbers as $accountNumber)
+                                                    <option value="{{ $accountNumber->id }}">
+                                                        {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
-
-
                                     </div>
 
                                     <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="subject">Bank Name<span style="color: red">*</span> :</label>
-                                            <input name="subject" type="text" class="form-control" id="subject"
-                                                placeholder="Enter subject" value="{{ old('subject') }}" autocomplete="off"
-                                                required>
-
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('subject') }}</p>
-                                            @endif
-                                        </div>
-
                                         <div class="col-md-6">
                                             <label for="amount_spent">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
@@ -70,20 +57,6 @@
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('amount_spent') }}</p>
                                             @endif
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group row">
-
-                                        <div class="col-md-6">
-                                            <label>Type : <span style="color: red"></span></label>
-                                            <select name="type" class="form-control">
-                                                <option value="inside the school">
-                                                    inside the school</option>
-                                                <option value="out of school">out of school
-                                                </option>
-                                            </select>
                                         </div>
 
                                         <div class="col-md-6">
@@ -141,7 +114,7 @@
             removeThousandSeparator(amountInput);
 
             // Submit formulir
-            document.getElementById("expenditureForm").submit();
+            document.getElementById("sendForm").submit();
         }
     </script>
 @endsection

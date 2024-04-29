@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cashes', function (Blueprint $table) {
+        Schema::create('transaction_transfers', function (Blueprint $table) {
             $table->id();
-            $table->integer('account_no'); //nagmbil dari tabel account number
-            $table->string('name');
-            $table->enum('type', ['in', 'out'])->default('in');
+            $table->unsignedBigInteger('accountnumber_id');
+            $table->foreign('accountnumber_id')->references('id')->on('accountnumbers');
+            $table->string('transfer');
+            $table->integer('deposit');
+            $table->bigInteger('amount');
+            $table->dateTime('date')->default(now());
             $table->string('description');
-            $table->bigInteger('balance');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cashes');
+        Schema::dropIfExists('transaction_transfers');
     }
 };

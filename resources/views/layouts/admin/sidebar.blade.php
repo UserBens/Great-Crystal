@@ -287,24 +287,24 @@
                             class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Transaction' ? 'active' : '') : '' }}">
                             <i class="nav-icon fa-solid fa-comments-dollar"></i> 
                             <p>
-                                Transaction
+                                Accounting
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 <a href="{{ route('cash.index') }}"
-                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Cash' ? 'active' : '') : '' }}">
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Cash & Bank' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Cash</p>
+                                    <p>Cash & Bank</p>
                                 </a>
                             </li>
                           
                             <li class="nav-item">
-                                <a href="{{ route('bank.index') }}"
-                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Bank' ? 'active' : '') : '' }}">
+                                <a href="{{ route('account.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Account Number' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Bank</p>
+                                    <p>Account Number</p>
                                 </a>
                             </li>
 

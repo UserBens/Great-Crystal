@@ -49,8 +49,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input name="amount" type="text" class="form-control"
-                                                    id="amount" placeholder="Enter amount" autocomplete="off"
+                                                <input name="amount" type="text" class="form-control" id="amount"
+                                                    placeholder="Enter amount" autocomplete="off"
                                                     value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}"
                                                     required>
                                             </div>

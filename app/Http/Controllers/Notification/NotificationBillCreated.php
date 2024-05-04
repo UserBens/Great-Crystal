@@ -90,28 +90,25 @@ class NotificationBillCreated extends Controller
             array_push($billCreated, $mailDatas);
          }
 
-         DB::commit();
-
          foreach ($billCreated as $idx => $mailData) {
-
             try {
-               $array_email = [];
-               foreach ($data[$idx]->relationship as $el) {
-                  $mailData['name'] = $data[$idx]->relationship[0]->name;
-                  array_push($array_email, $el->email);
-                  $pdf = app('dompdf.wrapper');
-                  $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $createBill])->setPaper('a4', 'portrait');
-                  Mail::to($el->email)->send(new SppMail($mailData, "Tagihan SPP " . $data[$idx]->name .  " bulan ini, " . date('F Y') . " sudah dibuat.", $pdf));
-               }
-               dispatch(new SendEmailJob($array_email, 'SPP', $mailData, "Pemberitahuan Tagihan Monthly Fee " .  " " . date('F Y') . ".", $mailData['bill'][0]->id));
-            } catch (Exception) {
-
-               statusInvoiceMail::create([
-                  'bill_id' => $mailData['bill'][0]->id,
-                  'status' => false,
-               ]);
+                $array_email = [];
+                foreach ($mailData['student']->relationship as $el) {
+                    $mailData['name'] = $mailData['student']->relationship[0]->name;
+                    array_push($array_email, $el->email);
+                    $pdf = app('dompdf.wrapper');
+                    // Perhatikan bahwa kita menggunakan $mailData['bill'][0] untuk setiap siswa
+                    $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $mailData['bill'][0]])->setPaper('a4', 'portrait');
+                    Mail::to($el->email)->send(new SppMail($mailData, "Tagihan SPP " . $mailData['student']->name .  " bulan ini, " . date('F Y') . " sudah dibuat.", $pdf));
+                }
+                dispatch(new SendEmailJob($array_email, 'SPP', $mailData, "Pemberitahuan Tagihan Monthly Fee " .  " " . date('F Y') . ".", $mailData['bill'][0]->id));
+            } catch (Exception $e) {
+                statusInvoiceMail::create([
+                    'bill_id' => $mailData['bill'][0]->id,
+                    'status' => false,
+                ]);
             }
-         }
+        }
 
          DB::commit();
 

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('id_or_passport')->unique();
             $table->string('nationality');
             $table->string('phone')->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->timestamps();
         });
     }

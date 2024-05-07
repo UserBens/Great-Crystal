@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction_transfer extends Model
+class Transaction_send extends Model
 {
     use HasFactory;
 

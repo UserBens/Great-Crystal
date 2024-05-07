@@ -76,7 +76,7 @@
                                 <th>Type</th>
                                 <th>Bank Name</th>
                                 <th>Amount</th>
-                                <th>Description</th>
+                                <th>Date</th>
                                 <th style="width: 8%;" class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -90,8 +90,8 @@
                                     <td>{{ $account->type }}</td>
                                     <td>{{ $account->bank_name }}</td>
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
-                                    <td style="max-width: 200px;">{{ $account->description }}</td>
-                                    {{-- <td>{{ \Carbon\Carbon::parse($account->spent_at)->format('Y-m-d') }}</td> --}}
+                                    {{-- <td style="max-width: 200px;">{{ $account->description }}</td> --}}
+                                    <td>{{ \Carbon\Carbon::parse($account->created_at)->format('Y-m-d') }}</td>
                                     <td class="project-actions text-right">
                                         <!-- Add action buttons here (view, edit, delete, etc.) -->
 

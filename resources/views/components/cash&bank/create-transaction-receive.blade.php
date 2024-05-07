@@ -7,7 +7,7 @@
                 <div class="col-md-6">
                     <!-- general form elements -->
                     <div>
-                        <form id="receiveForm" method="POST" action="{{ route('create-transaction.store') }}"
+                        <form id="receiveForm" method="POST" action="{{ route('transaction-receive.store') }}"
                             onsubmit="submitForm()">
                             @csrf
                             <div class="card card-dark">
@@ -21,7 +21,7 @@
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Pay From : <span style="color: red">*</span></label>
-                                            <select name="account_no" class="form-control">
+                                            <select name="transfer" class="form-control">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
                                                         {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
@@ -32,7 +32,7 @@
 
                                         <div class="col-md-6">
                                             <label>To : <span style="color: red">*</span></label>
-                                            <select name="account_no" class="form-control">
+                                            <select name="deposit" class="form-control">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
                                                         {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
@@ -44,25 +44,25 @@
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="amount_spent">Amount<span style="color: red">*</span> :</label>
+                                            <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input name="amount_spent" type="text" class="form-control"
+                                                <input name="amount" type="text" class="form-control"
                                                     id="amount" placeholder="Enter amount" autocomplete="off"
                                                     value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}"
                                                     required>
                                             </div>
                                             @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('amount_spent') }}</p>
+                                                <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
                                         </div>
 
                                         <div class="col-md-6">
                                             <label>Date <span style="color: red">*</span></label>
                                             <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input name="spent_at" type="text" class="form-control "
+                                                <input name="date" type="text" class="form-control "
                                                     placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
                                                     data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"
                                                     data-mask required />

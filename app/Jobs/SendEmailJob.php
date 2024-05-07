@@ -1,5 +1,5 @@
 <?php
-  
+
 namespace App\Jobs;
 
 use App\Mail\BookMail;
@@ -19,14 +19,14 @@ use DateTime;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-  
+
 class SendEmailJob implements ShouldQueue, ShouldBeUnique, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    
+
     public $email, $type, $mailData, $subject, $bill_id, $product;
     public $tries = 5;
-  
+
     /**
      * Create a new job instance.
      */
@@ -38,48 +38,47 @@ class SendEmailJob implements ShouldQueue, ShouldBeUnique, ShouldBeUniqueUntilPr
         $this->subject = $subject;
         $this->bill_id = $bill_id;
     }
-  
+
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        // info('queue email running');
-        $bcc = 'donny@great.sch.id';
+        $bcc = 'donny@great.sch.id'; // Alamat email yang akan disalin secara tersembunyi
+
         $pdfBill = Bill::with(['student' => function ($query) {
             $query->with('grade');
         }, 'bill_collection', 'bill_installments'])
-        ->where('id', $this->bill_id)
-        ->first();
-          
+            ->where('id', $this->bill_id)
+            ->first();
+
         $pdf = app('dompdf.wrapper');
-        $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait'); 
+        $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
 
         $pdfReport = null;
 
-        if($pdfBill->installment){
-            
+        if ($pdfBill->installment) {
             $pdfReport = app('dompdf.wrapper');
-            $pdfReport->loadView('components.bill.pdf.installment-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait'); 
+            $pdfReport->loadView('components.bill.pdf.installment-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
         }
 
-
-
-        //check type
-
-        if(strtolower($this->type) === 'paket') {
+        // Memilih tipe email
+        if (strtolower($this->type) === 'paket') {
             $target = new PaketMail($this->mailData, $this->subject, $pdf, $pdfReport);
         } else if (strtolower($this->type) === 'capital fee') {
             $target = new FeeRegisMail($this->mailData, $this->subject, $pdf, $pdfReport);
-        } else if (strtolower($this->type) === 'book'){
+        } else if (strtolower($this->type) === 'book') {
             $target = new BookMail($this->mailData, $this->subject, $pdf);
         } else {
             $target = new SppMail($this->mailData, $this->subject, $pdf);
         }
 
-        
-        Mail::to($this->email[0])->cc($this->email[1], 'parents')->bcc($bcc, 'owners')->send($target);
+        // Mengirim email dengan BCC
+        Mail::to($this->email[0])
+            ->bcc($bcc)
+            ->send($target);
 
+        // Membuat catatan status pengiriman email
         statusInvoiceMail::create([
             'status' => true,
             'bill_id' => $this->bill_id,
@@ -90,9 +89,9 @@ class SendEmailJob implements ShouldQueue, ShouldBeUnique, ShouldBeUniqueUntilPr
         ]);
     }
 
-    public function failed(\Exception $exception) :void
+    public function failed(\Exception $exception): void
     {
-       info('Queue job '. $this->type .' failed at ' . date('Y-m-d H:i:s'));
+        info('Queue job ' . $this->type . ' failed at ' . date('Y-m-d H:i:s'));
         statusInvoiceMail::create([
             'status' => false,
             'bill_id' => $this->bill_id,
@@ -107,7 +106,6 @@ class SendEmailJob implements ShouldQueue, ShouldBeUnique, ShouldBeUniqueUntilPr
     {
         return now()->addMinutes(10);
     }
-
 
     public function uniqueId(): string
     {

@@ -215,8 +215,10 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/transaction-transfer', [AccountingController::class, 'storeTransactionTransfer'])->name('transaction-transfer.store');
 
       Route::get('/transaction-send', [AccountingController::class, 'createTransactionSend'])->name('transaction-send.create');
+      Route::post('/transaction-send', [AccountingController::class, 'storeTransactionSend'])->name('transaction-send.store');
 
       Route::get('/transaction-receive', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
+      Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
       
    });
 

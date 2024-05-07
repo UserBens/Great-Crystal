@@ -9,7 +9,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Income Transactions</h3>
+                            <h3 class="card-title">Report Journal</h3>
                             {{-- <h3 class="card-title align">Income Transactions</h3> --}}
                         </div>
                         {{-- <h4 class="p-3 m-0">Total Income : Rp {{ number_format($totalpaid, 0, ',', '.') }}</h4> --}}
@@ -23,19 +23,19 @@
                                             <th>Account Number</th>
                                             <th>Debit</th>
                                             <th>Kredit</th>
-                                            <th>Actions</th>
+                                            <th>Created At</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- @foreach ($bills as $key => $item)
+                                        @foreach ($data as $key => $item)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
-                                                <td>{{ $item->student->name }}</td>
-                                                <td>{{ $item->number_invoice }}</td>
+                                                <td>{{ $item->transfer }}</td>
+                                                <td>{{ $item->deposit }}</td>
                                                 <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                                <td>{{ $item->paid_date }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('Y-m-d') }}</td>
                                             </tr>
-                                        @endforeach --}}
+                                        @endforeach
                                     </tbody>
                                 </table>
                                 <div class="d-flex justify-content-end mt-4">

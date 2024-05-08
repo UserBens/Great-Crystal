@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('transaction_transfers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('accountnumber_id');
+            $table->foreign('accountnumber_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('transfer');
             $table->integer('deposit');
             $table->bigInteger('amount');

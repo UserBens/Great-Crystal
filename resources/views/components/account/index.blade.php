@@ -4,9 +4,58 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
 
-        <h2 class="text-center display-4 mb-3">Account Number Search</h2>
+        <h2 class="text-center display-4 mb-4">Account Number Search</h2>
+
 
         {{-- code here --}}
+        <div class="m-3">
+
+            <form action="{{ route('cash.index') }}" method="GET" class="mb-3">
+                <div class="row">
+                    <div class="col-md-3">
+                        <input type="text" name="search" class="form-control" placeholder="Search..."
+                            value="{{ $form->search ?? '' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="type" class="form-control">
+                            <option value="">-- Select Type --</option>
+                            <option value="transaction_transfer"
+                                {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
+                                Transaction Transfer</option>
+                            <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
+                                Transaction Send</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="sort" class="form-control">
+                            <option value="">-- Sort By --</option>
+                            <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
+                            <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="order" class="form-control">
+                            <option value="">-- Order --</option>
+                            <option value="asc" {{ $form->order === 'asc' ? 'selected' : '' }}>Ascending
+                            </option>
+                            <option value="desc" {{ $form->order === 'desc' ? 'selected' : '' }}>Descending
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                {{-- <div class="row mt-2">
+                <div class="col-md-3">
+                    <select name="status" class="form-control">
+                        <option value="">-- Status --</option>
+                        <option value="paid" {{ $form->status === 'paid' ? 'selected' : '' }}>Paid</option>
+                        <option value="unpaid" {{ $form->status === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
+                    </select>
+                </div>
+                <!-- Tambahkan input fields lainnya sesuai kebutuhan -->
+            </div> --}}
+                <button type="submit" class="btn btn-primary mt-2">Filter</button>
+            </form>
+        </div>
 
         <!-- Conditional rendering based on data availability -->
         @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
@@ -35,13 +84,13 @@
                     <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-5 mx-2">
                         <i class="fa-solid fa-plus"></i> Create Account
                     </a>
-        
+
                 </div>
             </div>
         @else
             <!-- Display data when expenditure data is available -->
             <!-- Add button to register new expenditure -->
-            <form action="/admin/account" method="GET" class="input-group input-group-lg">
+            {{-- <form action="/admin/account" method="GET" class="input-group input-group-lg">
                 <input name="search" type="search" value="{{ $form->search }}" class="form-control form-control-lg"
                     placeholder="Type Account Number here">
                 <div class="input-group-append">
@@ -49,7 +98,11 @@
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
-            </form>
+            </form> --}}
+
+
+
+
 
             <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-5 mx-2">
                 <i class="fa-solid fa-plus"></i> Create Account
@@ -96,17 +149,16 @@
                                         <!-- Add action buttons here (view, edit, delete, etc.) -->
 
                                         <div class="btn-group">
-                                            <a class="btn btn-info btn-sm"
-                                                href="/admin/account/{{ $account->id }}/edit"
+                                            <a class="btn btn-info btn-sm" href="/admin/account/{{ $account->id }}/edit"
                                                 style="margin-right: 5px;">
                                                 <i class="fas fa-pencil-alt"></i> Edit
                                             </a>
 
                                             {{-- @can('delete-account') --}}
-                                                <button class="btn btn-danger btn-sm delete-btn"
-                                                    data-id="{{ $account->id }}" style="margin-right: 5px;">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
+                                            <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $account->id }}"
+                                                style="margin-right: 5px;">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
                                             {{-- @endcan --}}
                                         </div>
 
@@ -132,7 +184,8 @@
                                                             method="POST" style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                                                            <button type="submit" class="btn btn-danger">Ya,
+                                                                Hapus</button>
                                                         </form>
                                                     </div>
                                                 </div>

@@ -11,14 +11,14 @@
 
 
         <!-- Conditional rendering based on data availability -->
-        @if (sizeof($allData) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
+        @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
             <!-- Display message when no data found based on search criteria -->
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Cash or Bank found based on your search criteria!</h3>
                 </div>
             </div>
-        @elseif (sizeof($allData) == 0)
+        @elseif (sizeof($data) == 0)
             <!-- Display message when no transfer data found -->
 
             <div class="row h-100 my-5">
@@ -106,8 +106,8 @@
                 <div class="dropdown-menu" style="min-width: 100%">
                     {{-- <a class="dropdown-item" href="/admin/cash/create-account">Create New Account</a> --}}
                     <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer Money</a>
-                    <a class="dropdown-item" href="{{ route('transaction-send.create') }}">Send Money</a>
-                    <a class="dropdown-item" href="{{ route('transaction-receive.create') }}">Receive Money</a>
+                    {{-- <a class="dropdown-item" href="{{ route('transaction-send.create') }}">Send Money</a>
+                    <a class="dropdown-item" href="{{ route('transaction-receive.create') }}">Receive Money</a> --}}
                     <!-- Example of another option -->
                 </div>
             </div>
@@ -130,8 +130,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 3%">#</th>
-                                <th>Transfer From</th>
-                                <th>Recipient</th>
+                                <th>Account Number</th>
                                 <th>Amount</th>
                                 <th>Date</th>
                                 <th>Type</th>
@@ -140,13 +139,13 @@
                         </thead>
                         <tbody>
                             <!-- Loop through transfer data -->
-                            @foreach ($allData as $item)
+                            @foreach ($data as $item)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $item->transferAccount->account_no }} -
                                         {{ $item->transferAccount->name }}</td>
-                                    <td>{{ $item->depositAccount->account_no }} -
-                                        {{ $item->depositAccount->name }}</td>
+                                    {{-- <td>{{ $item->depositAccount->account_no }} -
+                                        {{ $item->depositAccount->name }}</td> --}}
 
                                     <td>Rp.{{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->spent_at)->format('Y-m-d') }}</td>
@@ -171,8 +170,8 @@
                                                 <i class="fas fa-pencil-alt"></i> Edit
                                             </a> --}}
 
-                                            <button class="btn btn-danger btn-sm delete-btn"
-                                                data-id="{{ $item->id }}" style="margin-right: 5px;">
+                                            <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
+                                                style="margin-right: 5px;">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
                                             {{-- @can('delete-transfer')
@@ -197,12 +196,14 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-dismiss="modal">Batal</button>
-                                                        {{-- <form action="{{ route('transaction-transfer.destroy', $transfer->id) }}"
+                                                        <form
+                                                            action="{{ route('transaction-transfer.destroy', $item->id) }}"
                                                             method="POST" style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Ya, Hapus</button>
-                                                        </form> --}}
+                                                            <button type="submit" class="btn btn-danger">Ya,
+                                                                Hapus</button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -216,11 +217,11 @@
                     <!-- Pagination with adjusted layout -->
                     <div class="d-flex justify-content-between mt-4 px-3">
                         <div class="mb-3">
-                            Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of
-                            {{ $allData->total() }} results
+                            Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of
+                            {{ $data->total() }} results
                         </div>
                         <div>
-                            {{ $allData->links('pagination::bootstrap-4') }}
+                            {{ $data->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 

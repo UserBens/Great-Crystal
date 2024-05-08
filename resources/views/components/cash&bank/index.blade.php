@@ -116,6 +116,8 @@
             <div class="card card-dark mt-5">
                 <div class="card-header">
                     {{-- <h3 class="card-title">Total Expenditure : Rp.{{ number_format($totalExpenditure, 0, ',', '.') }}</h3> --}}
+                    <h3 class="card-title">Cash & Bank List Transaction </h3>
+
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
@@ -147,7 +149,7 @@
                                     {{-- <td>{{ $item->depositAccount->account_no }} -
                                         {{ $item->depositAccount->name }}</td> --}}
 
-                                    <td>Rp.{{ number_format($item->amount, 0, ',', '.') }}</td>
+                                    <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->spent_at)->format('Y-m-d') }}</td>
                                     <td>
                                         <!-- Tampilkan pembeda berdasarkan nilai kolom 'type' -->

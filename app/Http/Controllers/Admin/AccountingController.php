@@ -21,33 +21,70 @@ class AccountingController extends Controller
             'child' => 'database Cash & Bank',
         ]);
 
+        // try {
+        //     $form = (object) [
+        //         'sort' => $request->sort ? $request->sort : null,
+        //         'order' => $request->order ? $request->order : null,
+        //         'status' => $request->status ? $request->status : null,
+        //         'search' => $request->search ? $request->search : null,
+        //         'type' => $request->type ? $request->type :  null,
+        //     ];
+
+        //     $data = [];
+
+        //     // Mengatur default urutan
+        //     $order = $request->sort ? $request->sort : 'desc';
+
+        //     // Query data berdasarkan parameter yang diberikan
+        //     if ($request->has('search')) {
+        //         $data = Transaction_transfer::where('transfer', 'LIKE', '%' . $request->search . '%')
+        //             ->orWhere('deposit', 'LIKE', '%' . $request->search . '%')
+        //             ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
+        //             ->orWhere('date', 'LIKE', '%' . $request->search . '%')
+        //             ->orderBy($request->order ?? 'created_at', $order)
+        //             ->paginate(10);
+        //     } else {
+        //         $data = Transaction_transfer::orderBy('created_at', $order)->paginate(10);
+        //     }
+
+        //     return view('components.cash&bank.index')->with('data', $data)->with('form', $form);
+        // } catch (Exception $err) {
+        //     return dd($err);
+        // }
+
+        $form = (object) [
+            'sort' => $request->sort ?? null,
+            'order' => $request->order ?? null,
+            'status' => $request->status ?? null,
+            'search' => $request->search ?? null,
+            'type' => $request->type ?? null,
+        ];
+
         try {
-            $form = (object) [
-                'sort' => $request->sort ? $request->sort : null,
-                'order' => $request->order ? $request->order : null,
-                'status' => $request->status ? $request->status : null,
-                'search' => $request->search ? $request->search : null,
-                'type' => $request->type ? $request->type :  null,
-            ];
+            $allData = Cash::leftJoin('accountnumbers as transfer_account', 'cash.transfer', '=', 'transfer_account.id')
+                ->leftJoin('accountnumbers as deposit_account', 'cash.deposit', '=', 'deposit_account.id')
+                ->where(function ($query) use ($request) {
+                    if ($request->has('search')) {
+                        $query->where('transfer_account.account_no', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('deposit_account.account_no', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('cash.amount', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('cash.date', 'LIKE', '%' . $request->search . '%');
+                    }
+                })
+                ->select([
+                    'transfer_account.account_no as transfer_account_no',
+                    'deposit_account.account_no as deposit_account_no',
+                    'cash.amount',
+                    'cash.date',
+                    'cash.created_at'
+                ])
+                ->orderBy($form->order ?? 'date', $form->sort ?? 'desc')
+                ->paginate(10);
 
-            $data = [];
-
-            // Mengatur default urutan
-            $order = $request->sort ? $request->sort : 'desc';
-
-            // Query data berdasarkan parameter yang diberikan
-            if ($request->has('search')) {
-                $data = Transaction_transfer::where('transfer', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('deposti', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('date', 'LIKE', '%' . $request->search . '%')
-                    ->orderBy($request->order ?? 'created_at', $order)
-                    ->paginate(10);
-            } else {
-                $data = Transaction_transfer::orderBy('created_at', $order)->paginate(10);
-            }
-
-            return view('components.cash&bank.index')->with('data', $data)->with('form', $form);
+            return view('components.journal.index', [
+                'allData' => $allData,
+                'form' => $form,
+            ]);
         } catch (Exception $err) {
             return dd($err);
         }
@@ -138,10 +175,6 @@ class AccountingController extends Controller
             'description' => 'required',
         ]);
 
-        // Konversi format tanggal menggunakan Carbon
-        // $spent_at = Carbon::createFromFormat('d/m/Y', $request->spent_at)->format('Y-m-d');
-
-        // Simpan data pengeluaran ke dalam database
         Accountnumber::create([
             'name' => $request->name,
             'account_no' => $request->account_no,
@@ -153,6 +186,57 @@ class AccountingController extends Controller
 
         // Redirect ke halaman indeks pengeluaran dengan pesan sukses
         return redirect()->route('account.index')->with('success', 'Account created successfully!');
+    }
+
+    public function editAccount($id)
+    {
+        $accountNumbers = Accountnumber::findOrFail($id);
+
+        return view('components.account.edit-account', [
+            'accountNumbers' => $accountNumbers,
+        ]);
+    }
+
+    public function updateAccount(Request $request, $id)
+    {
+        // Validasi input
+        $request->validate([
+            'name' => 'required',
+            'account_no' => 'required',
+            'type' => 'required',
+            'bank_name' => 'required',
+            'amount' => 'required|numeric',
+            'description' => 'required',
+        ]);
+
+        $accountNumbers = Accountnumber::findOrFail($id);
+
+        $accountNumbers->update([
+            'name' => $request->name,
+            'account_no' => $request->account_no,
+            'type' => $request->type,
+            'bank_name' => $request->bank_name,
+            'amount' => $request->amount,
+            'description' => $request->description,
+        ]);
+
+        // Redirect ke halaman indeks pengeluaran dengan pesan sukses
+        return redirect()->route('account.index')->with('success', 'Account created successfully!');
+    }
+
+    public function destroyAccount($id)
+    {
+        try {
+            // Cari data transaksi transfer berdasarkan ID
+            $accountNumbers = Accountnumber::findOrFail($id);
+
+            // Hapus data transaksi transfer
+            $accountNumbers->delete();
+
+            return redirect()->back()->with('success', 'Account Number Deleted Successfully!');
+        } catch (Exception $err) {
+            return dd($err);
+        }
     }
 
     // milik transfer transaction

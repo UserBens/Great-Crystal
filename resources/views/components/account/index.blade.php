@@ -111,7 +111,8 @@
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-5">
                 <div class="card-header">
-                    {{-- <h3 class="card-title">Total Expenditure : Rp.{{ number_format($totalExpenditure, 0, ',', '.') }}</h3> --}}
+                    <h3 class="card-title">List Account Number</h3>
+                    
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
@@ -180,7 +181,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-dismiss="modal">Batal</button>
-                                                        <form action="{{ route('account.store', $account->id) }}"
+                                                        <form action="{{ route('account.destroy', $account->id) }}"
                                                             method="POST" style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')

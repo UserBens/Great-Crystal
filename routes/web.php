@@ -235,6 +235,9 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/', [AccountingController::class, 'indexAccount'])->name('account.index');
       Route::get('/create-account', [AccountingController::class, 'createAccount'])->name('create-account.create');
       Route::post('/create-account/store', [AccountingController::class, 'storeAccount'])->name('account.store');
+      Route::get('/{id}/edit', [AccountingController::class, 'editAccount'])->name('account.edit');
+      Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
+      Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
    });
 });
 

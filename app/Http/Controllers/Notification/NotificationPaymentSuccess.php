@@ -17,6 +17,7 @@ use App\Models\statusInvoiceMail;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Console\View\Components\Alert;
 use Illuminate\Support\Carbon;
 
 class NotificationPaymentSuccess extends Controller
@@ -201,6 +202,91 @@ class NotificationPaymentSuccess extends Controller
             'status' => false,
             'is_paid' => true,
          ]);
+      }
+   }
+
+   public function sendPaymentSuccessNotification($bill_id)
+   {
+      try {
+         // Validasi apakah bill_id valid
+         if (!$bill_id) {
+            throw new \InvalidArgumentException("Invalid bill ID provided.");
+         }
+
+         // Mulai transaksi database
+         DB::beginTransaction();
+
+         // Ambil data siswa dengan tagihan yang sesuai
+         $student = Student::with(['bill' => function ($query) use ($bill_id) {
+            $query->where('id', $bill_id);
+         }, 'relationship'])->whereHas('bill', function ($query) use ($bill_id) {
+            $query->where('id', $bill_id);
+         })->first();
+
+         // Jika tidak ada siswa ditemukan untuk bill ID yang diberikan, lemparkan pengecualian
+         if (!$student) {
+            throw new \Exception("Student not found for the provided bill ID.");
+         }
+
+         // Siapkan data email dan PDF
+         foreach ($student->bill as $bill) {
+            $mailData = [
+               'student' => $student,
+               'bill' => [$bill],
+            ];
+
+            $pdfBill = Bill::with(['student' => function ($query) {
+               $query->with('grade');
+            }, 'bill_collection', 'bill_installments'])->where('id', $bill->id)->first();
+
+            $array_email = [];
+            foreach ($student->relationship as $idx => $parent) {
+               if ($idx == 0) {
+                  $mailData['name'] = $parent->name;
+               }
+               array_push($array_email, $parent->email);
+            }
+
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
+
+            $pdfReport = null;
+            if ($pdfBill->installment) {
+               $pdfReport = app('dompdf.wrapper');
+               $pdfReport->loadView('components.emails.payment-success-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
+            }
+
+            // Kirim email dan jadwalkan pekerjaan asinkron untuk mengirim pemberitahuan pembayaran
+            Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
+            dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
+         }
+
+         // Commit transaksi
+         DB::commit();
+
+         // Log keberhasilan pengiriman pemberitahuan pembayaran
+         info('Payment success notification sent successfully.');
+
+         // Beri respons sukses
+         return redirect('/admin/bills')->with('success', 'Email successfully sent');
+      } catch (\Exception $err) {
+         // Rollback transaksi jika terjadi kesalahan
+         DB::rollBack();
+
+         // Log kesalahan
+         info('Error sending payment success notification: ' . $err->getMessage());
+
+         // Buat entri email status invoice jika terjadi kesalahan
+         if (isset($pdfBill)) {
+            statusInvoiceMail::create([
+               'bill_id' => $pdfBill->id,
+               'status' => false,
+               'is_paid' => true,
+            ]);
+         }
+
+         // Beri respons dengan pesan kesalahan
+         return back()->with('error', 'Failed to send email: ' . $err->getMessage());
       }
    }
 }

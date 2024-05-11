@@ -95,6 +95,9 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/status/{id}', [StatusMailSend::class, 'send']);
       Route::patch('/update-paid/{bill_id}/{student_id}', [BillController::class, 'paidOfBook'])->name('action.book.payment');
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
+
+      Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
+
    });
 
 

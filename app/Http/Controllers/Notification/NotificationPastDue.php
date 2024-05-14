@@ -52,18 +52,44 @@ class NotificationPastDue extends Controller
          //    }
          // }
 
+         // if ($charge) {
+         //    $billCharge = Bill::with('bill_installments')->where('paidOf', false)->where('deadline_invoice', '<', date('Y-m-d'))->where('type', $type)->get(['id', 'amount', 'charge', 'installment', 'amount_installment']);
+         //    foreach ($billCharge as $bill) {
+         //       # code...
+         //       Bill::where('id', $bill->id)->update([
+         //          'charge' => 100000, // Set charge menjadi 100.000
+         //       ]);
+
+         //       foreach ($bill->bill_installments as $installment) {
+         //          if ($installment->pivot->main_id != $installment->pivot->child_id) {
+         //             Bill::where('id', $installment->pivot->child_id)->update([
+         //                'charge' => 100000, // Perbarui nilai charge pada tagihan anak menjadi 100.000
+         //             ]);
+         //          }
+         //       }
+         //    }
+         // }
+
          if ($charge) {
             $billCharge = Bill::with('bill_installments')->where('paidOf', false)->where('deadline_invoice', '<', date('Y-m-d'))->where('type', $type)->get(['id', 'amount', 'charge', 'installment', 'amount_installment']);
             foreach ($billCharge as $bill) {
-               # code...
+               // Update charge tanpa mengubah amount asli
+               $updatedCharge = 100000; // Set charge menjadi 100.000
+               $totalAmount = $bill->amount + $updatedCharge; // Hitung total pembayaran
+
                Bill::where('id', $bill->id)->update([
-                  'charge' => 100000, // Set charge menjadi 100.000
+                  'charge' => $updatedCharge, // Perbarui charge menjadi 100.000
+                  'amount' => $totalAmount, // Perbarui total pembayaran
                ]);
 
                foreach ($bill->bill_installments as $installment) {
                   if ($installment->pivot->main_id != $installment->pivot->child_id) {
+                     $childBill = Bill::find($installment->pivot->child_id);
+                     $childTotalAmount = $childBill->amount + $updatedCharge; // Hitung total pembayaran untuk tagihan anak
+
                      Bill::where('id', $installment->pivot->child_id)->update([
-                        'charge' => 100000, // Set charge pada tagihan anak menjadi 100.000
+                        'charge' => $updatedCharge, // Perbarui charge pada tagihan anak
+                        'amount' => $childTotalAmount, // Perbarui total pembayaran pada tagihan anak
                      ]);
                   }
                }
@@ -74,13 +100,13 @@ class NotificationPastDue extends Controller
 
             $data = Student::with(['bill' => function ($query) use ($type) {
                $query
-                  ->whereNotIn('type', ['SPP', "Capital Fee", "Paker", "Book", "uniform"])
+                  ->whereNotIn('type', ['SPP', "Capital Fee", "Paket", "Book", "uniform"])
                   ->where('deadline_invoice', '<', date('Y-m-d'))
                   ->where('paidOf', false)
                   ->get();
             }, 'relationship'])->whereHas('bill', function ($query) use ($type) {
                $query
-                  ->whereNotIn('type', ['SPP', "Capital Fee", "Paker", "Book", "uniform"])
+                  ->whereNotIn('type', ['SPP', "Capital Fee", "Paket", "Book", "uniform"])
                   ->where('paidOf', false)
                   ->where('deadline_invoice', '<', date('Y-m-d'));
             })->get();

@@ -99,7 +99,7 @@ class NotificationPaymentSuccess extends Controller
                   //code...
                   foreach ($student->relationship as $relationship) {
                      $mailData['name'] = $relationship->name;
-                     Mail::to($relationship->email)->send(new PaymentSuccessMail($mailData, "Payment " . $type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
+                     Mail::to($relationship->email)->send(new PaymentSuccessMail($mailData, "Payment for School Fee - " . date('F Y') . $type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
                      statusInvoiceMail::create([
                         'bill_id' => $pdfBill->id,
                         'status' => false,
@@ -257,7 +257,8 @@ class NotificationPaymentSuccess extends Controller
             }
 
             // Kirim email dan jadwalkan pekerjaan asinkron untuk mengirim pemberitahuan pembayaran
-            Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
+            // Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
+            Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment for School Fee – " . date('F Y') . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
             dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
          }
 

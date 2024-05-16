@@ -8,8 +8,6 @@
 
         {{-- code here --}}
 
-
-
         <!-- Conditional rendering based on data availability -->
         @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
             <!-- Display message when no data found based on search criteria -->
@@ -40,19 +38,6 @@
                 </div>
             </div>
         @else
-            <!-- Display data when transfer data is available -->
-            <!-- Add button to register new transfer -->
-            {{-- <form action="/admin/expenditure" method="GET" class="input-group input-group-lg">
-                <input name="search" type="search" value="{{ $form->search }}" class="form-control form-control-lg"
-                    placeholder="Type Expenditure here">
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-lg btn-default">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
-            </form> --}}
-
-            <!-- Form filter untuk menyaring data -->
             <form action="{{ route('cash.index') }}" method="GET" class="mb-3">
                 <div class="row">
                     <div class="col-md-3">
@@ -84,38 +69,26 @@
                         </select>
                     </div>
                 </div>
-                {{-- <div class="row mt-2">
-                    <div class="col-md-3">
-                        <select name="status" class="form-control">
-                            <option value="">-- Status --</option>
-                            <option value="paid" {{ $form->status === 'paid' ? 'selected' : '' }}>Paid</option>
-                            <option value="unpaid" {{ $form->status === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
-                        </select>
-                    </div>
-                    <!-- Tambahkan input fields lainnya sesuai kebutuhan -->
-                </div> --}}
+
                 <button type="submit" class="btn btn-primary mt-2">Filter</button>
             </form>
 
 
-            <div class="btn-group mt-5">
+            <div class="btn-group mt-2">
                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
                     <i class="fa-solid fa-plus"></i> Create Transaction
                 </button>
                 <div class="dropdown-menu" style="min-width: 100%">
-                    {{-- <a class="dropdown-item" href="/admin/cash/create-account">Create New Account</a> --}}
+
                     <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer Money</a>
-                    {{-- <a class="dropdown-item" href="{{ route('transaction-send.create') }}">Send Money</a>
-                    <a class="dropdown-item" href="{{ route('transaction-receive.create') }}">Receive Money</a> --}}
-                    <!-- Example of another option -->
+
                 </div>
             </div>
 
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-5">
                 <div class="card-header">
-                    {{-- <h3 class="card-title">Total Expenditure : Rp.{{ number_format($totalExpenditure, 0, ',', '.') }}</h3> --}}
                     <h3 class="card-title">Cash & Bank List Transaction </h3>
 
                     <div class="card-tools">
@@ -124,8 +97,6 @@
                         </button>
                     </div>
                 </div>
-
-
 
                 <div class="card-body p-0">
                     <table class="table table-striped projects">
@@ -144,8 +115,12 @@
                             @foreach ($data as $item)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $item->transferAccount->account_no }} -
-                                        {{ $item->transferAccount->name }}</td>
+                                    <td>
+                                        @if ($item->transferAccount)
+                                            {{ $item->transferAccount->account_no }} - {{ $item->transferAccount->name }}
+                                        @endif
+                                    </td>
+
                                     {{-- <td>{{ $item->depositAccount->account_no }} -
                                         {{ $item->depositAccount->name }}</td> --}}
 
@@ -167,10 +142,10 @@
                                         <!-- Add action buttons here (view, edit, delete, etc.) -->
 
                                         <div class="btn-group">
-                                            {{-- <a class="btn btn-info btn-sm" href="{{ route('transaction-transfer.edit', $transfer->id) }}"
+                                            <a class="btn btn-info btn-sm" href="{{ route('transaction-transfer.edit', $transfer->id) }}"
                                                 style="margin-right: 5px;">
                                                 <i class="fas fa-pencil-alt"></i> Edit
-                                            </a> --}}
+                                            </a>
 
                                             <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
                                                 style="margin-right: 5px;">

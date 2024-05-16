@@ -411,7 +411,7 @@ class AccountingController extends Controller
 
             $allData = $transferdata
                 ->orderBy($form->order ?? 'date', $form->sort ?? 'desc')
-                ->paginate(10);
+                ->paginate(5);
 
             return view('components.journal.index', [
                 'allData' => $allData,
@@ -419,6 +419,19 @@ class AccountingController extends Controller
             ]);
         } catch (Exception $err) {
             return dd($err);
+        }
+    }
+
+    public function showJournalDetail($id)
+    {
+        try {
+            $transaction = Transaction_transfer::findOrFail($id);
+
+            return view('components.journal.detail', [
+                'transaction' => $transaction,
+            ]);
+        } catch (Exception $e) {
+            return redirect()->route('journal.index')->with('error', 'Failed to fetch transaction details.');
         }
     }
 }

@@ -172,7 +172,10 @@ class NotificationPastDue extends Controller
                      $pdf = app('dompdf.wrapper');
                      // Perhatikan bahwa kita menggunakan $mailData['bill'][0] untuk setiap siswa
                      $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $mailData['bill'][0]])->setPaper('a4', 'portrait');
-                     Mail::to($parent->email)->send(new SppMail($mailData, "Tagihan SPP " . $mailData['student']->name .  " bulan ini, " . date('F Y') . " sudah dibuat.", $pdf));
+                     // Mail::to($parent->email)->send(new SppMail($mailData, "REMINDER: Tagihan Monthly Fee " . $mailData['student']->name . " " . date('F Y') . " Sudah Lewat Tanggal Jatuh Tempo.", $pdf));
+                     Mail::to($parent->email)->send(new SppMail($mailData, "REMINDER: Tagihan Monthly Fee " . $mailData['student']->name .  "  " . date('F Y') . " Sudah Lewat Tanggal Jatuh Tempo", $pdf));
+
+                    
                   }
 
                   dispatch(new SendEmailJob($array_email, strtolower($type), $mailData, $subs, $bill->id));

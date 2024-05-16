@@ -384,7 +384,11 @@
                                                                                             <tr>
                                                                                                 <td colspan="2"
                                                                                                     style="color: #525f7f; font-size: 15px; line-height: 24px; word-break: normal; font-weight: bold; padding: 20px 0 0;">
-                                                                                                    Total
+                                                                                                    @if ($mailData['past_due'])
+                                                                                                        Total Pembayaran
+                                                                                                    @else
+                                                                                                        Total
+                                                                                                    @endif
                                                                                                 </td>
                                                                                                 <td align="right"
                                                                                                     style="color: #525f7f; font-size: 15px; line-height: 24px; word-break: normal; font-weight: bold; padding: 20px 0 0;">
@@ -582,7 +586,8 @@
 
                                                 <div
                                                     style="font-family:Roboto,Mulish, Muli, Arial, sans-serif;font-size:14px;font-weight:400;line-height:20px;text-align:center;color:#616161;margin-top:15px;">
-                                                    © {{ date('Y') }} [Great Crystal School and Course Center], JL. RAYA DARMO PERMAI III,
+                                                    © {{ date('Y') }} [Great Crystal School and Course Center], JL.
+                                                    RAYA DARMO PERMAI III,
                                                     PUNCAK
                                                     PERMAI SQUARE SURABAYA, INDONESIA</div>
                                             </td>

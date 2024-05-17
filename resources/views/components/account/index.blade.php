@@ -8,17 +8,15 @@
 
 
         {{-- code here --}}
-        <div class="m-3">
-
+        <div class="m-1">
             <form action="{{ route('cash.index') }}" method="GET" class="mb-3">
                 <div class="row">
+
                     <div class="col-md-3">
-                        <input type="text" name="search" class="form-control" placeholder="Search..."
-                            value="{{ $form->search ?? '' }}">
-                    </div>
-                    <div class="col-md-3">
+                        <label for="date">Type Transaction</label>
+
                         <select name="type" class="form-control">
-                            <option value="">-- Select Type --</option>
+                            <option value="">-- All Data --</option>
                             <option value="transaction_transfer"
                                 {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
                                 Transaction Transfer</option>
@@ -27,33 +25,34 @@
                         </select>
                     </div>
                     <div class="col-md-3">
+                        <label for="date">Sort By</label>
+
                         <select name="sort" class="form-control">
-                            <option value="">-- Sort By --</option>
+                            <option value="">-- All Data --</option>
                             <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
                             <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <select name="order" class="form-control">
-                            <option value="">-- Order --</option>
-                            <option value="asc" {{ $form->order === 'asc' ? 'selected' : '' }}>Ascending
-                            </option>
-                            <option value="desc" {{ $form->order === 'desc' ? 'selected' : '' }}>Descending
-                            </option>
-                        </select>
+                        <label for="date">Date</label>
+                        <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                     </div>
+
+                    <div class="col-md-3">
+                        <label for="date">Search Data</label>
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search..."
+                                value="{{ $form->search ?? '' }}">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-secondary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
-                {{-- <div class="row mt-2">
-                <div class="col-md-3">
-                    <select name="status" class="form-control">
-                        <option value="">-- Status --</option>
-                        <option value="paid" {{ $form->status === 'paid' ? 'selected' : '' }}>Paid</option>
-                        <option value="unpaid" {{ $form->status === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
-                    </select>
-                </div>
-                <!-- Tambahkan input fields lainnya sesuai kebutuhan -->
-            </div> --}}
-                <button type="submit" class="btn btn-primary mt-2">Filter</button>
             </form>
         </div>
 
@@ -67,44 +66,16 @@
             </div>
         @elseif (sizeof($data) == 0)
             <!-- Display message when no expenditure data found -->
-
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Account Number has been created yet. Click the button below to create Account Number!</h3>
-                    {{-- <div class="btn-group mt-5">
-                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                            <i class="fa-solid fa-plus"></i> Create Account
-                        </button>
-                        <div class="dropdown-menu" style="min-width: 100%";>
-                            <a class="dropdown-item"href="/admin/account/create-account">Create New Account</a>
-                            <!-- Example of another option -->
-                        </div>
-                    </div> --}}
-                    <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-5 mx-2">
+                    <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-3">
                         <i class="fa-solid fa-plus"></i> Create Account
                     </a>
-
                 </div>
             </div>
         @else
-            <!-- Display data when expenditure data is available -->
-            <!-- Add button to register new expenditure -->
-            {{-- <form action="/admin/account" method="GET" class="input-group input-group-lg">
-                <input name="search" type="search" value="{{ $form->search }}" class="form-control form-control-lg"
-                    placeholder="Type Account Number here">
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-lg btn-default">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
-            </form> --}}
-
-
-
-
-
-            <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-5 mx-2">
+            <a type="button" href="/admin/account/create-account" class="btn btn-success btn mt-3">
                 <i class="fa-solid fa-plus"></i> Create Account
             </a>
 
@@ -112,7 +83,7 @@
             <div class="card card-dark mt-5">
                 <div class="card-header">
                     <h3 class="card-title">List Account Number</h3>
-                    
+
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
@@ -146,20 +117,25 @@
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
                                     {{-- <td style="max-width: 200px;">{{ $account->description }}</td> --}}
                                     <td>{{ \Carbon\Carbon::parse($account->created_at)->format('Y-m-d') }}</td>
+                                    <td>
+                                        <a class="btn btn-info btn-sm" href="/admin/account/{{ $account->id }}/edit"
+                                            style="margin-right: 5px;">
+                                            <i class="fas fa-pencil-alt"></i> Edit
+                                        </a>
+
+                                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $account->id }}"
+                                            style="margin-right: 5px;">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
                                     <td class="project-actions text-right">
                                         <!-- Add action buttons here (view, edit, delete, etc.) -->
 
                                         <div class="btn-group">
-                                            <a class="btn btn-info btn-sm" href="/admin/account/{{ $account->id }}/edit"
-                                                style="margin-right: 5px;">
-                                                <i class="fas fa-pencil-alt"></i> Edit
-                                            </a>
+
 
                                             {{-- @can('delete-account') --}}
-                                            <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $account->id }}"
-                                                style="margin-right: 5px;">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
+
                                             {{-- @endcan --}}
                                         </div>
 

@@ -6,57 +6,52 @@
             <!-- Small boxes (Stat box) -->
             <h2 class="text-center display-4 mb-4">Journal Search</h2>
 
-            <div class="m-2">
-                <!-- Form untuk filter data -->
-                <!-- Isi formulir disini -->
-                {{-- <div class="m-3"> --}}
+            <div class="m-1">
+                <form action="{{ route('journal.index') }}" method="GET" class="mb-3">
+                    <div class="row">
 
-                    <form action="{{ route('cash.index') }}" method="GET" class="mb-3">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <input type="text" name="search" class="form-control" placeholder="Search..."
-                                    value="{{ $form->search ?? '' }}">
-                            </div>
-                            <div class="col-md-3">
-                                <select name="type" class="form-control">
-                                    <option value="">-- Select Type --</option>
-                                    <option value="transaction_transfer"
-                                        {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
-                                        Transaction Transfer</option>
-                                    <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
-                                        Transaction Send</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="sort" class="form-control">
-                                    <option value="">-- Sort By --</option>
-                                    <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
-                                    <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="order" class="form-control">
-                                    <option value="">-- Order --</option>
-                                    <option value="asc" {{ $form->order === 'asc' ? 'selected' : '' }}>Ascending
-                                    </option>
-                                    <option value="desc" {{ $form->order === 'desc' ? 'selected' : '' }}>Descending
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        {{-- <div class="row mt-2">
                         <div class="col-md-3">
-                            <select name="status" class="form-control">
-                                <option value="">-- Status --</option>
-                                <option value="paid" {{ $form->status === 'paid' ? 'selected' : '' }}>Paid</option>
-                                <option value="unpaid" {{ $form->status === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
+                            <label for="date">Type Transaction</label>
+
+                            <select name="type" class="form-control">
+                                <option value="">-- All Data --</option>
+                                <option value="transaction_transfer"
+                                    {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
+                                    Transaction Transfer</option>
+                                <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
+                                    Transaction Send</option>
                             </select>
                         </div>
-                        <!-- Tambahkan input fields lainnya sesuai kebutuhan -->
-                    </div> --}}
-                        <button type="submit" class="btn btn-primary mt-2">Filter</button>
-                    </form>
-                {{-- </div> --}}
+                        <div class="col-md-3">
+                            <label for="date">Sort By</label>
+
+                            <select name="sort" class="form-control">
+                                <option value="">-- All Data --</option>
+                                <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
+                                <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date">Date</label>
+                            <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="date">Search Data</label>
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Search..."
+                                    value="{{ $form->search ?? '' }}">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-secondary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </form>
             </div>
 
             <div class="row justify-content-center">
@@ -98,7 +93,7 @@
                                                 <td>0</td> {{-- Debit --}}
                                                 <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}
                                                 </td> {{-- Credit --}}
-                                                
+
                                                 <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
                                                 </td>

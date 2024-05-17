@@ -1,52 +1,18 @@
-@extends('layouts.admin.master')
-@section('content')
+    @extends('layouts.admin.master')
+    @section('content')
 
-    <!-- Content Wrapper. Contains page content -->
-    <div class="container-fluid">
+        <!-- Content Wrapper. Contains page content -->
+        <div class="container-fluid">
 
-        <h2 class="text-center display-4 mb-3">Cash & Bank Search</h2>
-
-        {{-- code here --}}
-
-        <!-- Conditional rendering based on data availability -->
-        @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
-            <!-- Display message when no data found based on search criteria -->
-            <div class="row h-100 my-5">
-                <div class="col-sm-12 my-auto text-center">
-                    <h3>No Cash or Bank found based on your search criteria!</h3>
-                </div>
-            </div>
-        @elseif (sizeof($data) == 0)
-            <!-- Display message when no transfer data found -->
-
-            <div class="row h-100 my-5">
-                <div class="col-sm-12 my-auto text-center">
-                    <h3>No Cash or Bank has been transferred yet. Click the button below to create Transaction!</h3>
-                    <div class="btn-group mt-5">
-                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                            <i class="fa-solid fa-plus"></i> Create Transaction
-                        </button>
-                        <div class="dropdown-menu" style="min-width: 100%">
-                            {{-- <a class="dropdown-item" href="/admin/cash/create-account">Create New Account</a> --}}
-                            <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer Money</a>
-                            <a class="dropdown-item" href="/admin/cash/transaction-send">Send Money</a>
-                            <a class="dropdown-item" href="/admin/cash/transaction-receive">Receive Money</a>
-                            <!-- Example of another option -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @else
+            <h2 class="text-center display-4 mb-3">Cash & Bank Search</h2>
             <form action="{{ route('cash.index') }}" method="GET" class="mb-3">
                 <div class="row">
+
                     <div class="col-md-3">
-                        <input type="text" name="search" class="form-control" placeholder="Search..."
-                            value="{{ $form->search ?? '' }}">
-                    </div>
-                    <div class="col-md-3">
+                        <label for="date">Type Transaction</label>
+
                         <select name="type" class="form-control">
-                            <option value="">-- Select Type --</option>
+                            <option value="">-- All Data --</option>
                             <option value="transaction_transfer"
                                 {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
                                 Transaction Transfer</option>
@@ -55,198 +21,243 @@
                         </select>
                     </div>
                     <div class="col-md-3">
+                        <label for="date">Sort By</label>
+
                         <select name="sort" class="form-control">
-                            <option value="">-- Sort By --</option>
+                            <option value="">-- All Data --</option>
                             <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
                             <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <select name="order" class="form-control">
-                            <option value="">-- Order --</option>
-                            <option value="asc" {{ $form->order === 'asc' ? 'selected' : '' }}>Ascending</option>
-                            <option value="desc" {{ $form->order === 'desc' ? 'selected' : '' }}>Descending</option>
-                        </select>
+                        <label for="date">Date</label>
+                        <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                     </div>
-                </div>
 
-                <button type="submit" class="btn btn-primary mt-2">Filter</button>
+                    <div class="col-md-3">
+                        <label for="date">Search Data</label>
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search..."
+                                value="{{ $form->search ?? '' }}">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-secondary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
             </form>
+            {{-- code here --}}
 
-
-            <div class="btn-group mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
-                    <i class="fa-solid fa-plus"></i> Create Transaction
-                </button>
-                <div class="dropdown-menu" style="min-width: 100%">
-
-                    <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer Money</a>
-
+            <!-- Conditional rendering based on data availability -->
+            @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
+                <!-- Display message when no data found based on search criteria -->
+                <div class="row h-100 my-5">
+                    <div class="col-sm-12 my-auto text-center">
+                        <h3>No Cash or Bank found based on your search criteria!</h3>
+                    </div>
                 </div>
-            </div>
+            @elseif (sizeof($data) == 0)
+                <!-- Display message when no transfer data found -->
 
-            <!-- Display Cash or Bank data in a table -->
-            <div class="card card-dark mt-5">
-                <div class="card-header">
-                    <h3 class="card-title">Cash & Bank List Transaction </h3>
+                <div class="row h-100 my-5">
+                    <div class="col-sm-12 my-auto text-center">
+                        <h3>No Cash or Bank has been transferred yet. Click the button below to create Transaction!</h3>
+                        <div class="btn-group mt-5">
+                            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-plus"></i> Create Transaction
+                            </button>
+                            <div class="dropdown-menu" style="min-width: 100%">
+                                {{-- <a class="dropdown-item" href="/admin/cash/create-account">Create New Account</a> --}}
+                                <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer
+                                    Money</a>
+                                <a class="dropdown-item" href="/admin/cash/transaction-send">Send Money</a>
+                                <a class="dropdown-item" href="/admin/cash/transaction-receive">Receive Money</a>
+                                <!-- Example of another option -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="btn-group mt-2">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-plus"></i> Create Transaction
+                    </button>
+                    <div class="dropdown-menu" style="min-width: 100%">
 
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
+                        <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer Money</a>
+
                     </div>
                 </div>
 
-                <div class="card-body p-0">
-                    <table class="table table-striped projects">
-                        <thead>
-                            <tr>
-                                <th style="width: 3%">#</th>
-                                <th>Account Number</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th style="width: 8%;" class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Loop through transfer data -->
-                            @foreach ($data as $item)
+                <!-- Display Cash or Bank data in a table -->
+                <div class="card card-dark mt-5">
+                    <div class="card-header">
+                        <h3 class="card-title">Cash & Bank List Transaction </h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <table class="table table-striped projects">
+                            <thead>
                                 <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
-                                    <td>
-                                        @if ($item->transferAccount)
-                                            {{ $item->transferAccount->account_no }} - {{ $item->transferAccount->name }}
-                                        @endif
-                                    </td>
+                                    <th style="width: 3%">#</th>
+                                    <th>Account Number</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    {{-- <th>Type</th> --}}
+                                    <th style="width: 8%;" class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Loop through transfer data -->
+                                @foreach ($data as $item)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>
+                                            @if ($item->transferAccount)
+                                                {{ $item->transferAccount->account_no }} -
+                                                {{ $item->transferAccount->name }}
+                                            @endif
+                                        </td>
 
-                                    {{-- <td>{{ $item->depositAccount->account_no }} -
-                                        {{ $item->depositAccount->name }}</td> --}}
+                                        {{-- <td>{{ $item->depositAccount->account_no }} -
+                                            {{ $item->depositAccount->name }}</td> --}}
 
-                                    <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->spent_at)->format('Y-m-d') }}</td>
-                                    <td>
-                                        <!-- Tampilkan pembeda berdasarkan nilai kolom 'type' -->
-                                        @if ($item->type === 'transaction_transfer')
-                                            <span class="badge badge-primary">Transfer</span>
-                                        @elseif ($item->type === 'transaction_send')
-                                            <span class="badge badge-success">Send</span>
-                                        @elseif ($item->type === 'transaction_receive')
-                                            <span class="badge badge-warning">Receive</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- <td style="max-width: 200px;">{{ $transfer->description }}</td> --}}
-                                    <td class="project-actions text-right">
-                                        <!-- Add action buttons here (view, edit, delete, etc.) -->
-
-                                        <div class="btn-group">
-                                            <a class="btn btn-info btn-sm" href="{{ route('transaction-transfer.edit', $transfer->id) }}"
-                                                style="margin-right: 5px;">
-                                                <i class="fas fa-pencil-alt"></i> Edit
-                                            </a>
-
+                                        <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->date)->format('Y-m-d') }}</td>
+                                        <td>
+                                            <!-- Tampilkan pembeda berdasarkan nilai kolom 'type' -->
+                                            @if ($item->type === 'transaction_transfer')
+                                                <span class="badge badge-primary">Transfer</span>
+                                            @elseif ($item->type === 'transaction_send')
+                                                <span class="badge badge-success">Send</span>
+                                            @elseif ($item->type === 'transaction_receive')
+                                                <span class="badge badge-warning">Receive</span>
+                                            @endif
                                             <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
                                                 style="margin-right: 5px;">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
-                                            {{-- @can('delete-transfer')
-                                            @endcan --}}
-                                        </div>
+                                        </td>
 
-                                        <!-- Modal Konfirmasi Penghapusan -->
-                                        <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Konfirmasi Penghapusan</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Anda yakin ingin menghapus data ini?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Batal</button>
-                                                        <form
-                                                            action="{{ route('transaction-transfer.destroy', $item->id) }}"
-                                                            method="POST" style="display: inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Ya,
-                                                                Hapus</button>
-                                                        </form>
+                                        {{-- <td style="max-width: 200px;">{{ $transfer->description }}</td> --}}
+                                        <td class="project-actions text-right">
+                                            <!-- Add action buttons here (view, edit, delete, etc.) -->
+
+                                            <div class="btn-group">
+                                                {{-- <a class="btn btn-info btn-sm" href="{{ route('transaction-transfer.edit', $item->id) }}"
+                                                    style="margin-right: 5px;">
+                                                    <i class="fas fa-pencil-alt"></i> Edit
+                                                </a> --}}
+
+
+                                                {{-- @can('delete-transfer')
+                                                @endcan --}}
+                                            </div>
+
+                                            <!-- Modal Konfirmasi Penghapusan -->
+                                            <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
+                                                role="dialog">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Konfirmasi Penghapusan</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Anda yakin ingin menghapus data ini?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Batal</button>
+                                                            <form
+                                                                action="{{ route('transaction-transfer.destroy', $item->id) }}"
+                                                                method="POST" style="display: inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger">Ya,
+                                                                    Hapus</button>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <!-- /Modal Konfirmasi Penghapusan -->
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <!-- Pagination with adjusted layout -->
-                    <div class="d-flex justify-content-between mt-4 px-3">
-                        <div class="mb-3">
-                            Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of
-                            {{ $data->total() }} results
+                                            <!-- /Modal Konfirmasi Penghapusan -->
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <!-- Pagination with adjusted layout -->
+                        <div class="d-flex justify-content-between mt-4 px-3">
+                            <div class="mb-3">
+                                Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of
+                                {{ $data->total() }} results
+                            </div>
+                            <div>
+                                {{ $data->links('pagination::bootstrap-4') }}
+                            </div>
                         </div>
-                        <div>
-                            {{ $data->links('pagination::bootstrap-4') }}
-                        </div>
-                    </div>
 
+                    </div>
                 </div>
-            </div>
-            <!-- /Display Cash or Bank data in a table -->
+                <!-- /Display Cash or Bank data in a table -->
+            @endif
+
+        </div>
+
+        {{-- SweetAlert --}}
+        @if (session('success'))
+            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+            <script>
+                swal({
+                    title: "Success!",
+                    text: "{{ session('success') }}",
+                    icon: "success",
+                    button: "OK",
+                });
+            </script>
         @endif
 
-    </div>
-
-    {{-- SweetAlert --}}
-    @if (session('success'))
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        {{-- search button --}}
         <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
+            // Tangani klik tombol pencarian
+            document.getElementById('searchButton').addEventListener('click', function() {
+                // Dapatkan nilai dari input pencarian
+                var searchValue = document.getElementById('searchInput').value;
+
+                // Redirect ke halaman pencarian dengan parameter 'search'
+                window.location.href = '/admin/expenditure?search=' + searchValue;
             });
         </script>
-    @endif
 
-    {{-- search button --}}
-    <script>
-        // Tangani klik tombol pencarian
-        document.getElementById('searchButton').addEventListener('click', function() {
-            // Dapatkan nilai dari input pencarian
-            var searchValue = document.getElementById('searchInput').value;
+        {{-- delete button --}}
+        <script>
+            // Tangani klik tombol delete
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    let expenditureId = this.getAttribute('data-id');
 
-            // Redirect ke halaman pencarian dengan parameter 'search'
-            window.location.href = '/admin/expenditure?search=' + searchValue;
-        });
-    </script>
+                    // Tampilkan modal konfirmasi penghapusan
+                    $('#deleteModal' + expenditureId).modal('show');
 
-    {{-- delete button --}}
-    <script>
-        // Tangani klik tombol delete
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                let expenditureId = this.getAttribute('data-id');
-
-                // Tampilkan modal konfirmasi penghapusan
-                $('#deleteModal' + expenditureId).modal('show');
-
-                // Hentikan tindakan default penghapusan
-                return false;
+                    // Hentikan tindakan default penghapusan
+                    return false;
+                });
             });
-        });
-    </script>
-@endsection
+        </script>
+    @endsection

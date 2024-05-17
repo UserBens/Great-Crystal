@@ -22,37 +22,60 @@ class AccountingController extends Controller
         ]);
 
         try {
+            // Inisialisasi objek form dengan nilai default
             $form = (object) [
-                'sort' => $request->sort ? $request->sort : null,
-                'order' => $request->order ? $request->order : null,
-                'status' => $request->status ? $request->status : null,
-                'search' => $request->search ? $request->search : null,
-                'type' => $request->type ? $request->type :  null,
+                'search' => $request->search ?? null,
+                'type' => $request->type ?? null,
+                'sort' => $request->sort ?? null,
+                'order' => $request->order ?? null,
+                'status' => $request->status ?? null,
             ];
 
-            $data = [];
+            // Query data berdasarkan parameter pencarian yang diberikan
+            $query = Transaction_transfer::with(['transferAccount', 'depositAccount']);
 
-            // Mengatur default urutan
-            $order = $request->sort ? $request->sort : 'desc';
-
-            // Query data berdasarkan parameter yang diberikan
-            if ($request->has('search')) {
-                $data = Transaction_transfer::where('transfer', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('deposit', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('date', 'LIKE', '%' . $request->search . '%')
-                    ->orderBy($request->order ?? 'created_at', $order)
-                    ->paginate(10);
-            } else {
-                // $data = Transaction_transfer::orderBy('created_at', $order)->paginate(10);
-                $data = Transaction_transfer::with('transferAccount')->orderBy('created_at', $order)->paginate(10);
+            if ($request->filled('search')) {
+                $searchTerm = '%' . $request->search . '%';
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->whereHas('transferAccount', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', $searchTerm)
+                            ->orWhere('account_no', 'LIKE', $searchTerm);
+                    })->orWhereHas('depositAccount', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', $searchTerm)
+                            ->orWhere('account_no', 'LIKE', $searchTerm);
+                    })->orWhere('amount', 'LIKE', $searchTerm)
+                        ->orWhere('date', 'LIKE', $searchTerm);
+                });
             }
 
-            return view('components.cash&bank.index')->with('data', $data)->with('form', $form);
+            // Mengatur urutan berdasarkan parameter yang dipilih
+            if ($request->filled('sort') && $request->filled('order')) {
+                if ($request->sort === 'date') {
+                    $query->orderBy('date', $request->order);
+                } else {
+                    $query->orderBy($request->sort, $request->order);
+                }
+            }
+
+            // Filter data berdasarkan tanggal
+            if ($request->filled('date')) {
+                $searchDate = date('Y-m-d', strtotime($request->date));
+                $query->whereDate('date', $searchDate);
+            }
+
+            // Memuat data dengan pagination
+            $data = $query->paginate(10);
+
+            // Menampilkan view dengan data dan form
+            return view('components.cash&bank.index', compact('data', 'form'));
         } catch (Exception $err) {
+            // Menampilkan pesan error jika terjadi kesalahan
             return dd($err);
         }
     }
+
+
+
 
     // public function deleteSelectedItems(Request $request)
     // {
@@ -232,14 +255,61 @@ class AccountingController extends Controller
             Transaction_transfer::create([
                 'transfer_account_id' => $request->transfer_account_id,
                 'deposit_account_id' => $request->deposit_account_id,
-                'transfer' => $request->transfer_account_id, // Apakah ini benar-benar diperlukan?
-                'deposit' => $request->deposit_account_id, // Apakah ini benar-benar diperlukan?
+                // 'transfer' => $request->transfer_account_id, // Apakah ini benar-benar diperlukan?
+                // 'deposit' => $request->deposit_account_id, // Apakah ini benar-benar diperlukan?
                 'amount' => $request->amount,
                 'date' => $date,
                 'description' => $request->description,
             ]);
 
             return redirect()->route('cash.index')->with('success', 'Transaction Transfer Created Successfully!');
+        } catch (Exception $err) {
+            // Tangani kesalahan di sini
+            return dd($err);
+        }
+    }
+
+    public function editTransactionTransfer($id)
+    {
+        $transaction = Transaction_transfer::findOrFail($id);
+        $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
+
+
+        return view('components.cash&bank.edit-transaction-transfer', [
+            'transaction' => $transaction,
+            'accountNumbers' => $accountNumbers,
+        ]);
+    }
+
+    public function updateTransactionTransfer(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                // 'accountnumber_id' => 'required', // Pastikan Anda memvalidasi accountnumber_id
+                // 'transfer' => 'required',
+                // 'deposit' => 'required',
+                'transfer_account_id' => 'required',
+                'deposit_account_id' => 'required',
+                'amount' => 'required|numeric',
+                'date' => 'required|date_format:d/m/Y',
+                'description' => 'required',
+            ]);
+
+            $transaction_transfer = Transaction_transfer::findOrFail($id);
+
+            $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+
+            $transaction_transfer::update([
+                'transfer_account_id' => $request->transfer_account_id,
+                'deposit_account_id' => $request->deposit_account_id,
+                // 'transfer' => $request->transfer_account_id, // Apakah ini benar-benar diperlukan?
+                // 'deposit' => $request->deposit_account_id, // Apakah ini benar-benar diperlukan?
+                'amount' => $request->amount,
+                'date' => $date,
+                'description' => $request->description,
+            ]);
+
+            return redirect()->route('cash.index')->with('success', 'Transaction Transfer Updated Successfully!');
         } catch (Exception $err) {
             // Tangani kesalahan di sini
             return dd($err);
@@ -262,109 +332,109 @@ class AccountingController extends Controller
         }
     }
 
-    public function createTransactionSend()
-    {
-        $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
-        return view('components.cash&bank.create-transaction-send', [
-            'accountNumbers' => $accountNumbers,
-        ]);
-    }
+    // public function createTransactionSend()
+    // {
+    //     $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
+    //     return view('components.cash&bank.create-transaction-send', [
+    //         'accountNumbers' => $accountNumbers,
+    //     ]);
+    // }
 
-    // milik transaction send
-    public function storeTransactionSend(Request $request)
-    {
-        $request->validate([
-            // 'accountnumber_id' => 'required', // Pastikan Anda memvalidasi accountnumber_id
-            'transfer' => 'required',
-            'deposit' => 'required',
-            'amount' => 'required|numeric',
-            'date' => 'required|date_format:d/m/Y',
-            'description' => 'required',
-        ]);
+    // // milik transaction send
+    // public function storeTransactionSend(Request $request)
+    // {
+    //     $request->validate([
+    //         // 'accountnumber_id' => 'required', // Pastikan Anda memvalidasi accountnumber_id
+    //         'transfer' => 'required',
+    //         'deposit' => 'required',
+    //         'amount' => 'required|numeric',
+    //         'date' => 'required|date_format:d/m/Y',
+    //         'description' => 'required',
+    //     ]);
 
-        $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+    //     $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
 
-        Transaction_send::create([
-            'accountnumber_id' => $request->transfer, // Sertakan nilai accountnumber_id yang diterima dari form
-            'transfer' => $request->transfer,
-            'deposit' => $request->deposit,
-            'amount' => $request->amount,
-            'date' => $date,
-            'description' => $request->description,
-        ]);
+    //     Transaction_send::create([
+    //         'accountnumber_id' => $request->transfer, // Sertakan nilai accountnumber_id yang diterima dari form
+    //         'transfer' => $request->transfer,
+    //         'deposit' => $request->deposit,
+    //         'amount' => $request->amount,
+    //         'date' => $date,
+    //         'description' => $request->description,
+    //     ]);
 
-        return redirect()->route('cash.index')->with('success', 'Transaction Send Created Successfully!');
-    }
+    //     return redirect()->route('cash.index')->with('success', 'Transaction Send Created Successfully!');
+    // }
 
-    public function deleteTransactionSend(Request $request)
-    {
-        try {
-            // Ambil ID dari request
-            $transactionId = $request->input('transaction_id');
+    // public function deleteTransactionSend(Request $request)
+    // {
+    //     try {
+    //         // Ambil ID dari request
+    //         $transactionId = $request->input('transaction_id');
 
-            // Cari data transaksi send berdasarkan ID
-            $transactionSend = Transaction_send::findOrFail($transactionId);
+    //         // Cari data transaksi send berdasarkan ID
+    //         $transactionSend = Transaction_send::findOrFail($transactionId);
 
-            // Hapus data transaksi send
-            $transactionSend->delete();
+    //         // Hapus data transaksi send
+    //         $transactionSend->delete();
 
-            return redirect()->back()->with('success', 'Transaction Send Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
-        }
-    }
+    //         return redirect()->back()->with('success', 'Transaction Send Deleted Successfully!');
+    //     } catch (Exception $err) {
+    //         return dd($err);
+    //     }
+    // }
 
-    // milik transaction Receive
-    public function createTransactionReceive()
-    {
-        $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
-        return view('components.cash&bank.create-transaction-receive', [
-            'accountNumbers' => $accountNumbers,
-        ]);
-    }
+    // // milik transaction Receive
+    // public function createTransactionReceive()
+    // {
+    //     $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
+    //     return view('components.cash&bank.create-transaction-receive', [
+    //         'accountNumbers' => $accountNumbers,
+    //     ]);
+    // }
 
-    public function storeTransactionReceive(Request $request)
-    {
-        $request->validate([
-            // 'accountnumber_id' => 'required', // Pastikan Anda memvalidasi accountnumber_id
-            'transfer' => 'required',
-            'deposit' => 'required',
-            'amount' => 'required|numeric',
-            'date' => 'required|date_format:d/m/Y',
-            'description' => 'required',
-        ]);
+    // public function storeTransactionReceive(Request $request)
+    // {
+    //     $request->validate([
+    //         // 'accountnumber_id' => 'required', // Pastikan Anda memvalidasi accountnumber_id
+    //         'transfer' => 'required',
+    //         'deposit' => 'required',
+    //         'amount' => 'required|numeric',
+    //         'date' => 'required|date_format:d/m/Y',
+    //         'description' => 'required',
+    //     ]);
 
-        $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+    //     $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
 
-        Transaction_receive::create([
-            'accountnumber_id' => $request->transfer, // Sertakan nilai accountnumber_id yang diterima dari form
-            'transfer' => $request->transfer,
-            'deposit' => $request->deposit,
-            'amount' => $request->amount,
-            'date' => $date,
-            'description' => $request->description,
-        ]);
+    //     Transaction_receive::create([
+    //         'accountnumber_id' => $request->transfer, // Sertakan nilai accountnumber_id yang diterima dari form
+    //         'transfer' => $request->transfer,
+    //         'deposit' => $request->deposit,
+    //         'amount' => $request->amount,
+    //         'date' => $date,
+    //         'description' => $request->description,
+    //     ]);
 
-        return redirect()->route('cash.index')->with('success', 'Transaction Send Created Successfully!');
-    }
+    //     return redirect()->route('cash.index')->with('success', 'Transaction Send Created Successfully!');
+    // }
 
-    public function deleteTransactionReceive(Request $request)
-    {
-        try {
-            // Ambil ID dari request
-            $transactionId = $request->input('transaction_id');
+    // public function deleteTransactionReceive(Request $request)
+    // {
+    //     try {
+    //         // Ambil ID dari request
+    //         $transactionId = $request->input('transaction_id');
 
-            // Cari data transaksi receive berdasarkan ID
-            $transactionReceive = Transaction_receive::findOrFail($transactionId);
+    //         // Cari data transaksi receive berdasarkan ID
+    //         $transactionReceive = Transaction_receive::findOrFail($transactionId);
 
-            // Hapus data transaksi receive
-            $transactionReceive->delete();
+    //         // Hapus data transaksi receive
+    //         $transactionReceive->delete();
 
-            return redirect()->back()->with('success', 'Transaction Receive Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
-        }
-    }
+    //         return redirect()->back()->with('success', 'Transaction Receive Deleted Successfully!');
+    //     } catch (Exception $err) {
+    //         return dd($err);
+    //     }
+    // }
 
     // public function indexBank()
     // {
@@ -382,7 +452,7 @@ class AccountingController extends Controller
             'page' => 'Transaction',
             'child' => 'database Journal',
         ]);
-
+    
         $form = (object) [
             'sort' => $request->sort ?? null,
             'order' => $request->order ?? null,
@@ -390,7 +460,7 @@ class AccountingController extends Controller
             'search' => $request->search ?? null,
             'type' => $request->type ?? null,
         ];
-
+    
         try {
             $transferdata = Transaction_transfer::select(
                 'transaction_transfers.*',
@@ -407,12 +477,17 @@ class AccountingController extends Controller
                             ->orWhere('transaction_transfers.description', 'LIKE', '%' . $request->search . '%');
                     }
                 });
-
-
+    
+            // Filter data berdasarkan tanggal
+            if ($request->filled('date')) {
+                $searchDate = date('Y-m-d', strtotime($request->date));
+                $transferdata->whereDate('transaction_transfers.date', $searchDate);
+            }
+    
             $allData = $transferdata
                 ->orderBy($form->order ?? 'date', $form->sort ?? 'desc')
                 ->paginate(5);
-
+    
             return view('components.journal.index', [
                 'allData' => $allData,
                 'form' => $form,
@@ -421,6 +496,7 @@ class AccountingController extends Controller
             return dd($err);
         }
     }
+    
 
     public function showJournalDetail($id)
     {

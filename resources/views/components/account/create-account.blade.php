@@ -7,8 +7,7 @@
                 <div class="col-md-6">
                     <!-- general form elements -->
                     <div>
-                        <form id="accountForm" method="POST" action="{{ route('account.store') }}"
-                            onsubmit="submitForm()">
+                        <form id="accountForm" method="POST" action="{{ route('account.store') }}" onsubmit="submitForm()">
                             @csrf
                             <div class="card card-dark">
                                 <div class="card-header">
@@ -31,22 +30,20 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="account_no">Account Number<span style="color: red">*</span> :</label>
+                                            <label for="account_no">Account Number<span style="color: red">*</span>
+                                                :</label>
                                             <input name="account_no" type="text" class="form-control" id="account_no"
-                                                placeholder="Enter Account Number" value="{{ old('account_no') }}" autocomplete="off"
-                                                required>
+                                                placeholder="Enter Account Number" value="{{ old('account_no') }}"
+                                                autocomplete="off" required>
 
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('account_no') }}</p>
                                             @endif
                                         </div>
 
-
                                     </div>
 
                                     <div class="form-group row">
-                                        
-
                                         <div class="col-md-6">
                                             <label>Type : <span style="color: red"></span></label>
                                             <select name="type" class="form-control">
@@ -60,8 +57,8 @@
                                         <div class="col-md-6">
                                             <label for="bank_name">Bank Name<span style="color: red">*</span> :</label>
                                             <input name="bank_name" type="text" class="form-control" id="bank_name"
-                                                placeholder="Enter Bank Name" value="{{ old('bank_name') }}" autocomplete="off"
-                                                required>
+                                                placeholder="Enter Bank Name" value="{{ old('bank_name') }}"
+                                                autocomplete="off" required>
 
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('bank_name') }}</p>
@@ -74,8 +71,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input name="amount" type="text" class="form-control"
-                                                    id="amount" placeholder="Enter amount" autocomplete="off"
+                                                <input name="amount" type="text" class="form-control" id="amount"
+                                                    placeholder="Enter amount" autocomplete="off"
                                                     value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}"
                                                     required>
                                             </div>
@@ -83,10 +80,16 @@
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
                                         </div>
+                                        <div class="col-md-6 mt-3">
+                                            <label>Category : <span style="color: red"></span></label>
+                                            <select name="account_category_id" class="form-control">
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->category_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
-
-
-                                   
 
                                     <div class="form-group row">
                                         <div class="col-md-12">

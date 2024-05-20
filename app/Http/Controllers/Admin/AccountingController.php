@@ -6,10 +6,11 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Cash;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Accountnumber;
-use App\Models\Transaction_receive;
+use App\Models\Accountcategory;
 use App\Models\Transaction_send;
+use App\Models\Transaction_receive;
+use App\Http\Controllers\Controller;
 use App\Models\Transaction_transfer;
 
 class AccountingController extends Controller
@@ -129,17 +130,20 @@ class AccountingController extends Controller
 
             // Query data berdasarkan parameter yang diberikan
             if ($request->has('search')) {
-                $data = Accountnumber::where('type', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('description', 'LIKE', '%' . $request->search . '%')
+                $data = Accountnumber::where('name', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('account_no', 'LIKE', '%' . $request->search . '%')
                     ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('spent_at', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('created_at', 'LIKE', '%' . $request->search . '%')
                     ->orderBy($request->order ?? 'created_at', $order)
                     ->paginate(10);
             } else {
                 $data = Accountnumber::orderBy('created_at', $order)->paginate(10);
             }
 
-            return view('components.account.index')->with('data', $data)->with('form', $form);
+            $categories = Accountcategory::all();
+
+
+            return view('components.account.index')->with('data', $data)->with('categories', $categories)->with('form', $form);
         } catch (Exception $err) {
             return dd($err);
         }
@@ -147,7 +151,11 @@ class AccountingController extends Controller
 
     public function createAccount()
     {
-        return view('components.account.create-account');
+        $categories = Accountcategory::all();
+
+        return view('components.account.create-account', [
+            'categories' => $categories,
+        ]);
     }
 
     public function storeAccount(Request $request)
@@ -157,6 +165,7 @@ class AccountingController extends Controller
             'name' => 'required',
             'account_no' => 'required',
             'type' => 'required',
+            'account_category_id' => 'required',
             'bank_name' => 'required',
             'amount' => 'required|numeric',
             'description' => 'required',
@@ -166,6 +175,7 @@ class AccountingController extends Controller
             'name' => $request->name,
             'account_no' => $request->account_no,
             'type' => $request->type,
+            'account_category_id' => $request->account_category_id,
             'bank_name' => $request->bank_name,
             'amount' => $request->amount,
             'description' => $request->description,
@@ -178,9 +188,11 @@ class AccountingController extends Controller
     public function editAccount($id)
     {
         $accountNumbers = Accountnumber::findOrFail($id);
+        $categories = Accountcategory::all();
 
         return view('components.account.edit-account', [
             'accountNumbers' => $accountNumbers,
+            'categories' => $categories,
         ]);
     }
 
@@ -191,6 +203,7 @@ class AccountingController extends Controller
             'name' => 'required',
             'account_no' => 'required',
             'type' => 'required',
+            'account_category_id' => 'required',
             'bank_name' => 'required',
             'amount' => 'required|numeric',
             'description' => 'required',
@@ -202,13 +215,14 @@ class AccountingController extends Controller
             'name' => $request->name,
             'account_no' => $request->account_no,
             'type' => $request->type,
+            'account_category_id' => $request->account_category_id,
             'bank_name' => $request->bank_name,
             'amount' => $request->amount,
             'description' => $request->description,
         ]);
 
         // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-        return redirect()->route('account.index')->with('success', 'Account created successfully!');
+        return redirect()->route('account.index')->with('success', 'Account Updated successfully!');
     }
 
     public function destroyAccount($id)
@@ -241,13 +255,12 @@ class AccountingController extends Controller
         try {
             $request->validate([
                 // 'accountnumber_id' => 'required', // Pastikan Anda memvalidasi accountnumber_id
-                // 'transfer' => 'required',
-                // 'deposit' => 'required',
                 'transfer_account_id' => 'required',
                 'deposit_account_id' => 'required',
                 'amount' => 'required|numeric',
                 'date' => 'required|date_format:d/m/Y',
                 'description' => 'required',
+                'no_transaction' => 'required',
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
@@ -255,11 +268,10 @@ class AccountingController extends Controller
             Transaction_transfer::create([
                 'transfer_account_id' => $request->transfer_account_id,
                 'deposit_account_id' => $request->deposit_account_id,
-                // 'transfer' => $request->transfer_account_id, // Apakah ini benar-benar diperlukan?
-                // 'deposit' => $request->deposit_account_id, // Apakah ini benar-benar diperlukan?
                 'amount' => $request->amount,
                 'date' => $date,
                 'description' => $request->description,
+                'no_transaction' => $request->no_transaction,
             ]);
 
             return redirect()->route('cash.index')->with('success', 'Transaction Transfer Created Successfully!');
@@ -465,7 +477,8 @@ class AccountingController extends Controller
             $transferdata = Transaction_transfer::select(
                 'transaction_transfers.*',
                 'a1.account_no AS transfer_account_no',
-                'a1.name AS transfer_account_name'
+                'a1.name AS transfer_account_name',
+                'transaction_transfers.no_transaction' // Tambahkan kolom no_transaction
             )
                 ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_transfers.transfer_account_id')
                 ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_transfers.deposit_account_id')

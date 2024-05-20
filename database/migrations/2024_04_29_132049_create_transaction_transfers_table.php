@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('transaction_transfers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('accountnumber_id');
-            $table->foreign('accountnumber_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('transfer');
-            $table->integer('deposit');
+            $table->unsignedBigInteger('transfer_account_id');
+            $table->foreign('transfer_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->unsignedBigInteger('deposit_account_id');
+            $table->foreign('deposit_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('no_transaction')->unique();
             $table->bigInteger('amount');
             $table->dateTime('date')->default(now());
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

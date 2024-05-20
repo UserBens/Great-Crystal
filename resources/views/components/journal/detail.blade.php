@@ -12,35 +12,38 @@
 
                         <!-- Tabel untuk menampilkan detail transaksi -->
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table class="table projects">
                                 <thead>
                                     <tr>
+                                        <th>No Transaction</th>
                                         <th>Account Number</th>
                                         <th>Debit</th>
                                         <th>Kredit</th>
                                         <th>Date</th>
-                                        <th>Description</th>
+                                        {{-- <th>Description</th> --}}
                                         <th>Created At</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @if ($transaction->transfer_account_id)
                                     <tr>
+                                        <td>{{ $transaction->no_transaction }}</td>
                                         <td>{{ $transaction->transferAccount->account_no }} - {{ $transaction->transferAccount->name }}</td>
                                         <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}</td>
                                         <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
-                                        <td>{{ $transaction->description }}</td>
+                                        {{-- <td>{{ $transaction->description }}</td> --}}
                                         <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}</td>
                                     </tr>
                                     @endif
                                     @if ($transaction->deposit_account_id)
                                     <tr>
+                                        <td>{{ $transaction->no_transaction }}</td>
                                         <td>{{ $transaction->depositAccount->account_no }} - {{ $transaction->depositAccount->name }}</td>
                                         <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}</td>
                                         <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
-                                        <td>{{ $transaction->description }}</td>
+                                        {{-- <td>{{ $transaction->description }}</td> --}}
                                         <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}</td>
                                     </tr>
                                     @endif

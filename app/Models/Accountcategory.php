@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Accountnumber extends Model
+class Accountcategory extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
 
-    public function accountcategory()
+    public function accountnumbers()
     {
-        return $this->belongsTo(Accountcategory::class, 'account_category_id');
+        return $this->hasMany(Accountnumber::class, 'account_category_id');
     }
 }

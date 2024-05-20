@@ -83,8 +83,8 @@
                     </div>
                 </div>
             @else
-                <div class="btn-group mt-2">
-                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
+                <div class="btn-group mt-3">
+                    <button type="button" class="btn btn-success dropdown-toggle mt-3" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-plus"></i> Create Transaction
                     </button>

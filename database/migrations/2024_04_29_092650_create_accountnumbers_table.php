@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('accountnumbers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('account_no'); 
+            $table->integer('account_no');  
+            $table->unsignedBigInteger('account_category_id');
+            $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('type', ['cash', 'bank']);
             $table->string('bank_name');
             $table->bigInteger('amount');

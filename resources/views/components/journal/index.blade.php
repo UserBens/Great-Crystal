@@ -63,15 +63,16 @@
 
                         <!-- Tabel untuk menampilkan data -->
                         <div class="card-body p-0">
-                            <table class="table table-striped projects">
+                            <table class="table projects">
                                 <thead>
                                     <tr>
+                                        <th>No Transaction</th>
                                         <th>Account Number</th>
                                         <th>Debit</th>
                                         <th>Credit</th>
                                         <th>Date</th>
                                         <th>Created At</th>
-                                        <th>Action</th>
+                                        {{-- <th>Action</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -87,6 +88,7 @@
                                         <tr>
                                             {{-- Untuk transfer_account_id --}}
                                             @if ($transaction->transfer_account_id)
+                                                <td>{{ $transaction->no_transaction }}</td>
                                                 <td>{{ $transaction->transferAccount->account_no }} -
                                                     {{ $transaction->transferAccount->name }}</td>
 
@@ -97,9 +99,17 @@
                                                 <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
                                                 </td>
-                                                <td>
+                                                {{-- <td>
                                                     <a href="{{ route('journal.detail', $transaction->id) }}"
-                                                        class="btn btn-primary btn-sm">View Detail</a>
+                                                        class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></a>
+                                                </td> --}}
+                                                <td class="text-center">
+                                                    <div class="btn-group">
+                                                        <a href="{{ route('journal.detail', $transaction->id) }}"
+                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
+                                                            View
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             @endif
                                         </tr>
@@ -107,6 +117,7 @@
                                         <tr>
                                             {{-- Untuk deposit_account_id --}}
                                             @if ($transaction->deposit_account_id)
+                                                <td>{{ $transaction->no_transaction }}</td>
                                                 <td>{{ $transaction->depositAccount->account_no }} -
                                                     {{ $transaction->depositAccount->name }}</td>
                                                 <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}
@@ -115,9 +126,13 @@
                                                 <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
                                                 </td>
-                                                <td>
-                                                    <a href="{{ route('journal.detail', $transaction->id) }}"
-                                                        class="btn btn-primary btn-sm">View Detail</a>
+                                                <td class="text-center">
+                                                    <div class="btn-group">
+                                                        <a href="{{ route('journal.detail', $transaction->id) }}"
+                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
+                                                            View
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             @endif
                                         </tr>

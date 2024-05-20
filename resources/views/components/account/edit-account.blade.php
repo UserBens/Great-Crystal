@@ -84,6 +84,18 @@
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
                                         </div>
+
+                                        <div class="col-md-6 mt-3">
+                                            <label>Category : <span style="color: red"></span></label>
+                                            <select name="account_category_id" class="form-control">
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}"
+                                                        {{ $category->id == $accountNumbers->account_category_id ? 'selected' : '' }}>
+                                                        {{ $category->category_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div class="form-group row">

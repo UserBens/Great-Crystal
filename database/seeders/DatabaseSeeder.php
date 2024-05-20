@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
          TeacherSeeder::class,
          GradeSeeder::class,
          StudentRelationshipSeeder::class,
+         AccountCategorySeeder::class,
       ]);
     }
 }

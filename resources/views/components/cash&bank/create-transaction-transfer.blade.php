@@ -17,7 +17,6 @@
                                 <!-- /.card-header -->
                                 <!-- form start -->
                                 <div class="card-body">
-
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Transfer From : <span style="color: red">*</span></label>
@@ -28,9 +27,7 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-
                                         </div>
-
                                         <div class="col-md-6">
                                             <label>To : <span style="color: red">*</span></label>
                                             <select name="deposit_account_id" class="form-control">
@@ -42,7 +39,6 @@
                                             </select>
                                         </div>
                                     </div>
-
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
@@ -91,7 +87,6 @@
                                                 <p style="color: red">{{ $errors->first('no_transaction') }}</p>
                                             @endif
                                         </div>
-
                                     </div>
 
                                     <div class="form-group row">

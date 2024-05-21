@@ -9,8 +9,6 @@
                         <div class="card-header">
                             <h3 class="card-title">Transaction Detail</h3>
                         </div>
-
-                        <!-- Tabel untuk menampilkan detail transaksi -->
                         <div class="card-body">
                             <table class="table projects">
                                 <thead>
@@ -20,34 +18,62 @@
                                         <th>Debit</th>
                                         <th>Kredit</th>
                                         <th>Date</th>
-                                        {{-- <th>Description</th> --}}
+                                        <th>Description</th>
                                         <th>Created At</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if ($transaction->transfer_account_id)
-                                    <tr>
-                                        <td>{{ $transaction->no_transaction }}</td>
-                                        <td>{{ $transaction->transferAccount->account_no }} - {{ $transaction->transferAccount->name }}</td>
-                                        <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}</td>
-                                        <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
-                                        {{-- <td>{{ $transaction->description }}</td> --}}
-                                        <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}</td>
-                                    </tr>
-                                    @endif
-                                    @if ($transaction->deposit_account_id)
-                                    <tr>
-                                        <td>{{ $transaction->no_transaction }}</td>
-                                        <td>{{ $transaction->depositAccount->account_no }} - {{ $transaction->depositAccount->name }}</td>
-                                        <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}</td>
-                                        <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
-                                        {{-- <td>{{ $transaction->description }}</td> --}}
-                                        <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}</td>
-                                    </tr>
-                                    @endif
+                                    @php
+                                        $totalDebit = 0;
+                                        $totalKredit = 0;
+                                    @endphp
+                                        @if ($transaction->transfer_account_id)
+                                            <tr>
+                                                <td>{{ $transaction->no_transaction }}</td>
+                                                <td>{{ $transaction->transferAccount->account_no }} -
+                                                    {{ $transaction->transferAccount->name }}</td>
+                                                <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}
+                                                </td>
+                                                <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
+                                                <td>{{ $transaction->description }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
+                                                </td>
+                                            </tr>
+                                            @php
+                                                $totalDebit += $transaction->amount;
+                                            @endphp
+                                        @endif
+                                        @if ($transaction->deposit_account_id)
+                                            <tr>
+                                                <td>{{ $transaction->no_transaction }}</td>
+                                                <td>{{ $transaction->depositAccount->account_no }} -
+                                                    {{ $transaction->depositAccount->name }}</td>
+                                                <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}
+                                                </td>
+                                                <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
+                                                <td>{{ $transaction->description }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
+                                                </td>
+                                            </tr>
+                                            @php
+                                                $totalKredit += $transaction->amount;
+                                            @endphp
+                                        @endif
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2"><strong>Total</strong></td>
+                                        <td><strong>{{ $totalDebit > 0 ? 'Rp ' . number_format($totalDebit, 0, ',', '.') : '0' }}</strong>
+                                        </td>
+                                        <td><strong>{{ $totalKredit > 0 ? 'Rp ' . number_format($totalKredit, 0, ',', '.') : '0' }}</strong>
+                                        </td>
+                                        <td colspan="4"></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <!-- /.card-body -->

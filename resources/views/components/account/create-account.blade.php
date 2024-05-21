@@ -16,7 +16,6 @@
                                 <!-- /.card-header -->
                                 <!-- form start -->
                                 <div class="card-body">
-
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label for="name">Name<span style="color: red">*</span> :</label>
@@ -44,26 +43,17 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label>Type : <span style="color: red"></span></label>
-                                            <select name="type" class="form-control">
-                                                <option value="cash">
-                                                    Cash</option>
-                                                <option value="bank">Bank
-                                                </option>
+
+                                        <div class="col-md-6 mt-3">
+                                            <label>Category : <span style="color: red"></span></label>
+                                            <select name="account_category_id" class="form-control">
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->category_name }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <label for="bank_name">Bank Name<span style="color: red">*</span> :</label>
-                                            <input name="bank_name" type="text" class="form-control" id="bank_name"
-                                                placeholder="Enter Bank Name" value="{{ old('bank_name') }}"
-                                                autocomplete="off" required>
-
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('bank_name') }}</p>
-                                            @endif
-                                        </div>
 
                                         <div class="col-md-6 mt-3">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
@@ -80,15 +70,7 @@
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
                                         </div>
-                                        <div class="col-md-6 mt-3">
-                                            <label>Category : <span style="color: red"></span></label>
-                                            <select name="account_category_id" class="form-control">
-                                                @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->category_name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+
                                     </div>
 
                                     <div class="form-group row">

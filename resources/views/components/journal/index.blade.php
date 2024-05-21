@@ -9,10 +9,8 @@
             <div class="m-1">
                 <form action="{{ route('journal.index') }}" method="GET" class="mb-3">
                     <div class="row">
-
                         <div class="col-md-3">
-                            <label for="date">Type Transaction</label>
-
+                            <label for="type">Type Transaction</label>
                             <select name="type" class="form-control">
                                 <option value="">-- All Data --</option>
                                 <option value="transaction_transfer"
@@ -23,21 +21,26 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="date">Sort By</label>
-
-                            <select name="sort" class="form-control">
+                            <label for="sort">Sort By</label>
+                            <select name="sort" class="form-control" id="sort-select">
                                 <option value="">-- All Data --</option>
-                                <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
-                                <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
+                                <option value="date"
+                                    {{ $form->sort === 'date' && $form->order !== 'asc' ? 'selected' : '' }}
+                                    data-order="asc">Date (Oldest First)</option>
+                                <option value="date"
+                                    {{ $form->sort === 'date' && $form->order === 'desc' ? 'selected' : '' }}
+                                    data-order="desc">Date (Newest First)</option>
+
                             </select>
                         </div>
+
+
                         <div class="col-md-3">
                             <label for="date">Date</label>
                             <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                         </div>
-
                         <div class="col-md-3">
-                            <label for="date">Search Data</label>
+                            <label for="search">Search Data</label>
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" placeholder="Search..."
                                     value="{{ $form->search ?? '' }}">
@@ -47,10 +50,9 @@
                                     </button>
                                 </div>
                             </div>
-
                         </div>
-
                     </div>
+                    <input type="hidden" name="order" id="order" value="{{ $form->order ?? 'asc' }}">
                 </form>
             </div>
 
@@ -60,8 +62,6 @@
                         <div class="card-header">
                             <h3 class="card-title">Report Journal</h3>
                         </div>
-
-                        <!-- Tabel untuk menampilkan data -->
                         <div class="card-body p-0">
                             <table class="table projects">
                                 <thead>
@@ -72,7 +72,6 @@
                                         <th>Credit</th>
                                         <th>Date</th>
                                         <th>Created At</th>
-                                        {{-- <th>Action</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -80,11 +79,6 @@
                                         $previousTransactionId = null;
                                     @endphp
                                     @foreach ($allData as $transaction)
-                                        @if ($previousTransactionId && $previousTransactionId != $transaction->id)
-                                            <!-- Baris pemisah antar kelompok transaksi -->
-                                            <tr class="transaction-separator"></tr>
-                                        @endif
-
                                         <tr>
                                             {{-- Untuk transfer_account_id --}}
                                             @if ($transaction->transfer_account_id)
@@ -99,10 +93,7 @@
                                                 <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
                                                 </td>
-                                                {{-- <td>
-                                                    <a href="{{ route('journal.detail', $transaction->id) }}"
-                                                        class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></a>
-                                                </td> --}}
+
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a href="{{ route('journal.detail', $transaction->id) }}"

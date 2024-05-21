@@ -14,22 +14,23 @@ class AccountCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            'KAS & BANK',
-            'AKUN PIUTANG',
-            'PERSEDIAAN',
-            'AKTIVA LANCAR LAINNYA',
-            'AKTIVA TETAP',
-            'DEPRESIASI & AMORTISASI',
-            'AKTIVA LAINNYA',
-            'AKUN HUTANG',
-            'KEWAJIBAN LANCAR LAINNYA',
-            'KEWAJIBAN JANGKA PANJANG',
-            'EKUITAS',
-            'PENDAPATAN',
-            'HARGA POKOK PENJUALAN',
-            'BEBAN',
-            'PENDAPATAN LAINNYA',
-            'BEBAN LAINNYA'
+            'Kas & Bank',
+            'Akun Piutang',
+            'Persediaan',
+            'Aktiva Lancar Lainnya',
+            'Aktiva Tetap',
+            'Deprestasi & Amortisasi',
+            'Aktiva Lainnya',
+            'Akun Hutang',
+            'Kewajiban Lancar Lainnya',
+            'Kewajiban Jangka Panjang',
+            'Ekuitas',
+            'Pendapatan',
+            'Harga Pokok Penjualan',
+            'Beban',
+            'Pendapatan Lainnya',
+            'Beban Lainnya',
+            'Depresiasi & Amortisasi',
         ];
 
         foreach ($categories as $category) {

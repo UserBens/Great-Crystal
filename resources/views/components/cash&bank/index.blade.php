@@ -1,16 +1,12 @@
     @extends('layouts.admin.master')
     @section('content')
-
         <!-- Content Wrapper. Contains page content -->
         <div class="container-fluid">
-
-            <h2 class="text-center display-4 mb-3">Cash & Bank Search</h2>
+            <h2 class="text-center display-4 mb-3">Transaction Transfer Search</h2>
             <form action="{{ route('cash.index') }}" method="GET" class="mb-3">
                 <div class="row">
-
                     <div class="col-md-3">
                         <label for="date">Type Transaction</label>
-
                         <select name="type" class="form-control">
                             <option value="">-- All Data --</option>
                             <option value="transaction_transfer"
@@ -22,7 +18,6 @@
                     </div>
                     <div class="col-md-3">
                         <label for="date">Sort By</label>
-
                         <select name="sort" class="form-control">
                             <option value="">-- All Data --</option>
                             <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
@@ -33,7 +28,6 @@
                         <label for="date">Date</label>
                         <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                     </div>
-
                     <div class="col-md-3">
                         <label for="date">Search Data</label>
                         <div class="input-group">
@@ -45,12 +39,9 @@
                                 </button>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
             </form>
-            {{-- code here --}}
 
             <!-- Conditional rendering based on data availability -->
             @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
@@ -62,51 +53,33 @@
                 </div>
             @elseif (sizeof($data) == 0)
                 <!-- Display message when no transfer data found -->
-
                 <div class="row h-100 my-5">
                     <div class="col-sm-12 my-auto text-center">
                         <h3>No Cash or Bank has been transferred yet. Click the button below to create Transaction!</h3>
-                        <div class="btn-group mt-5">
-                            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
+                        <div class="btn-group">
+                            <a type="button" href="{{ route('transaction-transfer.create') }}"
+                                class="btn btn-success mt-3">
                                 <i class="fa-solid fa-plus"></i> Create Transaction
-                            </button>
-                            <div class="dropdown-menu" style="min-width: 100%">
-                                {{-- <a class="dropdown-item" href="/admin/cash/create-account">Create New Account</a> --}}
-                                <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer
-                                    Money</a>
-                                <a class="dropdown-item" href="/admin/cash/transaction-send">Send Money</a>
-                                <a class="dropdown-item" href="/admin/cash/transaction-receive">Receive Money</a>
-                                <!-- Example of another option -->
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
             @else
-                <div class="btn-group mt-3">
-                    <button type="button" class="btn btn-success dropdown-toggle mt-3" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
+                <div class="btn-group">
+                    <a type="button" href="{{ route('transaction-transfer.create') }}" class="btn btn-success mt-3">
                         <i class="fa-solid fa-plus"></i> Create Transaction
-                    </button>
-                    <div class="dropdown-menu" style="min-width: 100%">
-
-                        <a class="dropdown-item" href="{{ route('transaction-transfer.create') }}">Transfer Money</a>
-
-                    </div>
+                    </a>
                 </div>
-
                 <!-- Display Cash or Bank data in a table -->
-                <div class="card card-dark mt-5">
+                <div class="card card-dark mt-4">
                     <div class="card-header">
-                        <h3 class="card-title">Cash & Bank List Transaction </h3>
-
+                        <h3 class="card-title">Transation Transfer List </h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
                     </div>
-
                     <div class="card-body p-0">
                         <table class="table table-striped projects">
                             <thead>
@@ -130,42 +103,18 @@
                                                 {{ $item->transferAccount->name }}
                                             @endif
                                         </td>
-
                                         {{-- <td>{{ $item->depositAccount->account_no }} -
                                             {{ $item->depositAccount->name }}</td> --}}
 
                                         <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->date)->format('Y-m-d') }}</td>
                                         <td>
-                                            <!-- Tampilkan pembeda berdasarkan nilai kolom 'type' -->
-                                            @if ($item->type === 'transaction_transfer')
-                                                <span class="badge badge-primary">Transfer</span>
-                                            @elseif ($item->type === 'transaction_send')
-                                                <span class="badge badge-success">Send</span>
-                                            @elseif ($item->type === 'transaction_receive')
-                                                <span class="badge badge-warning">Receive</span>
-                                            @endif
                                             <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
                                                 style="margin-right: 5px;">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </td>
-
-                                        {{-- <td style="max-width: 200px;">{{ $transfer->description }}</td> --}}
                                         <td class="project-actions text-right">
-                                            <!-- Add action buttons here (view, edit, delete, etc.) -->
-
-                                            <div class="btn-group">
-                                                {{-- <a class="btn btn-info btn-sm" href="{{ route('transaction-transfer.edit', $item->id) }}"
-                                                    style="margin-right: 5px;">
-                                                    <i class="fas fa-pencil-alt"></i> Edit
-                                                </a> --}}
-
-
-                                                {{-- @can('delete-transfer')
-                                                @endcan --}}
-                                            </div>
-
                                             <!-- Modal Konfirmasi Penghapusan -->
                                             <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
                                                 role="dialog">
@@ -212,12 +161,9 @@
                                 {{ $data->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
-
                     </div>
                 </div>
-                <!-- /Display Cash or Bank data in a table -->
             @endif
-
         </div>
 
         {{-- SweetAlert --}}

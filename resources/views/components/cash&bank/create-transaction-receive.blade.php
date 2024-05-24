@@ -7,21 +7,48 @@
                 <div class="col-md-6">
                     <!-- general form elements -->
                     <div>
-                        <form id="receiveForm" method="POST" action="{{ route('transaction-receive.store') }}"
+                        <form id="transferForm" method="POST" action="{{ route('transaction-receive.store') }}"
                             onsubmit="submitForm()">
                             @csrf
                             <div class="card card-dark">
                                 <div class="card-header">
-                                    <h3 class="card-title">Transaction Receive</h3>
+                                    <h3 class="card-title">Create Transaction Receive</h3>
                                 </div>
                                 <!-- /.card-header -->
                                 <!-- form start -->
                                 <div class="card-body">
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="amount">Transaction No.<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+
+                                                <input name="no_transaction" type="text" class="form-control"
+                                                    id="no_transaction" placeholder="Example : tf-100031" autocomplete="off"
+                                                    value="{{ old('no_transaction') }}" required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('no_transaction') }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="amount">Payer<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+
+                                                <input name="payer" type="text" class="form-control"
+                                                    id="payer" placeholder="Example : Budi (Supplier)"
+                                                    autocomplete="off" value="{{ old('payer') }}" required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('payer') }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label>Pay From : <span style="color: red">*</span></label>
-                                            <select name="transfer" class="form-control">
+                                            <label>Receive From : <span style="color: red">*</span></label>
+                                            <select name="transfer_account_id" class="form-control">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
                                                         {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
@@ -31,8 +58,8 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label>To : <span style="color: red">*</span></label>
-                                            <select name="deposit" class="form-control">
+                                            <label>Deposit To : <span style="color: red">*</span></label>
+                                            <select name="deposit_account_id" class="form-control">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
                                                         {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
@@ -49,8 +76,8 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input name="amount" type="text" class="form-control"
-                                                    id="amount" placeholder="Enter amount" autocomplete="off"
+                                                <input name="amount" type="text" class="form-control" id="amount"
+                                                    placeholder="Enter amount" autocomplete="off"
                                                     value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}"
                                                     required>
                                             </div>
@@ -72,7 +99,7 @@
                                                 </div>
                                             </div>
                                             @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('date_birth') }}</p>
+                                                <p style="color: red">{{ $errors->first('date') }}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -114,7 +141,7 @@
             removeThousandSeparator(amountInput);
 
             // Submit formulir
-            document.getElementById("receiveForm").submit();
+            document.getElementById("transferForm").submit();
         }
     </script>
 @endsection

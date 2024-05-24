@@ -9,9 +9,11 @@ use Illuminate\Http\Request;
 use App\Models\Accountnumber;
 use App\Models\Accountcategory;
 use App\Models\Transaction_send;
+use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction_transfer;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AccountingController extends Controller
 {
@@ -316,7 +318,7 @@ class AccountingController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = Transaction_transfer::with(['transferAccount', 'depositAccount']);
+            $query = Transaction_send::with(['transferAccount', 'depositAccount']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -358,6 +360,45 @@ class AccountingController extends Controller
         }
     }
 
+    public function createTransactionSend()
+    {
+        $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
+
+        return view('components.cash&bank.create-transaction-send', [
+            'accountNumbers' => $accountNumbers,
+        ]);
+    }
+
+    public function storeTransactionSend(Request $request)
+    {
+        try {
+            $request->validate([
+                'transfer_account_id' => 'required',
+                'deposit_account_id' => 'required',
+                'amount' => 'required|numeric',
+                'date' => 'required|date_format:d/m/Y',
+                'description' => 'required',
+                'no_transaction' => 'required',
+            ]);
+
+            $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+
+            Transaction_send::create([
+                'transfer_account_id' => $request->transfer_account_id,
+                'deposit_account_id' => $request->deposit_account_id,
+                'amount' => $request->amount,
+                'date' => $date,
+                'description' => $request->description,
+                'no_transaction' => $request->no_transaction,
+            ]);
+
+            return redirect()->route('transaction-send.index')->with('success', 'Transaction Send Created Successfully!');
+        } catch (Exception $err) {
+            // Tangani kesalahan di sini
+            return dd($err);
+        }
+    }
+
     public function indexTransactionReceive(Request $request)
     {
         session()->flash('page', (object)[
@@ -376,7 +417,7 @@ class AccountingController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = Transaction_transfer::with(['transferAccount', 'depositAccount']);
+            $query = Transaction_receive::with(['transferAccount', 'depositAccount']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -418,6 +459,112 @@ class AccountingController extends Controller
         }
     }
 
+    public function createTransactionReceive()
+    {
+        $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
+
+        return view('components.cash&bank.create-transaction-receive', [
+            'accountNumbers' => $accountNumbers,
+        ]);
+    }
+
+    public function storeTransactionReceive(Request $request)
+    {
+        try {
+            $request->validate([
+                'transfer_account_id' => 'required',
+                'deposit_account_id' => 'required',
+                'payer' => 'required',
+                'amount' => 'required|numeric',
+                'date' => 'required|date_format:d/m/Y',
+                'description' => 'required',
+                'no_transaction' => 'required',
+            ]);
+
+            $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+
+            Transaction_receive::create([
+                'transfer_account_id' => $request->transfer_account_id,
+                'deposit_account_id' => $request->deposit_account_id,
+                'payer' => $request->payer,
+                'amount' => $request->amount,
+                'date' => $date,
+                'description' => $request->description,
+                'no_transaction' => $request->no_transaction,
+            ]);
+
+            return redirect()->route('transaction-receive.index')->with('success', 'Transaction Receive Created Successfully!');
+        } catch (Exception $err) {
+            // Tangani kesalahan di sini
+            return dd($err);
+        }
+    }
+
+
+    // public function indexJournal(Request $request)
+    // {
+    //     session()->flash('page', (object) [
+    //         'page' => 'Journal',
+    //         'child' => 'database Journal',
+    //     ]);
+
+    //     $form = (object) [
+    //         'sort' => $request->sort ?? null,
+    //         'order' => $request->order ?? 'asc', // Default ascending
+    //         'status' => $request->status ?? null,
+    //         'search' => $request->search ?? null,
+    //         'type' => $request->type ?? null,
+    //     ];
+
+    //     try {
+    //         $transferdata = Transaction_transfer::select(
+    //             'transaction_transfers.*',
+    //             'a1.account_no AS transfer_account_no',
+    //             'a1.name AS transfer_account_name',
+    //             'a2.account_no AS deposit_account_no',
+    //             'a2.name AS deposit_account_name'
+    //         )
+    //             ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_transfers.transfer_account_id')
+    //             ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_transfers.deposit_account_id')
+    //             ->where(function ($query) use ($request) {
+    //                 if ($request->has('search')) {
+    //                     $query->where('transaction_transfers.no_transaction', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a2.account_no', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a2.name', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_transfers.amount', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_transfers.description', 'LIKE', '%' . $request->search . '%');
+    //                 }
+    //             });
+
+    //         // Filter data berdasarkan tanggal
+    //         if ($request->filled('date')) {
+    //             $searchDate = date('Y-m-d', strtotime($request->date));
+    //             $transferdata->whereDate('transaction_transfers.date', $searchDate);
+    //         }
+
+    //         if ($request->filled('sort')) {
+    //             // Ambil urutan dari request
+    //             $order = $request->order; // Ubah dari $form->order menjadi $request->order
+    //             $transferdata->orderBy($request->sort, $order);
+    //         } else {
+    //             // Jika tidak ada pengurutan yang dipilih, urutkan berdasarkan tanggal secara default
+    //             $transferdata->orderBy('date', $form->order);
+    //         }
+
+    //         $transfer = $transferdata->paginate(5);
+
+    //         return view('components.journal.index', [
+    //             'allData' => $transfer,
+    //             'form' => $form,
+    //         ]);
+    //     } catch (Exception $err) {
+    //         return dd($err);
+    //     }
+    // }
+
+
     public function indexJournal(Request $request)
     {
         session()->flash('page', (object) [
@@ -431,6 +578,7 @@ class AccountingController extends Controller
             'status' => $request->status ?? null,
             'search' => $request->search ?? null,
             'type' => $request->type ?? null,
+            'date' => $request->date ?? null,
         ];
 
         try {
@@ -439,7 +587,8 @@ class AccountingController extends Controller
                 'a1.account_no AS transfer_account_no',
                 'a1.name AS transfer_account_name',
                 'a2.account_no AS deposit_account_no',
-                'a2.name AS deposit_account_name'
+                'a2.name AS deposit_account_name',
+                DB::raw("'transfer' as type")
             )
                 ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_transfers.transfer_account_id')
                 ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_transfers.deposit_account_id')
@@ -455,25 +604,112 @@ class AccountingController extends Controller
                     }
                 });
 
-            // Filter data berdasarkan tanggal
+            $senddata = Transaction_send::select(
+                'transaction_sends.*',
+                'a1.account_no AS transfer_account_no',
+                'a1.name AS transfer_account_name',
+                'a2.account_no AS deposit_account_no',
+                'a2.name AS deposit_account_name',
+                DB::raw("'send' as type")
+            )
+                ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_sends.transfer_account_id')
+                ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_sends.deposit_account_id')
+                ->where(function ($query) use ($request) {
+                    if ($request->has('search')) {
+                        $query->where('transaction_sends.no_transaction', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('transaction_sends.amount', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('transaction_sends.description', 'LIKE', '%' . $request->search . '%');
+                    }
+                });
+
+            $receivedata = Transaction_receive::select(
+                'transaction_receives.*',
+                'a1.account_no AS transfer_account_no',
+                'a1.name AS transfer_account_name',
+                'a2.account_no AS deposit_account_no',
+                'a2.name AS deposit_account_name',
+                DB::raw("'receive' as type")
+            )
+                ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_receives.transfer_account_id')
+                ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_receives.deposit_account_id')
+                ->where(function ($query) use ($request) {
+                    if ($request->has('search')) {
+                        $query->where('transaction_receives.no_transaction', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('transaction_receives.amount', 'LIKE', '%' . $request->search . '%')
+                            ->orWhere('transaction_receives.description', 'LIKE', '%' . $request->search . '%');
+                    }
+                });
+
+            // Filter data by date
             if ($request->filled('date')) {
                 $searchDate = date('Y-m-d', strtotime($request->date));
                 $transferdata->whereDate('transaction_transfers.date', $searchDate);
+                $senddata->whereDate('transaction_sends.date', $searchDate);
+                $receivedata->whereDate('transaction_receives.date', $searchDate);
             }
 
             if ($request->filled('sort')) {
-                // Ambil urutan dari request
-                $order = $request->order; // Ubah dari $form->order menjadi $request->order
+                // Get order from request
+                $order = $request->order;
                 $transferdata->orderBy($request->sort, $order);
+                $senddata->orderBy($request->sort, $order);
+                $receivedata->orderBy($request->sort, $order);
             } else {
-                // Jika tidak ada pengurutan yang dipilih, urutkan berdasarkan tanggal secara default
+                // Default sort by date
                 $transferdata->orderBy('date', $form->order);
+                $senddata->orderBy('date', $form->order);
+                $receivedata->orderBy('date', $form->order);
             }
 
-            $allData = $transferdata->paginate(5);
+            // Ambil data lebih banyak dari setiap jenis transaksi
+            $transfer = $transferdata->take(10)->get();
+            $send = $senddata->take(10)->get();
+            $receive = $receivedata->take(10)->get();
+
+            // Combine results
+            $combinedData = collect([]);
+
+            // Ambil 2 data transfer
+            $combinedData = $combinedData->merge($transfer->take(2));
+
+            // Ambil 2 data send
+            $combinedData = $combinedData->merge($send->take(2));
+
+            // Ambil 2 data receive
+            $combinedData = $combinedData->merge($receive->take(2));
+
+            // Sort combined results
+            if ($form->sort) {
+                $combinedData = $combinedData->sortBy($form->sort, SORT_REGULAR, $form->order === 'desc');
+            }
+
+            // Paginate combined results
+            $perPage = 6;
+            $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+            $path = $request->url(); // Menggunakan URL saat ini sebagai jalur
+
+            // Ubah menjadi seperti ini
+            $paginatedData = new LengthAwarePaginator(
+                $combinedData->forPage($currentPage, $perPage),
+                $combinedData->count(),
+                $perPage,
+                $currentPage,
+                [
+                    'path' => $path,
+                    'pageName' => 'page',
+                ]
+            );
 
             return view('components.journal.index', [
-                'allData' => $allData,
+                'transfer' => $transfer,
+                'send' => $send,
+                'receive' => $receive,
+                'allData' => $paginatedData,
                 'form' => $form,
             ]);
         } catch (Exception $err) {
@@ -482,15 +718,116 @@ class AccountingController extends Controller
     }
 
 
-    public function showJournalDetail($id)
+    public function showJournalDetail($id, $type)
     {
         try {
-            $transaction = Transaction_transfer::findOrFail($id);
+            // Variabel untuk menyimpan data detail transaksi
+            $transactionDetails = [];
 
-            return view('components.journal.detail', [
-                'transaction' => $transaction,
-            ]);
+            // Sesuaikan pengecekan berdasarkan tipe transaksi
+            if ($type === 'transaction_transfer') {
+                $transaction = Transaction_transfer::find($id);
+
+                if ($transaction) {
+                    // Mengambil data transfer account
+                    $transferAccount = $transaction->transferAccount;
+                    // Mengambil data deposit account
+                    $depositAccount = $transaction->depositAccount;
+
+                    $transactionDetails = [
+                        [
+                            'account_number' => $transferAccount->account_no,
+                            'account_name' => $transferAccount->name,
+                            'debit' => 0,
+                            'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ],
+                        [
+                            'account_number' => $depositAccount->account_no,
+                            'account_name' => $depositAccount->name,
+                            'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'credit' => 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ]
+                    ];
+                }
+            } elseif ($type === 'transaction_send') {
+                $transaction = Transaction_send::find($id);
+
+                if ($transaction) {
+                    $transferAccount = $transaction->transferAccount;
+                    $depositAccount = $transaction->depositAccount;
+
+                    $transactionDetails = [
+                        [
+                            'account_number' => $transferAccount->account_no,
+                            'account_name' => $transferAccount->name,
+                            'debit' => 0,
+                            'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ],
+                        [
+                            'account_number' => $depositAccount->account_no,
+                            'account_name' => $depositAccount->name,
+                            'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'credit' => 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ]
+                    ];
+                }
+            } elseif ($type === 'transaction_receive') {
+                $transaction = Transaction_receive::find($id);
+
+                if ($transaction) {
+                    $transferAccount = $transaction->transferAccount;
+                    $depositAccount = $transaction->depositAccount;
+
+                    $transactionDetails = [
+                        [
+                            'account_number' => $transferAccount->account_no,
+                            'account_name' => $transferAccount->name,
+                            'debit' => 0,
+                            'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ],
+                        [
+                            'account_number' => $depositAccount->account_no,
+                            'account_name' => $depositAccount->name,
+                            'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'credit' => 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ]
+                    ];
+                }
+            } else {
+                // Jika tipe transaksi tidak valid, kembalikan ke halaman index dengan pesan error
+                return redirect()->route('journal.index')->with('error', 'Invalid transaction type.');
+            }
+
+            // Jika data ditemukan, tampilkan detailnya
+            if ($transaction !== null) {
+                return view('components.journal.detail', [
+                    'transaction' => $transaction,
+                    'transactionDetails' => $transactionDetails,
+                ]);
+            } else {
+                // Jika data tidak ditemukan, kembalikan ke halaman index dengan pesan error
+                return redirect()->route('journal.index')->with('error', 'Transaction details not found.');
+            }
         } catch (Exception $e) {
+            // Tangani kesalahan dengan mengembalikan ke halaman index dengan pesan error
             return redirect()->route('journal.index')->with('error', 'Failed to fetch transaction details.');
         }
     }

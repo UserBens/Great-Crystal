@@ -57,7 +57,7 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Cash or Bank has been transferred yet. Click the button below to create Transaction!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('transaction-transfer.create') }}"
+                        <a type="button" href="{{ route('transaction-receive.create') }}"
                             class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Create Transaction
                         </a>
@@ -66,7 +66,7 @@
             </div>
         @else
         <div class="btn-group">
-            <a type="button" href="{{ route('transaction-transfer.create') }}" class="btn btn-success mt-3">
+            <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success mt-3">
                 <i class="fa-solid fa-plus"></i> Create Transaction
             </a>
         </div>

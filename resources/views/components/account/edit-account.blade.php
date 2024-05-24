@@ -42,34 +42,9 @@
                                                 <p style="color: red">{{ $errors->first('account_no') }}</p>
                                             @endif
                                         </div>
-
-
                                     </div>
 
                                     <div class="form-group row">
-
-
-                                        <div class="col-md-6">
-                                            <label>Type : <span style="color: red"></span></label>
-                                            <select name="type" class="form-control">
-                                                <option value="cash">
-                                                    Cash</option>
-                                                <option value="bank">Bank
-                                                </option>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label for="bank_name">Bank Name<span style="color: red">*</span> :</label>
-                                            <input name="bank_name" type="text" class="form-control" id="bank_name"
-                                                placeholder="Enter Bank Name" value="{{ $accountNumbers->bank_name }}"
-                                                autocomplete="off" required>
-
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('bank_name') }}</p>
-                                            @endif
-                                        </div>
-
                                         <div class="col-md-6 mt-3">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">

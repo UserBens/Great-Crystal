@@ -3,9 +3,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row d-flex justify-content-center">
-                <!-- left column -->
                 <div class="col-md-6">
-                    <!-- general form elements -->
                     <div>
                         <form id="accountForm" method="POST" action="{{ route('account.store') }}" onsubmit="submitForm()">
                             @csrf
@@ -13,8 +11,6 @@
                                 <div class="card-header">
                                     <h3 class="card-title">Create Account Number</h3>
                                 </div>
-                                <!-- /.card-header -->
-                                <!-- form start -->
                                 <div class="card-body">
                                     <div class="form-group row">
                                         <div class="col-md-6">
@@ -22,39 +18,38 @@
                                             <input name="name" type="text" class="form-control" id="name"
                                                 placeholder="Enter Name" value="{{ old('name') }}" autocomplete="off"
                                                 required>
-
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('name') }}</p>
                                             @endif
                                         </div>
-
                                         <div class="col-md-6">
                                             <label for="account_no">Account Number<span style="color: red">*</span>
                                                 :</label>
                                             <input name="account_no" type="text" class="form-control" id="account_no"
                                                 placeholder="Enter Account Number" value="{{ old('account_no') }}"
                                                 autocomplete="off" required>
-
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('account_no') }}</p>
                                             @endif
                                         </div>
-
                                     </div>
-
                                     <div class="form-group row">
-
                                         <div class="col-md-6 mt-3">
                                             <label>Category : <span style="color: red"></span></label>
-                                            <select name="account_category_id" class="form-control">
-                                                @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->category_name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                            <div class="input-group">
+                                                <select name="account_category_id" class="form-control"
+                                                    id="account_category_id">
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}">{{ $category->category_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <button class="btn text-primary" data-toggle="modal"
+                                                data-target="#addCategoryModal">
+                                                + Add Category
+                                            </button>
                                         </div>
-
-
                                         <div class="col-md-6 mt-3">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
@@ -70,9 +65,7 @@
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
                                         </div>
-
                                     </div>
-
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
@@ -89,12 +82,39 @@
                                 <input role="button" type="submit" class="btn btn-success center col-12 mt-3">
                             </div>
                         </form>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog"
+                            aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('account-category.store') }}" id="addCategoryForm" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="category_name">Category Name</label>
+                                                <input type="text" class="form-control" id="category_name"
+                                                    name="category_name" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Save Category</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <script>
+        
         function removeThousandSeparator(input) {
             // Remove thousand separator (.)
             let value = input.value.replace(/\./g, '');

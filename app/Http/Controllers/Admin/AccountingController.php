@@ -152,6 +152,21 @@ class AccountingController extends Controller
         return redirect()->route('account.index')->with('success', 'Account created successfully!');
     }
 
+    public function storeAccountCategory(Request $request)
+    {
+        $request->validate([
+            'category_name' => 'required|string|max:255',
+        ]);
+    
+        $category = new Accountcategory();
+        $category->category_name = $request->category_name;
+        $category->save();
+    
+        // return redirect('create-account.create');
+        return redirect()->route('create-account.create');
+
+    }
+
     public function editAccount($id)
     {
         $accountNumbers = Accountnumber::findOrFail($id);

@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Cash;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use App\Models\Accountnumber;
 use App\Models\Accountcategory;
 use App\Models\Transaction_send;
 use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction_transfer;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -157,14 +159,13 @@ class AccountingController extends Controller
         $request->validate([
             'category_name' => 'required|string|max:255',
         ]);
-    
+
         $category = new Accountcategory();
         $category->category_name = $request->category_name;
         $category->save();
-    
+
         // return redirect('create-account.create');
         return redirect()->route('create-account.create');
-
     }
 
     public function editAccount($id)
@@ -836,6 +837,7 @@ class AccountingController extends Controller
                 return view('components.journal.detail', [
                     'transaction' => $transaction,
                     'transactionDetails' => $transactionDetails,
+                    'type' => $type,
                 ]);
             } else {
                 // Jika data tidak ditemukan, kembalikan ke halaman index dengan pesan error
@@ -844,6 +846,211 @@ class AccountingController extends Controller
         } catch (Exception $e) {
             // Tangani kesalahan dengan mengembalikan ke halaman index dengan pesan error
             return redirect()->route('journal.index')->with('error', 'Failed to fetch transaction details.');
+        }
+    }
+
+    // public function showJournalDetail($id, $type)
+    // {
+    //     try {
+    //         // Variabel untuk menyimpan data detail transaksi
+    //         $transactionDetails = [];
+
+    //         // Sesuaikan pengecekan berdasarkan tipe transaksi
+    //         $transaction = null;
+    //         if ($type === 'transaction_transfer') {
+    //             $transaction = Transaction_transfer::find($id);
+    //         } elseif ($type === 'transaction_send') {
+    //             $transaction = Transaction_send::find($id);
+    //         } elseif ($type === 'transaction_receive') {
+    //             $transaction = Transaction_receive::find($id);
+    //         }
+
+    //         if ($transaction) {
+    //             // Mengambil data transfer account
+    //             $transferAccount = $transaction->transferAccount;
+    //             // Mengambil data deposit account
+    //             $depositAccount = $transaction->depositAccount;
+
+    //             $transactionDetails = [
+    //                 [
+    //                     'account_number' => $transferAccount->account_no,
+    //                     'account_name' => $transferAccount->name,
+    //                     'debit' => 0,
+    //                     'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                     'date' => $transaction->date,
+    //                     'description' => $transaction->description,
+    //                     'created_at' => $transaction->created_at
+    //                 ],
+    //                 [
+    //                     'account_number' => $depositAccount->account_no,
+    //                     'account_name' => $depositAccount->name,
+    //                     'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                     'credit' => 0,
+    //                     'date' => $transaction->date,
+    //                     'description' => $transaction->description,
+    //                     'created_at' => $transaction->created_at
+    //                 ]
+    //             ];
+    //         } else {
+    //             // Jika tipe transaksi tidak valid, kembalikan ke halaman index dengan pesan error
+    //             return redirect()->route('journal.index')->with('error', 'Invalid transaction type.');
+    //         }
+
+    //         // Jika data ditemukan, tampilkan detailnya
+    //         if ($transaction !== null) {
+    //             if (request()->has('pdf')) {
+    //                 // Debugging
+    //                 Log::info('Generating PDF for transaction ID: ' . $id . ' with type: ' . $type);
+
+    //                 // Buat tampilan PDF
+    //                 $pdf = app('dompdf.wrapper');
+    //                 $pdf->loadView('components.journal.detail-pdf', [
+    //                     'transaction' => $transaction,
+    //                     'transactionDetails' => $transactionDetails,
+    //                 ]);
+
+    //                 // Debugging
+    //                 Log::info('PDF generated successfully for transaction ID: ' . $id . ' with type: ' . $type);
+
+    //                 // Download PDF
+    //                 return $pdf->download('journal_detail.pdf');
+    //             }
+
+    //             // Jika tidak ada parameter 'pdf', tampilkan view biasa
+    //             return view('components.journal.detail', [
+    //                 'transaction' => $transaction,
+    //                 'transactionDetails' => $transactionDetails,
+    //                 'type' => $type, // Tambahkan variabel $type ke dalam array data
+    //             ]);
+    //         } else {
+    //             // Jika data tidak ditemukan, kembalikan ke halaman index dengan pesan error
+    //             return redirect()->route('journal.index')->with('error', 'Transaction details not found.');
+    //         }
+    //     } catch (Exception $e) {
+    //         // Tangani kesalahan dengan mengembalikan ke halaman index dengan pesan error
+    //         return redirect()->route('journal.index')->with('error', 'Failed to fetch transaction details.');
+    //     }
+    // }
+
+
+
+
+
+    public function generatePdfJournalDetail($id, $type)
+    {
+        session()->flash('page', (object)[
+            'page' => 'Journal',
+            'child' => 'Journal Details'
+        ]);
+
+        try {
+            // Variabel untuk menyimpan data detail transaksi
+            $transactionDetails = [];
+
+            // Sesuaikan pengecekan berdasarkan tipe transaksi
+            if ($type === 'transaction_transfer') {
+                $transaction = Transaction_transfer::find($id);
+
+                if ($transaction) {
+                    // Mengambil data transfer account
+                    $transferAccount = $transaction->transferAccount;
+                    // Mengambil data deposit account
+                    $depositAccount = $transaction->depositAccount;
+
+                    $transactionDetails = [
+                        [
+                            'account_number' => $transferAccount->account_no,
+                            'account_name' => $transferAccount->name,
+                            'debit' => 0,
+                            'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ],
+                        [
+                            'account_number' => $depositAccount->account_no,
+                            'account_name' => $depositAccount->name,
+                            'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'credit' => 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ]
+                    ];
+                }
+            } elseif ($type === 'transaction_send') {
+                $transaction = Transaction_send::find($id);
+
+                if ($transaction) {
+                    $transferAccount = $transaction->transferAccount;
+                    $depositAccount = $transaction->depositAccount;
+
+                    $transactionDetails = [
+                        [
+                            'account_number' => $transferAccount->account_no,
+                            'account_name' => $transferAccount->name,
+                            'debit' => 0,
+                            'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ],
+                        [
+                            'account_number' => $depositAccount->account_no,
+                            'account_name' => $depositAccount->name,
+                            'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'credit' => 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ]
+                    ];
+                }
+            } elseif ($type === 'transaction_receive') {
+                $transaction = Transaction_receive::find($id);
+
+                if ($transaction) {
+                    $transferAccount = $transaction->transferAccount;
+                    $depositAccount = $transaction->depositAccount;
+
+                    $transactionDetails = [
+                        [
+                            'account_number' => $transferAccount->account_no,
+                            'account_name' => $transferAccount->name,
+                            'debit' => 0,
+                            'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ],
+                        [
+                            'account_number' => $depositAccount->account_no,
+                            'account_name' => $depositAccount->name,
+                            'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                            'credit' => 0,
+                            'date' => $transaction->date,
+                            'description' => $transaction->description,
+                            'created_at' => $transaction->created_at
+                        ]
+                    ];
+                }
+            } else {
+                // Jika tipe transaksi tidak valid, kembalikan ke halaman index dengan pesan error
+                return redirect()->route('journal.index')->with('error', 'Invalid transaction type.');
+            }
+
+            $nameFormatPdf = Carbon::now()->format('YmdHis') . mt_rand(1000, 9999) . '_journal_detail.pdf';
+
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('components.journal.detail-pdf', [
+                'transaction' => $transaction,
+                'transactionDetails' => $transactionDetails,
+                'type' => $type,
+            ])->setPaper('a4', 'landscape');
+
+            return $pdf->stream($nameFormatPdf);
+        } catch (Exception $e) {
+            return abort(500, 'Failed to fetch transaction details.');
         }
     }
 }

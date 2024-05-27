@@ -27,42 +27,23 @@
                                         $totalDebit = 0;
                                         $totalKredit = 0;
                                     @endphp
-                                        @if ($transaction->transfer_account_id)
-                                            <tr>
-                                                <td>{{ $transaction->no_transaction }}</td>
-                                                <td>{{ $transaction->transferAccount->account_no }} -
-                                                    {{ $transaction->transferAccount->name }}</td>
-                                                <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
-                                                <td>{{ $transaction->description }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
-                                                </td>
-                                            </tr>
-                                            @php
-                                                $totalDebit += $transaction->amount;
-                                            @endphp
-                                        @endif
-                                        @if ($transaction->deposit_account_id)
-                                            <tr>
-                                                <td>{{ $transaction->no_transaction }}</td>
-                                                <td>{{ $transaction->depositAccount->account_no }} -
-                                                    {{ $transaction->depositAccount->name }}</td>
-                                                <td>{{ $transaction->amount > 0 ? 'Rp ' . number_format($transaction->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>{{ $transaction->amount < 0 ? 'Rp ' . number_format(-$transaction->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($transaction->date)->format('j F Y') }}</td>
-                                                <td>{{ $transaction->description }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('j F Y') }}
-                                                </td>
-                                            </tr>
-                                            @php
-                                                $totalKredit += $transaction->amount;
-                                            @endphp
-                                        @endif
+                                    @foreach ($transactionDetails as $detail)
+                                        <tr>
+                                            <td>{{ $transaction->no_transaction }}</td>
+                                            <td>{{ $detail['account_number'] }} - {{ $detail['account_name'] }}</td>
+                                            <td>{{ $detail['debit'] > 0 ? 'Rp ' . number_format($detail['debit'], 0, ',', '.') : '0' }}
+                                            </td>
+                                            <td>{{ $detail['credit'] > 0 ? 'Rp ' . number_format($detail['credit'], 0, ',', '.') : '0' }}
+                                            </td>
+                                            <td>{{ \Carbon\Carbon::parse($detail['date'])->format('j F Y') }}</td>
+                                            <td>{{ $detail['description'] }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($detail['created_at'])->format('j F Y') }}</td>
+                                        </tr>
+                                        @php
+                                            $totalDebit += $detail['debit'];
+                                            $totalKredit += $detail['credit'];
+                                        @endphp
+                                    @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
@@ -75,6 +56,13 @@
                                     </tr>
                                 </tfoot>
                             </table>
+
+                            <a href="{{ route('journal.detail.pdf', ['id' => $transaction->id, 'type' => $type]) }}"
+                                target="_blank" class="btn btn-warning btn-sm mt-2" id="print-pdf">
+                                <i class="fa-solid fa-file-pdf fa-bounce"
+                                    style="color: #000000; margin-right:2px;"></i>Print PDF
+                            </a>
+
                         </div>
                         <!-- /.card-body -->
                     </div>

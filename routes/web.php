@@ -97,7 +97,6 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
 
       Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
-
    });
 
 
@@ -219,15 +218,14 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/{id}/edit', [AccountingController::class, 'editTransactionTransfer'])->name('transaction-transfer.edit');
       Route::put('/{id}', [AccountingController::class, 'updateTransactionTransfer'])->name('transaction-transfer.update');
       Route::delete('/transaction-transfer/{id}', [AccountingController::class, 'deleteTransactionTransfer'])->name('transaction-transfer.destroy');
-      
+
       Route::get('/transaction-send', [AccountingController::class, 'indexTransactionSend'])->name('transaction-send.index');
       Route::get('/transaction-send/create', [AccountingController::class, 'createTransactionSend'])->name('transaction-send.create');
       Route::post('/transaction-send', [AccountingController::class, 'storeTransactionSend'])->name('transaction-send.store');
-      
+
       Route::get('/transaction-receive', [AccountingController::class, 'indexTransactionReceive'])->name('transaction-receive.index');
       Route::get('/transaction-receive/create', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
       Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
-      
    });
 
    // Route::prefix('/bank')->group(function () {
@@ -237,7 +235,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
    Route::prefix('/journal')->group(function () {
       Route::get('/', [AccountingController::class, 'indexJournal'])->name('journal.index');
       Route::get('/detail/{id}/{type}', [AccountingController::class, 'showJournalDetail'])->name('journal.detail');
-
+      Route::get('/detail/{id}/{type}/pdf', [AccountingController::class, 'generatePdfJournalDetail'])->name('journal.detail.pdf');
    });
 
    Route::prefix('/account')->group(function () {
@@ -248,7 +246,6 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
       Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
       Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
-
    });
 });
 

@@ -19,7 +19,34 @@
                                 <div class="card-body">
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label>Transfer From : <span style="color: red">*</span></label>
+                                            <label for="amount">Transaction No.<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+
+                                                <input name="no_transaction" type="text" class="form-control"
+                                                    id="no_transaction" placeholder="Example : S-100031" autocomplete="off"
+                                                    value="{{ old('no_transaction') }}" required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('no_transaction') }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="amount">Payer<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+
+                                                <input name="payer" type="text" class="form-control" id="payer"
+                                                    placeholder="Example : Budi (Supplier)" autocomplete="off"
+                                                    value="{{ old('payer') }}" required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('payer') }}</p>
+                                            @endif
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label>Pay From : <span style="color: red">*</span></label>
                                             <select name="transfer_account_id" class="form-control">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
@@ -29,7 +56,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <label>To : <span style="color: red">*</span></label>
+                                            <label>For : <span style="color: red">*</span></label>
                                             <select name="deposit_account_id" class="form-control">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
@@ -75,18 +102,7 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="amount">Transaction No.<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
 
-                                                <input name="no_transaction" type="text" class="form-control"
-                                                    id="no_transaction" placeholder="Example : tf-100031" autocomplete="off"
-                                                    value="{{ old('no_transaction') }}" required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('no_transaction') }}</p>
-                                            @endif
-                                        </div>
                                     </div>
 
                                     <div class="form-group row">

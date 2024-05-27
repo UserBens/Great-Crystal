@@ -23,7 +23,7 @@
                                             <div class="input-group">
 
                                                 <input name="no_transaction" type="text" class="form-control"
-                                                    id="no_transaction" placeholder="Example : tf-100031" autocomplete="off"
+                                                    id="no_transaction" placeholder="Example : R-100031" autocomplete="off"
                                                     value="{{ old('no_transaction') }}" required>
                                             </div>
                                             @if ($errors->any())
@@ -36,7 +36,7 @@
                                             <div class="input-group">
 
                                                 <input name="payer" type="text" class="form-control"
-                                                    id="payer" placeholder="Example : Budi (Supplier)"
+                                                    id="payer" placeholder="Example : Budi (Parent)"
                                                     autocomplete="off" value="{{ old('payer') }}" required>
                                             </div>
                                             @if ($errors->any())

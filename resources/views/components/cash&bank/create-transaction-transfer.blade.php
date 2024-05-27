@@ -19,6 +19,19 @@
                                 <div class="card-body">
                                     <div class="form-group row">
                                         <div class="col-md-6">
+                                            <label for="amount">Transaction No.<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+
+                                                <input name="no_transaction" type="text" class="form-control"
+                                                    id="no_transaction" placeholder="Example : TF-100031" autocomplete="off"
+                                                    value="{{ old('no_transaction') }}" required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('no_transaction') }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="col-md-6">
                                             <label>Transfer From : <span style="color: red">*</span></label>
                                             <select name="transfer_account_id" class="form-control">
                                                 @foreach ($accountNumbers as $accountNumber)
@@ -28,6 +41,9 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                    </div>
+
+                                    <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>To : <span style="color: red">*</span></label>
                                             <select name="deposit_account_id" class="form-control">
@@ -38,8 +54,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
+
                                         <div class="col-md-6">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
@@ -55,7 +70,9 @@
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
                                         </div>
+                                    </div>
 
+                                    <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Date <span style="color: red">*</span></label>
                                             <div class="input-group date" id="reservationdate" data-target-input="nearest">
@@ -70,21 +87,6 @@
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('date') }}</p>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="amount">Transaction No.<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
-
-                                                <input name="no_transaction" type="text" class="form-control"
-                                                    id="no_transaction" placeholder="Example : tf-100031" autocomplete="off"
-                                                    value="{{ old('no_transaction') }}" required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('no_transaction') }}</p>
                                             @endif
                                         </div>
                                     </div>

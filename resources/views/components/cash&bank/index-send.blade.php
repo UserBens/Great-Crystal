@@ -3,7 +3,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
         <h2 class="text-center display-4 mb-3">Transaction Send Search</h2>
-        <form action="{{ route('cash.index') }}" method="GET" class="mb-3">
+        <form action="{{ route('transaction-send.index') }}" method="GET" class="mb-3">
             <div class="row">
                 <div class="col-md-3">
                     <label for="date">Type Transaction</label>
@@ -132,7 +132,7 @@
                                                         <button type="button" class="btn btn-secondary"
                                                             data-dismiss="modal">Batal</button>
                                                         <form
-                                                            action="{{ route('transaction-transfer.destroy', $item->id) }}"
+                                                            action="{{ route('transaction-send.destroy', $item->id) }}"
                                                             method="POST" style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')

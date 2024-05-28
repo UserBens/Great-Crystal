@@ -2,15 +2,14 @@
 @section('content')
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
-        <h2 class="text-center display-4 mb-3">Transaction Receive Search</h2>
-        <form action="{{ route('transaction-receive.index') }}" method="GET" class="mb-3">
+        <h2 class="text-center display-4 mb-3">Transaction Transfer Search</h2>
+        <form action="{{ route('transaction-transfer.index') }}" method="GET" class="mb-3">
             <div class="row">
                 <div class="col-md-3">
                     <label for="date">Type Transaction</label>
                     <select name="type" class="form-control">
                         <option value="">-- All Data --</option>
-                        <option value="transaction_transfer"
-                            {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
+                        <option value="transaction_transfer" {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
                             Transaction Transfer</option>
                         <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
                             Transaction Send</option>
@@ -57,23 +56,22 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Cash or Bank has been transferred yet. Click the button below to create Transaction!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('transaction-receive.create') }}"
-                            class="btn btn-success mt-3">
+                        <a type="button" href="{{ route('transaction-transfer.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Create Transaction
                         </a>
                     </div>
                 </div>
             </div>
         @else
-        <div class="btn-group">
-            <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success mt-3">
-                <i class="fa-solid fa-plus"></i> Create Transaction
-            </a>
-        </div>
+            <div class="btn-group">
+                <a type="button" href="{{ route('transaction-transfer.create') }}" class="btn btn-success mt-3">
+                    <i class="fa-solid fa-plus"></i> Create Transaction
+                </a>
+            </div>
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-4">
                 <div class="card-header">
-                    <h3 class="card-title">Transaction Receive List </h3>
+                    <h3 class="card-title">Transation Transfer List </h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
@@ -104,7 +102,7 @@
                                         @endif
                                     </td>
                                     {{-- <td>{{ $item->depositAccount->account_no }} -
-                                        {{ $item->depositAccount->name }}</td> --}}
+                                            {{ $item->depositAccount->name }}</td> --}}
 
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('Y-m-d') }}</td>
@@ -134,7 +132,7 @@
                                                         <button type="button" class="btn btn-secondary"
                                                             data-dismiss="modal">Batal</button>
                                                         <form
-                                                            action="{{ route('transaction-receive.destroy', $item->id) }}"
+                                                            action="{{ route('transaction-transfer.destroy', $item->id) }}"
                                                             method="POST" style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')
@@ -206,4 +204,4 @@
             });
         });
     </script>
-@endsection
+    @endsection

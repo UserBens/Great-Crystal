@@ -160,7 +160,7 @@ class AccountingController extends Controller
 
     // milik transfer transaction
 
-    public function indexCash(Request $request)
+    public function indexTransfer(Request $request)
     {
         session()->flash('page', (object)[
             'page' => 'Transaction',
@@ -213,7 +213,7 @@ class AccountingController extends Controller
             $data = $query->paginate(10);
 
             // Menampilkan view dengan data dan form
-            return view('components.cash&bank.index', compact('data', 'form'));
+            return view('components.cash&bank.index-transfer', compact('data', 'form'));
         } catch (Exception $err) {
             // Menampilkan pesan error jika terjadi kesalahan
             return dd($err);
@@ -243,6 +243,12 @@ class AccountingController extends Controller
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
 
+            // // Check if the transfer account has sufficient funds
+            // $transferAccount = Accountnumber::find($request->transfer_account_id);
+            // if ($transferAccount->amount < $request->amount) {
+            //     return redirect()->back()->withErrors(['amount' => 'Insufficient funds in transfer account']);
+            // }
+
             Transaction_transfer::create([
                 'transfer_account_id' => $request->transfer_account_id,
                 'deposit_account_id' => $request->deposit_account_id,
@@ -252,53 +258,63 @@ class AccountingController extends Controller
                 'no_transaction' => $request->no_transaction,
             ]);
 
-            return redirect()->route('cash.index')->with('success', 'Transaction Transfer Created Successfully!');
+              // Update the amount in transfer account (allowing it to go negative)
+              $transferAccount = Accountnumber::find($request->transfer_account_id);
+              $transferAccount->amount -= $request->amount;
+              $transferAccount->save();
+  
+              // Update the amount in deposit account
+              $depositAccount = Accountnumber::find($request->deposit_account_id);
+              $depositAccount->amount += $request->amount;
+              $depositAccount->save();
+
+            return redirect()->route('transaction-transfer.index')->with('success', 'Transaction Transfer Created Successfully!');
         } catch (Exception $err) {
             // Tangani kesalahan di sini
             return dd($err);
         }
     }
 
-    public function editTransactionTransfer($id)
-    {
-        $transaction = Transaction_transfer::findOrFail($id);
-        $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
+    // public function editTransactionTransfer($id)
+    // {
+    //     $transaction = Transaction_transfer::findOrFail($id);
+    //     $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
 
-        return view('components.cash&bank.edit-transaction-transfer', [
-            'transaction' => $transaction,
-            'accountNumbers' => $accountNumbers,
-        ]);
-    }
+    //     return view('components.cash&bank.edit-transaction-transfer', [
+    //         'transaction' => $transaction,
+    //         'accountNumbers' => $accountNumbers,
+    //     ]);
+    // }
 
-    public function updateTransactionTransfer(Request $request, $id)
-    {
-        try {
-            $request->validate([
-                'transfer_account_id' => 'required',
-                'deposit_account_id' => 'required',
-                'amount' => 'required|numeric',
-                'date' => 'required|date_format:d/m/Y',
-                'description' => 'required',
-            ]);
+    // public function updateTransactionTransfer(Request $request, $id)
+    // {
+    //     try {
+    //         $request->validate([
+    //             'transfer_account_id' => 'required',
+    //             'deposit_account_id' => 'required',
+    //             'amount' => 'required|numeric',
+    //             'date' => 'required|date_format:d/m/Y',
+    //             'description' => 'required',
+    //         ]);
 
-            $transaction_transfer = Transaction_transfer::findOrFail($id);
+    //         $transaction_transfer = Transaction_transfer::findOrFail($id);
 
-            $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+    //         $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
 
-            $transaction_transfer::update([
-                'transfer_account_id' => $request->transfer_account_id,
-                'deposit_account_id' => $request->deposit_account_id,
-                'amount' => $request->amount,
-                'date' => $date,
-                'description' => $request->description,
-            ]);
+    //         $transaction_transfer::update([
+    //             'transfer_account_id' => $request->transfer_account_id,
+    //             'deposit_account_id' => $request->deposit_account_id,
+    //             'amount' => $request->amount,
+    //             'date' => $date,
+    //             'description' => $request->description,
+    //         ]);
 
-            return redirect()->route('cash.index')->with('success', 'Transaction Transfer Updated Successfully!');
-        } catch (Exception $err) {
-            // Tangani kesalahan di sini
-            return dd($err);
-        }
-    }
+    //         return redirect()->route('cash.index')->with('success', 'Transaction Transfer Updated Successfully!');
+    //     } catch (Exception $err) {
+    //         // Tangani kesalahan di sini
+    //         return dd($err);
+    //     }
+    // }
 
 
     public function deleteTransactionTransfer($id)
@@ -410,9 +426,34 @@ class AccountingController extends Controller
                 'payer' => $request->payer,
             ]);
 
+               // Update the amount in transfer account (allowing it to go negative)
+               $transferAccount = Accountnumber::find($request->transfer_account_id);
+               $transferAccount->amount -= $request->amount;
+               $transferAccount->save();
+   
+               // Update the amount in deposit account
+               $depositAccount = Accountnumber::find($request->deposit_account_id);
+               $depositAccount->amount += $request->amount;
+               $depositAccount->save();
+
             return redirect()->route('transaction-send.index')->with('success', 'Transaction Send Created Successfully!');
         } catch (Exception $err) {
             // Tangani kesalahan di sini
+            return dd($err);
+        }
+    }
+
+    public function deleteTransactionSend($id)
+    {
+        try {
+            // Cari data transaksi transfer berdasarkan ID
+            $transactionSend = Transaction_send::findOrFail($id);
+
+            // Hapus data transaksi transfer
+            $transactionSend->delete();
+
+            return redirect()->back()->with('success', 'Transaction Send Deleted Successfully!');
+        } catch (Exception $err) {
             return dd($err);
         }
     }
@@ -511,9 +552,34 @@ class AccountingController extends Controller
                 'no_transaction' => $request->no_transaction,
             ]);
 
+               // Update the amount in transfer account (allowing it to go negative)
+               $transferAccount = Accountnumber::find($request->transfer_account_id);
+               $transferAccount->amount -= $request->amount;
+               $transferAccount->save();
+   
+               // Update the amount in deposit account
+               $depositAccount = Accountnumber::find($request->deposit_account_id);
+               $depositAccount->amount += $request->amount;
+               $depositAccount->save();
+
             return redirect()->route('transaction-receive.index')->with('success', 'Transaction Receive Created Successfully!');
         } catch (Exception $err) {
             // Tangani kesalahan di sini
+            return dd($err);
+        }
+    }
+
+    public function deleteTransactionReceive($id)
+    {
+        try {
+            // Cari data transaksi transfer berdasarkan ID
+            $transactionReceive = Transaction_receive::findOrFail($id);
+
+            // Hapus data transaksi transfer
+            $transactionReceive->delete();
+
+            return redirect()->back()->with('success', 'Transaction Receive Deleted Successfully!');
+        } catch (Exception $err) {
             return dd($err);
         }
     }

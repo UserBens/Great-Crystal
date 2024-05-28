@@ -32,7 +32,7 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="amount">Payer<span style="color: red">*</span> :</label>
+                                            <label for="amount">Parent<span style="color: red">*</span> :</label>
                                             <div class="input-group">
 
                                                 <input name="payer" type="text" class="form-control"

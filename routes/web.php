@@ -7,7 +7,8 @@ use App\Http\Controllers\Admin\{
    BookController,
    DashboardController,
    GradeController,
-   PaymentBookController,
+    JournalKontroller,
+    PaymentBookController,
    PaymentGradeController,
    PaymentStudentController,
    RegisterController,
@@ -210,22 +211,25 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::delete('/{id}', [FinancialController::class, 'destroyExpenditure'])->name('expenditure.destroy');
    });
 
-   Route::prefix('/cash')->group(function () {
-      Route::get('/', [AccountingController::class, 'indexCash'])->name('cash.index');
+   Route::prefix('/transaction')->group(function () {
+      Route::get('/transaction-transfer', [AccountingController::class, 'indexTransfer'])->name('transaction-transfer.index');
 
-      Route::get('/transaction-transfer', [AccountingController::class, 'createTransactionTransfer'])->name('transaction-transfer.create');
+      Route::get('/transaction-transfer/create', [AccountingController::class, 'createTransactionTransfer'])->name('transaction-transfer.create');
       Route::post('/transaction-transfer', [AccountingController::class, 'storeTransactionTransfer'])->name('transaction-transfer.store');
-      Route::get('/{id}/edit', [AccountingController::class, 'editTransactionTransfer'])->name('transaction-transfer.edit');
-      Route::put('/{id}', [AccountingController::class, 'updateTransactionTransfer'])->name('transaction-transfer.update');
+      // Route::get('/{id}/edit', [AccountingController::class, 'editTransactionTransfer'])->name('transaction-transfer.edit');
+      // Route::put('/{id}', [AccountingController::class, 'updateTransactionTransfer'])->name('transaction-transfer.update');
       Route::delete('/transaction-transfer/{id}', [AccountingController::class, 'deleteTransactionTransfer'])->name('transaction-transfer.destroy');
 
       Route::get('/transaction-send', [AccountingController::class, 'indexTransactionSend'])->name('transaction-send.index');
       Route::get('/transaction-send/create', [AccountingController::class, 'createTransactionSend'])->name('transaction-send.create');
       Route::post('/transaction-send', [AccountingController::class, 'storeTransactionSend'])->name('transaction-send.store');
+      Route::delete('/transaction-send/{id}', [AccountingController::class, 'deleteTransactionSend'])->name('transaction-send.destroy');
 
       Route::get('/transaction-receive', [AccountingController::class, 'indexTransactionReceive'])->name('transaction-receive.index');
       Route::get('/transaction-receive/create', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
       Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
+      Route::delete('/transaction-receive/{id}', [AccountingController::class, 'deleteTransactionReceive'])->name('transaction-receive.destroy');
+
    });
 
    // Route::prefix('/bank')->group(function () {
@@ -233,9 +237,9 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
    // });
 
    Route::prefix('/journal')->group(function () {
-      Route::get('/', [AccountingController::class, 'indexJournal'])->name('journal.index');
-      Route::get('/detail/{id}/{type}', [AccountingController::class, 'showJournalDetail'])->name('journal.detail');
-      Route::get('/detail/{id}/{type}/pdf', [AccountingController::class, 'generatePdfJournalDetail'])->name('journal.detail.pdf');
+      Route::get('/', [JournalKontroller::class, 'indexJournal'])->name('journal.index');
+      Route::get('/detail/{id}/{type}', [JournalKontroller::class, 'showJournalDetail'])->name('journal.detail');
+      Route::get('/detail/{id}/{type}/pdf', [JournalKontroller::class, 'generatePdfJournalDetail'])->name('journal.detail.pdf');
    });
 
    Route::prefix('/account')->group(function () {

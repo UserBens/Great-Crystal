@@ -84,6 +84,195 @@ class JournalKontroller extends Controller
     // }
 
 
+    // public function indexJournal(Request $request)
+    // {
+    //     session()->flash('page', (object) [
+    //         'page' => 'Journal',
+    //         'child' => 'database Journal',
+    //     ]);
+
+    //     $form = (object) [
+    //         'sort' => $request->sort ?? null,
+    //         'order' => $request->order ?? 'asc', // Default ascending
+    //         'status' => $request->status ?? null,
+    //         'search' => $request->search ?? null,
+    //         'type' => $request->type ?? null,
+    //         'date' => $request->date ?? null,
+    //     ];
+
+    //     try {
+    //         $transferdata = Transaction_transfer::select(
+    //             'transaction_transfers.*',
+    //             'a1.account_no AS transfer_account_no',
+    //             'a1.name AS transfer_account_name',
+    //             'a2.account_no AS deposit_account_no',
+    //             'a2.name AS deposit_account_name',
+    //             DB::raw("'transfer' as type")
+    //         )
+    //             ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_transfers.transfer_account_id')
+    //             ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_transfers.deposit_account_id')
+    //             ->where(function ($query) use ($request) {
+    //                 if ($request->has('search')) {
+    //                     $query->where('transaction_transfers.no_transaction', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a2.account_no', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a2.name', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_transfers.amount', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_transfers.description', 'LIKE', '%' . $request->search . '%');
+    //                 }
+    //             });
+
+    //         $senddata = Transaction_send::select(
+    //             'transaction_sends.*',
+    //             'a1.account_no AS transfer_account_no',
+    //             'a1.name AS transfer_account_name',
+    //             'a2.account_no AS deposit_account_no',
+    //             'a2.name AS deposit_account_name',
+    //             DB::raw("'send' as type")
+    //         )
+    //             ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_sends.transfer_account_id')
+    //             ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_sends.deposit_account_id')
+    //             ->where(function ($query) use ($request) {
+    //                 if ($request->has('search')) {
+    //                     $query->where('transaction_sends.no_transaction', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_sends.amount', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_sends.description', 'LIKE', '%' . $request->search . '%');
+    //                 }
+    //             });
+
+    //         $receivedata = Transaction_receive::select(
+    //             'transaction_receives.*',
+    //             'a1.account_no AS transfer_account_no',
+    //             'a1.name AS transfer_account_name',
+    //             'a2.account_no AS deposit_account_no',
+    //             'a2.name AS deposit_account_name',
+    //             DB::raw("'receive' as type")
+    //         )
+    //             ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_receives.transfer_account_id')
+    //             ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_receives.deposit_account_id')
+    //             ->where(function ($query) use ($request) {
+    //                 if ($request->has('search')) {
+    //                     $query->where('transaction_receives.no_transaction', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_receives.amount', 'LIKE', '%' . $request->search . '%')
+    //                         ->orWhere('transaction_receives.description', 'LIKE', '%' . $request->search . '%');
+    //                 }
+    //             });
+
+    //         // Filter data by date
+    //         if ($request->filled('date')) {
+    //             $searchDate = date('Y-m-d', strtotime($request->date));
+    //             $transferdata->whereDate('transaction_transfers.date', $searchDate);
+    //             $senddata->whereDate('transaction_sends.date', $searchDate);
+    //             $receivedata->whereDate('transaction_receives.date', $searchDate);
+    //         }
+
+    //         if ($request->filled('sort')) {
+    //             // Get order from request
+    //             $order = $request->order;
+    //             $transferdata->orderBy($request->sort, $order);
+    //             $senddata->orderBy($request->sort, $order);
+    //             $receivedata->orderBy($request->sort, $order);
+    //         } else {
+    //             // Default sort by date
+    //             $transferdata->orderBy('date', $form->order);
+    //             $senddata->orderBy('date', $form->order);
+    //             $receivedata->orderBy('date', $form->order);
+    //         }
+
+    //         // Ambil data lebih banyak dari setiap jenis transaksi
+    //         $transfer = $transferdata->take(2)->get();
+    //         $send = $senddata->take(2)->get();
+    //         $receive = $receivedata->take(2)->get();
+
+    //         // Combine results
+    //         $combinedData = collect([]);
+
+    //         // Ambil 2 data transfer
+    //         $combinedData = $combinedData->merge($transfer->take(2));
+
+    //         // Ambil 2 data send
+    //         $combinedData = $combinedData->merge($send->take(2));
+
+    //         // Ambil 2 data receive
+    //         $combinedData = $combinedData->merge($receive->take(2));
+
+    //         // Sort combined results
+    //         if ($form->sort) {
+    //             $combinedData = $combinedData->sortBy($form->sort, SORT_REGULAR, $form->order === 'desc');
+    //         }
+
+    //         // Paginate combined results
+    //         $perPage = 10;
+    //         $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+    //         $path = $request->url(); // Menggunakan URL saat ini sebagai jalur
+
+    //         // Ubah menjadi seperti ini
+    //         $paginatedData = new LengthAwarePaginator(
+    //             $combinedData->forPage($currentPage, $perPage),
+    //             $combinedData->count(),
+    //             $perPage,
+    //             $currentPage,
+    //             [
+    //                 'path' => $path,
+    //                 'pageName' => 'page',
+    //             ]
+    //         );
+
+    //         return view('components.journal.index', [
+    //             'transfer' => $transfer,
+    //             'send' => $send,
+    //             'receive' => $receive,
+    //             'allData' => $paginatedData,
+    //             'form' => $form,
+    //         ]);
+    //     } catch (Exception $err) {
+    //         return dd($err);
+    //     }
+    // }
+
+    // public function indexJournal(Request $request)
+    // {
+    //     session()->flash('page', (object) [
+    //         'page' => 'Journal',
+    //         'child' => 'database Journal',
+    //     ]);
+
+    //     $form = (object) [
+    //         'sort' => $request->sort ?? null,
+    //         'order' => $request->order ?? 'asc', // Default ascending
+    //         'status' => $request->status ?? null,
+    //         'search' => $request->search ?? null,
+    //         'type' => $request->type ?? null,
+    //         'date' => $request->date ?? null,
+    //     ];
+
+    //     $query = DB::table('transaction_transfers')
+    //         ->select('transaction_transfers.id', 'transaction_transfers.no_transaction', 'transaction_transfers.transfer_account_id', 'transaction_transfers.deposit_account_id', 'transaction_transfers.amount', 'transaction_transfers.date', 'transaction_transfers.created_at', DB::raw("'transaction_transfer' as type"))
+    //         ->union(
+    //             DB::table('transaction_sends')
+    //                 ->select('transaction_sends.id', 'transaction_sends.no_transaction', 'transaction_sends.transfer_account_id', 'transaction_sends.deposit_account_id', 'transaction_sends.amount', 'transaction_sends.date', 'transaction_sends.created_at', DB::raw("'transaction_send' as type"))
+    //         )
+    //         ->union(
+    //             DB::table('transaction_receives')
+    //                 ->select('transaction_receives.id', 'transaction_receives.no_transaction', 'transaction_receives.transfer_account_id', 'transaction_receives.deposit_account_id', 'transaction_receives.amount', 'transaction_receives.date', 'transaction_receives.created_at', DB::raw("'transaction_receive' as type"))
+    //         );
+
+    //     if ($form->sort && in_array($form->sort, ['date'])) {
+    //         $query = $query->orderBy($form->sort, $form->order);
+    //     }
+
+    //     $allData = $query->paginate(10);
+
+    //     return view('components.journal.index', compact('allData', 'form'));
+    // }
+
+
     public function indexJournal(Request $request)
     {
         session()->flash('page', (object) [
@@ -100,140 +289,46 @@ class JournalKontroller extends Controller
             'date' => $request->date ?? null,
         ];
 
-        try {
-            $transferdata = Transaction_transfer::select(
-                'transaction_transfers.*',
-                'a1.account_no AS transfer_account_no',
-                'a1.name AS transfer_account_name',
-                'a2.account_no AS deposit_account_no',
-                'a2.name AS deposit_account_name',
-                DB::raw("'transfer' as type")
-            )
-                ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_transfers.transfer_account_id')
-                ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_transfers.deposit_account_id')
-                ->where(function ($query) use ($request) {
-                    if ($request->has('search')) {
-                        $query->where('transaction_transfers.no_transaction', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a2.account_no', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a2.name', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('transaction_transfers.amount', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('transaction_transfers.description', 'LIKE', '%' . $request->search . '%');
-                    }
-                });
+        $transactionTransfers = DB::table('transaction_transfers')
+            ->select('transaction_transfers.id', 'transaction_transfers.no_transaction', 'accountnumbers_transfer.name as transfer_account_name', 'accountnumbers_deposit.name as deposit_account_name', 'transaction_transfers.amount', 'transaction_transfers.date', 'transaction_transfers.created_at', DB::raw('"transaction_transfer" as type'))
+            ->join('accountnumbers as accountnumbers_transfer', 'transaction_transfers.transfer_account_id', '=', 'accountnumbers_transfer.id')
+            ->join('accountnumbers as accountnumbers_deposit', 'transaction_transfers.deposit_account_id', '=', 'accountnumbers_deposit.id');
 
-            $senddata = Transaction_send::select(
-                'transaction_sends.*',
-                'a1.account_no AS transfer_account_no',
-                'a1.name AS transfer_account_name',
-                'a2.account_no AS deposit_account_no',
-                'a2.name AS deposit_account_name',
-                DB::raw("'send' as type")
-            )
-                ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_sends.transfer_account_id')
-                ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_sends.deposit_account_id')
-                ->where(function ($query) use ($request) {
-                    if ($request->has('search')) {
-                        $query->where('transaction_sends.no_transaction', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('transaction_sends.amount', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('transaction_sends.description', 'LIKE', '%' . $request->search . '%');
-                    }
-                });
+        $transactionSends = DB::table('transaction_sends')
+            ->select('transaction_sends.id', 'transaction_sends.no_transaction', 'accountnumbers_transfer.name as transfer_account_name', 'accountnumbers_deposit.name as deposit_account_name', 'transaction_sends.amount', 'transaction_sends.date', 'transaction_sends.created_at', DB::raw('"transaction_send" as type'))
+            ->join('accountnumbers as accountnumbers_transfer', 'transaction_sends.transfer_account_id', '=', 'accountnumbers_transfer.id')
+            ->join('accountnumbers as accountnumbers_deposit', 'transaction_sends.deposit_account_id', '=', 'accountnumbers_deposit.id');
 
-            $receivedata = Transaction_receive::select(
-                'transaction_receives.*',
-                'a1.account_no AS transfer_account_no',
-                'a1.name AS transfer_account_name',
-                'a2.account_no AS deposit_account_no',
-                'a2.name AS deposit_account_name',
-                DB::raw("'receive' as type")
-            )
-                ->leftJoin('accountnumbers as a1', 'a1.id', '=', 'transaction_receives.transfer_account_id')
-                ->leftJoin('accountnumbers as a2', 'a2.id', '=', 'transaction_receives.deposit_account_id')
-                ->where(function ($query) use ($request) {
-                    if ($request->has('search')) {
-                        $query->where('transaction_receives.no_transaction', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a1.account_no', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('a1.name', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('transaction_receives.amount', 'LIKE', '%' . $request->search . '%')
-                            ->orWhere('transaction_receives.description', 'LIKE', '%' . $request->search . '%');
-                    }
-                });
+        $transactionReceives = DB::table('transaction_receives')
+            ->select('transaction_receives.id', 'transaction_receives.no_transaction', 'accountnumbers_transfer.name as transfer_account_name', 'accountnumbers_deposit.name as deposit_account_name', 'transaction_receives.amount', 'transaction_receives.date', 'transaction_receives.created_at', DB::raw('"transaction_receive" as type'))
+            ->join('accountnumbers as accountnumbers_transfer', 'transaction_receives.transfer_account_id', '=', 'accountnumbers_transfer.id')
+            ->join('accountnumbers as accountnumbers_deposit', 'transaction_receives.deposit_account_id', '=', 'accountnumbers_deposit.id');
 
-            // Filter data by date
-            if ($request->filled('date')) {
-                $searchDate = date('Y-m-d', strtotime($request->date));
-                $transferdata->whereDate('transaction_transfers.date', $searchDate);
-                $senddata->whereDate('transaction_sends.date', $searchDate);
-                $receivedata->whereDate('transaction_receives.date', $searchDate);
-            }
+        $query = $transactionTransfers->union($transactionSends)->union($transactionReceives);
 
-            if ($request->filled('sort')) {
-                // Get order from request
-                $order = $request->order;
-                $transferdata->orderBy($request->sort, $order);
-                $senddata->orderBy($request->sort, $order);
-                $receivedata->orderBy($request->sort, $order);
-            } else {
-                // Default sort by date
-                $transferdata->orderBy('date', $form->order);
-                $senddata->orderBy('date', $form->order);
-                $receivedata->orderBy('date', $form->order);
-            }
-
-            // Ambil data lebih banyak dari setiap jenis transaksi
-            $transfer = $transferdata->take(10)->get();
-            $send = $senddata->take(10)->get();
-            $receive = $receivedata->take(10)->get();
-
-            // Combine results
-            $combinedData = collect([]);
-
-            // Ambil 2 data transfer
-            $combinedData = $combinedData->merge($transfer->take(2));
-
-            // Ambil 2 data send
-            $combinedData = $combinedData->merge($send->take(2));
-
-            // Ambil 2 data receive
-            $combinedData = $combinedData->merge($receive->take(2));
-
-            // Sort combined results
-            if ($form->sort) {
-                $combinedData = $combinedData->sortBy($form->sort, SORT_REGULAR, $form->order === 'desc');
-            }
-
-            // Paginate combined results
-            $perPage = 10;
-            $currentPage = LengthAwarePaginator::resolveCurrentPage();
-
-            $path = $request->url(); // Menggunakan URL saat ini sebagai jalur
-
-            // Ubah menjadi seperti ini
-            $paginatedData = new LengthAwarePaginator(
-                $combinedData->forPage($currentPage, $perPage),
-                $combinedData->count(),
-                $perPage,
-                $currentPage,
-                [
-                    'path' => $path,
-                    'pageName' => 'page',
-                ]
-            );
-
-            return view('components.journal.index', [
-                'transfer' => $transfer,
-                'send' => $send,
-                'receive' => $receive,
-                'allData' => $paginatedData,
-                'form' => $form,
-            ]);
-        } catch (Exception $err) {
-            return dd($err);
+        if ($form->type) {
+            $query->where('type', $form->type);
         }
+
+        if ($form->date) {
+            $query->whereDate('date', $form->date);
+        }
+
+        if ($form->search) {
+            $query->where(function ($query) use ($form) {
+                $query->where('no_transaction', 'like', '%' . $form->search . '%')
+                    ->orWhere('transfer_account_name', 'like', '%' . $form->search . '%')
+                    ->orWhere('deposit_account_name', 'like', '%' . $form->search . '%');
+            });
+        }
+
+        if ($form->sort) {
+            $query->orderBy($form->sort, $form->order);
+        }
+
+        $allData = $query->paginate(10);
+
+        return view('components.journal.index', compact('allData', 'form'));
     }
 
 

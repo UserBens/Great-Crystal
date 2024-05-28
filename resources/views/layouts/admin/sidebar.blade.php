@@ -280,26 +280,40 @@
                         </ul>
                     </li>
 
-                    {{-- Transaction Page --}}
+                    {{-- Cash & Bank Page --}}
                     <li
                         class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Transaction' ? 'menu-open' : '') : '' }}">
                         <a href="#"
                             class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Transaction' ? 'active' : '') : '' }}">
-                            <i class="nav-icon fa-solid fa-comments-dollar"></i> 
+                            <i class="nav-icon fa-solid fa-comments-dollar"></i>
                             <p>
-                                Accounting
+                                Cash & Bank
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="{{ route('cash.index') }}"
-                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Cash & Bank' ? 'active' : '') : '' }}">
+                                <a href="{{ route('transaction-transfer.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Transaction Transfer' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Cash & Bank</p>
+                                    <p>Transfer</p>
                                 </a>
                             </li>
-                          
+                            <li class="nav-item">
+                                <a href="{{ route('transaction-send.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Transaction Send' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Send</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('transaction-receive.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Transaction Receive' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Receive</p>
+                                </a>
+                            </li>
+
                             <li class="nav-item">
                                 <a href="{{ route('account.index') }}"
                                     class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Account Number' ? 'active' : '') : '' }}">
@@ -308,14 +322,31 @@
                                 </a>
                             </li>
 
+                        </ul>
+                    </li>
+
+                    {{-- Journal Page --}}
+                    <li
+                        class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Journal' ? 'menu-open' : '') : '' }}">
+                        <a href="#"
+                            class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Journal' ? 'active' : '') : '' }}">
+                            <i class="nav-icon fa-solid fa-file-lines"></i>
+                            <p>
+                                Journal
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+
+
                             <li class="nav-item">
                                 <a href="{{ route('journal.index') }}"
                                     class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Journal' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Journal</p>
+                                    <p>Report Journal</p>
                                 </a>
                             </li>
-                           
+
                         </ul>
                     </li>
                 @endif

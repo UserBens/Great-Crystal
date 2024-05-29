@@ -170,15 +170,35 @@ class AccountingController extends Controller
         try {
             // Inisialisasi objek form dengan nilai default
             $form = (object) [
+                'sort' => $request->sort ?? 'date', // Default sort by date
+                'order' => $request->order ?? 'desc', // Default descending
+                'status' => $request->status ?? null,
                 'search' => $request->search ?? null,
                 'type' => $request->type ?? null,
-                'sort' => $request->sort ?? null,
-                'order' => $request->order ?? null,
-                'status' => $request->status ?? null,
+                'date' => $request->date ?? null,
             ];
+
 
             // Query data berdasarkan parameter pencarian yang diberikan
             $query = Transaction_transfer::with(['transferAccount', 'depositAccount']);
+
+            if ($form->date) {
+                $query->whereDate('date', $form->date);
+            }
+
+            // if ($request->filled('search')) {
+            //     $searchTerm = '%' . $request->search . '%';
+            //     $query->where(function ($q) use ($searchTerm) {
+            //         $q->whereHas('transferAccount', function ($q) use ($searchTerm) {
+            //             $q->where('name', 'LIKE', $searchTerm)
+            //                 ->orWhere('account_no', 'LIKE', $searchTerm);
+            //         })->orWhereHas('depositAccount', function ($q) use ($searchTerm) {
+            //             $q->where('name', 'LIKE', $searchTerm)
+            //                 ->orWhere('account_no', 'LIKE', $searchTerm);
+            //         })->orWhere('amount', 'LIKE', $searchTerm)
+            //             ->orWhere('date', 'LIKE', $searchTerm);
+            //     });
+            // }
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -194,20 +214,14 @@ class AccountingController extends Controller
                 });
             }
 
-            // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'date') {
-                    $query->orderBy('date', $request->order);
-                } else {
-                    $query->orderBy($request->sort, $request->order);
-                }
+            if ($form->sort === 'date') {
+                $query->orderBy('date', $form->order);
+            } elseif ($form->sort === 'oldest') {
+                $query->orderBy('date', 'asc');
+            } elseif ($form->sort === 'newest') {
+                $query->orderBy('date', 'desc');
             }
 
-            // Filter data berdasarkan tanggal
-            if ($request->filled('date')) {
-                $searchDate = date('Y-m-d', strtotime($request->date));
-                $query->whereDate('date', $searchDate);
-            }
 
             // Memuat data dengan pagination
             $data = $query->paginate(10);
@@ -258,15 +272,15 @@ class AccountingController extends Controller
                 'no_transaction' => $request->no_transaction,
             ]);
 
-              // Update the amount in transfer account (allowing it to go negative)
-              $transferAccount = Accountnumber::find($request->transfer_account_id);
-              $transferAccount->amount -= $request->amount;
-              $transferAccount->save();
-  
-              // Update the amount in deposit account
-              $depositAccount = Accountnumber::find($request->deposit_account_id);
-              $depositAccount->amount += $request->amount;
-              $depositAccount->save();
+            // Update the amount in transfer account (allowing it to go negative)
+            $transferAccount = Accountnumber::find($request->transfer_account_id);
+            $transferAccount->amount -= $request->amount;
+            $transferAccount->save();
+
+            // Update the amount in deposit account
+            $depositAccount = Accountnumber::find($request->deposit_account_id);
+            $depositAccount->amount += $request->amount;
+            $depositAccount->save();
 
             return redirect()->route('transaction-transfer.index')->with('success', 'Transaction Transfer Created Successfully!');
         } catch (Exception $err) {
@@ -342,11 +356,12 @@ class AccountingController extends Controller
         try {
             // Inisialisasi objek form dengan nilai default
             $form = (object) [
+                'sort' => $request->sort ?? 'date', // Default sort by date
+                'order' => $request->order ?? 'desc', // Default descending
+                'status' => $request->status ?? null,
                 'search' => $request->search ?? null,
                 'type' => $request->type ?? null,
-                'sort' => $request->sort ?? null,
-                'order' => $request->order ?? null,
-                'status' => $request->status ?? null,
+                'date' => $request->date ?? null,
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
@@ -366,20 +381,29 @@ class AccountingController extends Controller
                 });
             }
 
-            // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'date') {
-                    $query->orderBy('date', $request->order);
-                } else {
-                    $query->orderBy($request->sort, $request->order);
-                }
+            // // Mengatur urutan berdasarkan parameter yang dipilih
+            // if ($request->filled('sort') && $request->filled('order')) {
+            //     if ($request->sort === 'date') {
+            //         $query->orderBy('date', $request->order);
+            //     } else {
+            //         $query->orderBy($request->sort, $request->order);
+            //     }
+            // }
+
+            // // Filter data berdasarkan tanggal
+            // if ($request->filled('date')) {
+            //     $searchDate = date('Y-m-d', strtotime($request->date));
+            //     $query->whereDate('date', $searchDate);
+            // }
+
+            if ($form->sort === 'date') {
+                $query->orderBy('date', $form->order);
+            } elseif ($form->sort === 'oldest') {
+                $query->orderBy('date', 'asc');
+            } elseif ($form->sort === 'newest') {
+                $query->orderBy('date', 'desc');
             }
 
-            // Filter data berdasarkan tanggal
-            if ($request->filled('date')) {
-                $searchDate = date('Y-m-d', strtotime($request->date));
-                $query->whereDate('date', $searchDate);
-            }
 
             // Memuat data dengan pagination
             $data = $query->paginate(10);
@@ -426,15 +450,15 @@ class AccountingController extends Controller
                 'payer' => $request->payer,
             ]);
 
-               // Update the amount in transfer account (allowing it to go negative)
-               $transferAccount = Accountnumber::find($request->transfer_account_id);
-               $transferAccount->amount -= $request->amount;
-               $transferAccount->save();
-   
-               // Update the amount in deposit account
-               $depositAccount = Accountnumber::find($request->deposit_account_id);
-               $depositAccount->amount += $request->amount;
-               $depositAccount->save();
+            // Update the amount in transfer account (allowing it to go negative)
+            $transferAccount = Accountnumber::find($request->transfer_account_id);
+            $transferAccount->amount -= $request->amount;
+            $transferAccount->save();
+
+            // Update the amount in deposit account
+            $depositAccount = Accountnumber::find($request->deposit_account_id);
+            $depositAccount->amount += $request->amount;
+            $depositAccount->save();
 
             return redirect()->route('transaction-send.index')->with('success', 'Transaction Send Created Successfully!');
         } catch (Exception $err) {
@@ -552,15 +576,15 @@ class AccountingController extends Controller
                 'no_transaction' => $request->no_transaction,
             ]);
 
-               // Update the amount in transfer account (allowing it to go negative)
-               $transferAccount = Accountnumber::find($request->transfer_account_id);
-               $transferAccount->amount -= $request->amount;
-               $transferAccount->save();
-   
-               // Update the amount in deposit account
-               $depositAccount = Accountnumber::find($request->deposit_account_id);
-               $depositAccount->amount += $request->amount;
-               $depositAccount->save();
+            // Update the amount in transfer account (allowing it to go negative)
+            $transferAccount = Accountnumber::find($request->transfer_account_id);
+            $transferAccount->amount -= $request->amount;
+            $transferAccount->save();
+
+            // Update the amount in deposit account
+            $depositAccount = Accountnumber::find($request->deposit_account_id);
+            $depositAccount->amount += $request->amount;
+            $depositAccount->save();
 
             return redirect()->route('transaction-receive.index')->with('success', 'Transaction Receive Created Successfully!');
         } catch (Exception $err) {

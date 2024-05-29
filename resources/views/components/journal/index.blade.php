@@ -1,11 +1,8 @@
 @extends('layouts.admin.master')
 @section('content')
-    <!-- Content Wrapper. Contains page content -->
     <section class="content">
         <div class="container-fluid">
-            <!-- Small boxes (Stat box) -->
             <h2 class="text-center display-4 mb-4">Journal Search</h2>
-
             <div class="m-1">
                 <form action="{{ route('journal.index') }}" method="GET" class="mb-3">
                     <div class="row">
@@ -26,9 +23,9 @@
                         <div class="col-md-3">
                             <label for="sort">Sort By</label>
                             <select name="sort" class="form-control" id="sort-select">
-                                <option value="">-- All Data --</option>
+                                <option value="">-- Select Sort --</option>
                                 <option value="date"
-                                    {{ $form->sort === 'date' && $form->order !== 'asc' ? 'selected' : '' }}
+                                    {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
                                     data-order="asc">Date (Oldest First)</option>
                                 <option value="date"
                                     {{ $form->sort === 'date' && $form->order === 'desc' ? 'selected' : '' }}
@@ -52,7 +49,7 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" name="order" id="order" value="{{ $form->order ?? 'asc' }}">
+                    <input type="hidden" name="order" id="order" value="{{ $form->order ?? 'desc' }}">
                 </form>
             </div>
 
@@ -63,171 +60,47 @@
                             <h3 class="card-title">Report Journal</h3>
                         </div>
                         <div class="card-body p-0">
-                            <table class="table projects">
-                                <thead>
-                                    <tr>
-                                        <th>No Transaction</th>
-                                        <th>Account Number</th>
-                                        <th>Debit</th>
-                                        <th>Credit</th>
-                                        <th>Date</th>
-                                        <th>Created At</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($transfer as $item)
+                            <form action="{{ route('journal.detail.selected') }}" method="GET">
+                                @csrf
+                                <table class="table table-striped projects">
+                                    <thead>
                                         <tr>
-                                            @if ($item->transfer_account_id)
-                                                <td>{{ $item->no_transaction }}</td>
-                                                <td>{{ $item->transfer_account_no }} -
-                                                    {{ $item->transfer_account_name }}</td>
-                                                <td>0</td>
-                                                <td>{{ $item->amount > 0 ? 'Rp ' . number_format($item->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => 'transaction_transfer']) }}"
-                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
-                                                            View</a>
-
-                                                    </div>
-                                                </td>
-                                            @endif
+                                            <th>Select Item</th>
+                                            <th>No Transaction</th>
+                                            <th>Transfer Account</th>
+                                            <th>Deposit Account</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Created At</th>
                                         </tr>
-                                        <tr>
-                                            @if ($item->deposit_account_id)
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($allData as $item)
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" name="id[]" value="{{ $item->id }}">
+                                                    <input type="hidden" name="type[]" value="{{ $item->type }}">
+                                                </td>
                                                 <td>{{ $item->no_transaction }}</td>
-                                                <td>{{ $item->deposit_account_no }} -
-                                                    {{ $item->deposit_account_name }}</td>
-                                                <td>{{ $item->amount > 0 ? 'Rp ' . number_format($item->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>0</td>
+                                                <td>{{ $item->transfer_account_name }}</td>
+                                                <td>{{ $item->deposit_account_name }}</td>
+                                                <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}
-                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
-                                                        <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => 'transaction_transfer']) }}"
-                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
-                                                            View</a>
-
-                                                    </div>
-                                                </td>
-                                            @endif
-                                        </tr>
-                                    @endforeach
-
-                                    @foreach ($send as $item)
-                                        <tr>
-                                            @if ($item->transfer_account_id)
-                                                <td>{{ $item->no_transaction }}</td>
-                                                <td>{{ $item->transfer_account_no }} -
-                                                    {{ $item->transfer_account_name }}</td>
-                                                <td>0</td>
-                                                <td>{{ $item->amount > 0 ? 'Rp ' . number_format($item->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => 'transaction_send']) }}"
-                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
-                                                            View</a>
-
-                                                    </div>
-                                                </td>
-                                            @endif
-                                        </tr>
-                                        <tr>
-                                            @if ($item->deposit_account_id)
-                                                <td>{{ $item->no_transaction }}</td>
-                                                <td>{{ $item->deposit_account_no }} -
-                                                    {{ $item->deposit_account_name }}</td>
-                                                <td>{{ $item->amount > 0 ? 'Rp ' . number_format($item->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>0</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => 'transaction_send']) }}"
+                                                        <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
                                                             class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
                                                             View</a>
                                                     </div>
                                                 </td>
-                                            @endif
-                                        </tr>
-                                    @endforeach
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <button type="submit" class="btn btn-primary m-3">View Selected Details</button>
+                            </form>
 
-                                    @foreach ($receive as $item)
-                                        {{-- <tr>
-                                            <td>{{ $item->no_transaction }}</td>
-                                            <td>{{ $item->receive_account_no }} - {{ $item->receive_account_name }}</td>
-                                            <td>{{ $item->amount > 0 ? 'Rp ' . number_format($item->amount, 0, ',', '.') : '0' }}
-                                            </td>
-                                            <td>0</td>
-                                            <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
-                                            <td class="text-center">
-                                                <div class="btn-group">
-                                                    <a href="{{ route('journal.detail', $item->id) }}"
-                                                        class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-eye"></i> View
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr> --}}
-                                        <tr>
-                                            @if ($item->transfer_account_id)
-                                                <td>{{ $item->no_transaction }}</td>
-                                                <td>{{ $item->transfer_account_no }} -
-                                                    {{ $item->transfer_account_name }}</td>
-                                                <td>0</td>
-                                                <td>{{ $item->amount > 0 ? 'Rp ' . number_format($item->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                         <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => 'transaction_receive']) }}"
-                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
-                                                            View</a>
-                                                    </div>
-                                                </td>
-                                            @endif
-                                        </tr>
-                                        <tr>
-                                            @if ($item->deposit_account_id)
-                                                <td>{{ $item->no_transaction }}</td>
-                                                <td>{{ $item->deposit_account_no }} -
-                                                    {{ $item->deposit_account_name }}</td>
-                                                <td>{{ $item->amount > 0 ? 'Rp ' . number_format($item->amount, 0, ',', '.') : '0' }}
-                                                </td>
-                                                <td>0</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                         <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => 'transaction_receive']) }}"
-                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
-                                                            View</a>
-                                                    </div>
-                                                </td>
-                                            @endif
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-
-                            <!-- Pagination -->
                             <div class="d-flex justify-content-between mt-4 px-3">
                                 <div class="mb-3">
                                     Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of
@@ -238,14 +111,21 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- /.card-body -->
                     </div>
-                    <!-- /.card -->
                 </div>
-                <!-- /.col -->
             </div>
-            <!-- /.row -->
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
-    <!-- /.content-wrapper -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sortSelect = document.getElementById('sort-select');
+            const orderInput = document.getElementById('order');
+
+            sortSelect.addEventListener('change', function() {
+                const selectedOption = sortSelect.options[sortSelect.selectedIndex];
+                orderInput.value = selectedOption.getAttribute('data-order');
+            });
+        });
+    </script>
 @endsection

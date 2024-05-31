@@ -58,10 +58,25 @@
                                 </tfoot>
                             </table>
 
-                            <a href="" target="_blank" class="btn btn-warning btn-sm mt-2" id="print-pdf">
+                            {{-- <a href="{{ route('journal.detail.selected.pdf', ['id' => $transaction->id, 'type' => $type]) }}"
+                                target="_blank" class="btn btn-warning btn-sm mt-2" id="print-pdf">
                                 <i class="fa-solid fa-file-pdf fa-bounce"
                                     style="color: #000000; margin-right:2px;"></i>Print PDF
+                            </a> --}}
+
+                            {{-- <a href="{{ route('journal.detail.selected.pdf', ['no_transaction' => $selectedNoTransactions]) }}"
+                                target="_blank" class="btn btn-warning btn-sm mt-2" id="print-pdf">
+                                <i class="fa-solid fa-file-pdf fa-bounce"
+                                    style="color: #000000; margin-right:2px;"></i>Print PDF
+                            </a> --}}
+
+                            <a href="{{ route('journal.detail.selected.pdf', ['selectedNoTransactions' => $selectedNoTransactions]) }}"
+                                target="_blank" class="btn btn-warning btn-sm mt-2" id="print-pdf">
+                                <i class="fa-solid fa-file-pdf fa-bounce" style="color: #000000; margin-right:2px;"></i>Print PDF
                             </a>
+                            
+
+
                         </div>
                         <!-- /.card-body -->
                     </div>

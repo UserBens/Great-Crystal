@@ -179,7 +179,9 @@ class NotificationPaymentSuccess extends Controller
                      $pdfReport->loadView('components.emails.payment-success-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
                   }
 
-                  Mail::to($parent->email)->send(new PaymentSuccessMail($mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
+                  // Mail::to($parent->email)->send(new PaymentSuccessMail($mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
+                  Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment for School Fee – " . date('F Y') . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
+
                }
                // return view('emails.payment-success')->with('mailData', $mailData);
                dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));

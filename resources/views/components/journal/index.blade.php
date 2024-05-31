@@ -64,8 +64,8 @@
                                 @csrf
                                 <table class="table table-striped projects">
                                     <thead>
-                                        <tr>
-                                            <th>Select Item</th>
+                                        <tr class="text-center">
+                                            <th>✔ Select Item</th>
                                             <th>No Transaction</th>
                                             <th>Transfer Account</th>
                                             <th>Deposit Account</th>
@@ -76,10 +76,10 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($allData as $item)
-                                            <tr>
-                                                <td>
-                                                    <input type="checkbox" name="id[]" value="{{ $item->id }}">
-                                                    <input type="hidden" name="type[]" value="{{ $item->type }}">
+                                            <tr class="text-center">
+                                                <td class="text-center">
+                                                    <input type="checkbox" name="no_transaction[]" value="{{ $item->no_transaction }}"> 
+
                                                 </td>
                                                 <td>{{ $item->no_transaction }}</td>
                                                 <td>{{ $item->transfer_account_name }}</td>
@@ -100,6 +100,10 @@
                                 </table>
                                 <button type="submit" class="btn btn-primary m-3">View Selected Details</button>
                             </form>
+
+
+
+
 
                             <div class="d-flex justify-content-between mt-4 px-3">
                                 <div class="mb-3">

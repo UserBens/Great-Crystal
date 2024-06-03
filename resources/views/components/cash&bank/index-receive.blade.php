@@ -55,7 +55,7 @@
             <!-- Display message when no transfer data found -->
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
-                    <h3>No Cash or Bank has been transferred yet. Click the button below to create Transaction!</h3>
+                    <h3>Click the button below to create Transaction Receive!</h3>
                     <div class="btn-group">
                         <a type="button" href="{{ route('transaction-receive.create') }}"
                             class="btn btn-success mt-3">

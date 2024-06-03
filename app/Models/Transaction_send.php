@@ -20,4 +20,9 @@ class Transaction_send extends Model
     {
         return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
     }
+
+    public function TransactionSendSupplier()
+    {
+        return $this->belongsTo(TransactionSendSupplier::class, 'transaction_send_supplier_id');
+    }
 }

@@ -48,7 +48,6 @@ class AccountCategorySeeder extends Seeder
             'Expenses',
             'Other Income',
             'Other Expenses',
-            'Depreciation & Amortization',
         ];
 
         foreach ($categories as $category) {

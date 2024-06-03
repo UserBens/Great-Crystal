@@ -16,11 +16,11 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="date">Sort By</label>
-                    <select name="sort" class="form-control">
-                        <option value="">-- All Data --</option>
-                        <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
-                        <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
+                    <label for="sort">Sort By</label>
+                    <select name="sort" class="form-control" id="sort-select">
+                        <option>-- All Data --</option>
+                        <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)</option>
+                        <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -54,7 +54,7 @@
             <!-- Display message when no transfer data found -->
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
-                    <h3>No Cash or Bank has been transferred yet. Click the button below to create Transaction!</h3>
+                    <h3>Click the button below to create Transaction Send!</h3>
                     <div class="btn-group">
                         <a type="button" href="{{ route('transaction-send.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Create Transaction

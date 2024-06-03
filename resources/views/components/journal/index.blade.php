@@ -78,8 +78,8 @@
                                         @foreach ($allData as $item)
                                             <tr class="text-center">
                                                 <td class="text-center">
-                                                    <input type="checkbox" name="no_transaction[]" value="{{ $item->no_transaction }}"> 
-
+                                                    <input type="checkbox" name="no_transaction[]"
+                                                        value="{{ $item->no_transaction }}">
                                                 </td>
                                                 <td>{{ $item->no_transaction }}</td>
                                                 <td>{{ $item->transfer_account_name }}</td>
@@ -90,7 +90,7 @@
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
-                                                            class="btn btn-primary btn-sm"><i class="fas fa-eye"></i>
+                                                            class="btn btn-primary btn-sm"><i class="fas fa-folder"></i>
                                                             View</a>
                                                     </div>
                                                 </td>
@@ -98,13 +98,10 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <button type="submit" class="btn btn-primary m-3">View Selected Details</button>
+                                <div class="text-left" style="margin-left: 50px;">
+                                    <button type="submit" class="btn btn-sm btn-primary">View Selected</button>
+                                </div>
                             </form>
-
-
-
-
-
                             <div class="d-flex justify-content-between mt-4 px-3">
                                 <div class="mb-3">
                                     Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of

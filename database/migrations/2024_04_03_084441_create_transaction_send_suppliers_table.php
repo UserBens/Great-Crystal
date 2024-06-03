@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('accountcategories', function (Blueprint $table) {
+        Schema::create('transaction_send_suppliers', function (Blueprint $table) {
             $table->id();
-            $table->string('category_name')->unique();
+            $table->string('supplier_name')->unique();
+            $table->string('supplier_role');
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('accountcategories');
+        Schema::dropIfExists('transaction_send_suppliers');
     }
 };

@@ -31,19 +31,29 @@
                                             @endif
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="amount">Supplier<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
+                                            <label>Supplier : <span style="color: red">*</span></label>
+                                            <select name="transaction_send_supplier_id" class="form-control select2"
+                                                id="supplierSelect">
+                                                <option value="" selected disabled>Select a Supplier</option>
+                                                @foreach ($suppliers as $supplier)
+                                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} -
+                                                        {{ $supplier->supplier_role }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
 
-                                                <input name="payer" type="text" class="form-control" id="payer"
-                                                    placeholder="Example : Budi (Supplier)" autocomplete="off"
-                                                    value="{{ old('payer') }}" required>
+                                            <button class="btn text-primary" data-toggle="modal"
+                                                data-target="#addSupplierModal">
+                                                + Add Supplier
+                                            </button>
+                                            <div class="row">
+                                                @if ($errors->has('supplier_name'))
+                                                    <span class="text-danger">{{ $errors->first('supplier_name') }}</span>
+                                                @endif
                                             </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('payer') }}</p>
-                                            @endif
                                         </div>
-                                        
                                     </div>
+
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Pay From : <span style="color: red">*</span></label>
@@ -121,6 +131,45 @@
                                 <input role="button" type="submit" class="btn btn-success center col-12 mt-3">
                             </div>
                         </form>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog"
+                            aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addSupplierModalLabel">Add Supplier</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('transaction-send-supplier.store') }}"
+                                            id="addSupplierForm" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="supplier_name">Supplier Name :</label>
+                                                <input type="text" class="form-control" id="supplier_name"
+                                                    name="supplier_name" required>
+                                                @if ($errors->has('supplier_name'))
+                                                    <span class="text-danger">{{ $errors->first('supplier_name') }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="supplier_role">Role :</label>
+                                                <input type="text" class="form-control" id="supplier_role"
+                                                    name="supplier_role" required>
+                                                @if ($errors->has('supplier_role'))
+                                                    <span class="text-danger">{{ $errors->first('supplier_role') }}</span>
+                                                @endif
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -144,5 +193,10 @@
             // Submit formulir
             document.getElementById("transferForm").submit();
         }
+
+        // Inisialisasi Select2 pada elemen select
+        $(document).ready(function() {
+            $('.select2').select2();
+        });
     </script>
 @endsection

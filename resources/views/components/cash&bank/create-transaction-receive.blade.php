@@ -21,7 +21,6 @@
                                         <div class="col-md-6">
                                             <label for="amount">Transaction No.<span style="color: red">*</span> :</label>
                                             <div class="input-group">
-
                                                 <input name="no_transaction" type="text" class="form-control"
                                                     id="no_transaction" placeholder="Example : R-100031" autocomplete="off"
                                                     value="{{ old('no_transaction') }}" required>
@@ -32,23 +31,23 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="amount">Parent<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
-
-                                                <input name="payer" type="text" class="form-control"
-                                                    id="payer" placeholder="Example : Budi (Parent)"
-                                                    autocomplete="off" value="{{ old('payer') }}" required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('payer') }}</p>
-                                            @endif
+                                            <label>Student Name : <span style="color: red">*</span></label>
+                                            <select name="student_id" class="form-control select2" id="studentSelect">
+                                                <option value="" selected disabled>Select a Student</option>
+                                                @foreach ($students as $student)
+                                                    <option value="{{ $student->id }}">
+                                                        {{ $student->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
+
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Receive From : <span style="color: red">*</span></label>
-                                            <select name="transfer_account_id" class="form-control">
+                                            <select name="transfer_account_id" class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
                                                         {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
@@ -59,7 +58,7 @@
 
                                         <div class="col-md-6">
                                             <label>Deposit To : <span style="color: red">*</span></label>
-                                            <select name="deposit_account_id" class="form-control">
+                                            <select name="deposit_account_id" class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
                                                         {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
@@ -107,8 +106,8 @@
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
-                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="10"
-                                                placeholder="Enter description">{{ old('description') }}</textarea>
+                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
+                                                rows="10" placeholder="Enter description">{{ old('description') }}</textarea>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('description') }}</p>
                                             @endif
@@ -143,5 +142,12 @@
             // Submit formulir
             document.getElementById("transferForm").submit();
         }
+
+     
+
+        // Inisialisasi Select2 pada elemen select
+        $(document).ready(function() {
+            $('.select2').select2();
+        });
     </script>
 @endsection

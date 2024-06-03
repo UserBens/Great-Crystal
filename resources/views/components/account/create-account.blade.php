@@ -45,11 +45,15 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            @error('category_name')
+                                                <p style="color: red;">{{ $message }}</p>
+                                            @enderror
                                             <button class="btn text-primary" data-toggle="modal"
                                                 data-target="#addCategoryModal">
                                                 + Add Category
                                             </button>
                                         </div>
+
                                         <div class="col-md-6 mt-3">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
@@ -95,10 +99,14 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{ route('account-category.store') }}" id="addCategoryForm" method="POST">
+                                        <form action="{{ route('account-category.store') }}" id="addCategoryForm"
+                                            method="POST">
                                             @csrf
                                             <div class="form-group">
                                                 <label for="category_name">Category Name</label>
+                                                @error('category_name')
+                                                    <p style="color: red;">{{ $message }}</p>
+                                                @enderror
                                                 <input type="text" class="form-control" id="category_name"
                                                     name="category_name" required>
                                             </div>
@@ -114,7 +122,6 @@
         </div>
     </section>
     <script>
-        
         function removeThousandSeparator(input) {
             // Remove thousand separator (.)
             let value = input.value.replace(/\./g, '');

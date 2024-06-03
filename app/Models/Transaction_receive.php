@@ -20,4 +20,9 @@ class Transaction_receive extends Model
     {
         return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
     }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id');
+    }
 }

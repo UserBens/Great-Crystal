@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\TransactionSendSupplier;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +21,10 @@ class DatabaseSeeder extends Seeder
          StudentRelationshipSeeder::class,
          AccountCategorySeeder::class,
          AccountNumberSeeder::class,
+         TransactionSendSupplierSeeder::class,
+         TransactionTransferSeeder::class,
+         TransactionSendSeeder::class,
+         TransactionReceiveSeeder::class,
       ]);
     }
 }

@@ -112,14 +112,29 @@
                                     </div>
 
                                     <div class="form-group row">
-
+                                        <div class="col-md-6">
+                                            <label>Deadline Invoice <span style="color: red">*</span></label>
+                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                                <input name="deadline_invoice" type="text" class="form-control "
+                                                    placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
+                                                    data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"
+                                                    data-mask required />
+                                                <div class="input-group-append" data-target="#reservationdate"
+                                                    data-toggle="datetimepicker">
+                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                </div>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('deadline_invoice') }}</p>
+                                            @endif
+                                        </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
-                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="10"
-                                                placeholder="Enter description">{{ old('description') }}</textarea>
+                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
+                                                rows="10" placeholder="Enter description">{{ old('description') }}</textarea>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('description') }}</p>
                                             @endif

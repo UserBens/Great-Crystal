@@ -33,13 +33,11 @@ class JournalController extends Controller
             'status' => $request->status ?? null,
             'search' => $request->search ?? null,
             'type' => $request->type ?? null,
-            'date' => $request->date ?? null,
+            'start_date' => $request->start_date ?? null,
+            'end_date' => $request->end_date ?? null,
         ];
 
         $selectedItems = $request->id ?? [];
-
-        $selectedTypes = $request->type ?? [];
-
 
         $transactionTransfers = DB::table('transaction_transfers')
             ->select(
@@ -54,7 +52,6 @@ class JournalController extends Controller
                 'transaction_transfers.created_at',
                 DB::raw('"transaction_transfer" as type')
             )
-
             ->join('accountnumbers as accountnumbers_transfer', 'transaction_transfers.transfer_account_id', '=', 'accountnumbers_transfer.id')
             ->join('accountnumbers as accountnumbers_deposit', 'transaction_transfers.deposit_account_id', '=', 'accountnumbers_deposit.id');
 
@@ -71,7 +68,6 @@ class JournalController extends Controller
                 'transaction_sends.created_at',
                 DB::raw('"transaction_send" as type')
             )
-
             ->join('accountnumbers as accountnumbers_transfer', 'transaction_sends.transfer_account_id', '=', 'accountnumbers_transfer.id')
             ->join('accountnumbers as accountnumbers_deposit', 'transaction_sends.deposit_account_id', '=', 'accountnumbers_deposit.id');
 
@@ -88,7 +84,6 @@ class JournalController extends Controller
                 'transaction_receives.created_at',
                 DB::raw('"transaction_receive" as type')
             )
-
             ->join('accountnumbers as accountnumbers_transfer', 'transaction_receives.transfer_account_id', '=', 'accountnumbers_transfer.id')
             ->join('accountnumbers as accountnumbers_deposit', 'transaction_receives.deposit_account_id', '=', 'accountnumbers_deposit.id');
 
@@ -101,8 +96,8 @@ class JournalController extends Controller
             $query->where('type', $form->type);
         }
 
-        if ($form->date) {
-            $query->whereDate('date', $form->date);
+        if ($form->start_date && $form->end_date) {
+            $query->whereBetween('date', [$form->start_date, $form->end_date]);
         }
 
         if ($form->search) {
@@ -121,8 +116,346 @@ class JournalController extends Controller
 
         $allData = $query->paginate(10);
 
-        return view('components.journal.index', compact('allData', 'form', 'selectedItems', 'selectedTypes'));
+        return view('components.journal.index', compact('allData', 'form', 'selectedItems'));
     }
+
+
+    public function showSelectedJournalDetail(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $type = $request->input('type'); // Ambil jenis transaksi
+        $search = $request->input('search');
+        $sort = $request->input('sort');
+        $order = $request->input('order');
+
+        // Log debugging
+        Log::info('Request Data: ', $request->all());
+
+        if (empty($startDate) || empty($endDate)) {
+            return redirect()->route('journal.index')->with('error', 'Start date and end date are required.');
+        }
+
+        $transactionDetails = [];
+
+        // Logika untuk mengambil transaksi berdasarkan jenis transaksi
+        if ($type === 'transaction_transfer' || empty($type)) {
+            $transactionTransfers = Transaction_transfer::with(['transferAccount', 'depositAccount'])
+                ->whereBetween('date', [$startDate, $endDate])
+                ->when($search, function ($query, $search) {
+                    return $query->where('no_transaction', 'LIKE', "%{$search}%");
+                })
+                ->when($sort && $order, function ($query) use ($sort, $order) {
+                    return $query->orderBy($sort, $order);
+                })
+                ->get();
+
+            foreach ($transactionTransfers as $transaction) {
+                $transferAccount = $transaction->transferAccount;
+                $depositAccount = $transaction->depositAccount;
+
+                $transactionDetails[] = [
+                    [
+                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
+                        'account_number' => $transferAccount->account_no,
+                        'account_name' => $transferAccount->name,
+                        'debit' => 0,
+                        'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                        'date' => $transaction->date,
+                        'description' => $transaction->description,
+                        'created_at' => $transaction->created_at
+                    ],
+                    [
+                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
+                        'account_number' => $depositAccount->account_no,
+                        'account_name' => $depositAccount->name,
+                        'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                        'credit' => 0,
+                        'date' => $transaction->date,
+                        'description' => $transaction->description,
+                        'created_at' => $transaction->created_at
+                    ]
+                ];
+            }
+        }
+
+        if ($type === 'transaction_send' || empty($type)) {
+            $transactionSends = Transaction_send::with(['transferAccount', 'depositAccount'])
+                ->whereBetween('date', [$startDate, $endDate])
+                ->get();
+
+            foreach ($transactionSends as $transaction) {
+                $transferAccount = $transaction->transferAccount;
+                $depositAccount = $transaction->depositAccount;
+
+                $transactionDetails[] = [
+                    [
+                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
+                        'account_number' => $transferAccount->account_no,
+                        'account_name' => $transferAccount->name,
+                        'debit' => 0,
+                        'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                        'date' => $transaction->date,
+                        'description' => $transaction->description,
+                        'created_at' => $transaction->created_at
+                    ],
+                    [
+                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
+                        'account_number' => $depositAccount->account_no,
+                        'account_name' => $depositAccount->name,
+                        'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                        'credit' => 0,
+                        'date' => $transaction->date,
+                        'description' => $transaction->description,
+                        'created_at' => $transaction->created_at
+                    ]
+                ];
+            }
+        }
+
+        if ($type === 'transaction_receive' || empty($type)) {
+            $transactionReceives = Transaction_receive::with(['transferAccount', 'depositAccount'])
+                ->whereBetween('date', [$startDate, $endDate])
+                ->get();
+
+            foreach ($transactionReceives as $transaction) {
+                $transferAccount = $transaction->transferAccount;
+                $depositAccount = $transaction->depositAccount;
+
+                $transactionDetails[] = [
+                    [
+                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
+                        'account_number' => $transferAccount->account_no,
+                        'account_name' => $transferAccount->name,
+                        'debit' => 0,
+                        'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                        'date' => $transaction->date,
+                        'description' => $transaction->description,
+                        'created_at' => $transaction->created_at
+                    ],
+                    [
+                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
+                        'account_number' => $depositAccount->account_no,
+                        'account_name' => $depositAccount->name,
+                        'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                        'credit' => 0,
+                        'date' => $transaction->date,
+                        'description' => $transaction->description,
+                        'created_at' => $transaction->created_at
+                    ]
+                ];
+            }
+        }
+
+        // Debugging data yang akan dikirim ke view
+        Log::info('Transaction Details: ' . print_r($transactionDetails, true));
+
+        return view('components.journal.selected-detail', [
+            'transactionDetails' => $transactionDetails,
+            'selectedNoTransactions' => array_merge(
+                $transactionTransfers->pluck('no_transaction')->toArray(),
+                $transactionSends->pluck('no_transaction')->toArray(),
+                $transactionReceives->pluck('no_transaction')->toArray()
+            ),
+        ]);
+    }
+
+    // public function showSelectedJournalDetail(Request $request)
+    // {
+    //     $startDate = $request->input('start_date');
+    //     $endDate = $request->input('end_date');
+    //     $type = $request->input('type'); // Ambil jenis transaksi
+    //     $search = $request->input('search');
+    //     $sort = $request->input('sort');
+    //     $order = $request->input('order');
+
+    //     // Log debugging
+    //     Log::info('Request Data: ', $request->all());
+
+    //     if (empty($startDate) || empty($endDate)) {
+    //         return redirect()->route('journal.index')->with('error', 'Start date and end date are required.');
+    //     }
+
+    //     $transactionDetails = [];
+
+    //     // Logika untuk mengambil semua transaksi jika 'type' kosong atau null
+    //     if (empty($type)) {
+    //         // Ambil semua transaksi dari semua jenis
+    //         $transactionTransfers = Transaction_transfer::with(['transferAccount', 'depositAccount'])
+    //             ->whereBetween('date', [$startDate, $endDate])
+    //             ->when($search, function ($query, $search) {
+    //                 return $query->where('no_transaction', 'LIKE', "%{$search}%");
+    //             })
+    //             ->when($sort && $order, function ($query) use ($sort, $order) {
+    //                 return $query->orderBy($sort, $order);
+    //             })
+    //             ->get();
+
+    //         $transactionSends = Transaction_send::with(['transferAccount', 'depositAccount'])
+    //             ->whereBetween('date', [$startDate, $endDate])
+    //             ->get();
+
+    //         $transactionReceives = Transaction_receive::with(['transferAccount', 'depositAccount'])
+    //             ->whereBetween('date', [$startDate, $endDate])
+    //             ->get();
+
+    //         // Gabungkan semua transaksi dari semua jenis
+    //         $allTransactions = array_merge($transactionTransfers->toArray(), $transactionSends->toArray(), $transactionReceives->toArray());
+
+    //         // Tambahkan detail transaksi ke dalam $transactionDetails
+    //         foreach ($allTransactions as $transaction) {
+    //             $transferAccount = $transaction->transferAccount;
+    //             $depositAccount = $transaction->depositAccount;
+
+    //             $transactionDetails[] = [
+    //                 [
+    //                     'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                     'account_number' => $transferAccount->account_no,
+    //                     'account_name' => $transferAccount->name,
+    //                     'debit' => 0,
+    //                     'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                     'date' => $transaction->date,
+    //                     'description' => $transaction->description,
+    //                     'created_at' => $transaction->created_at
+    //                 ],
+    //                 [
+    //                     'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                     'account_number' => $depositAccount->account_no,
+    //                     'account_name' => $depositAccount->name,
+    //                     'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                     'credit' => 0,
+    //                     'date' => $transaction->date,
+    //                     'description' => $transaction->description,
+    //                     'created_at' => $transaction->created_at
+    //                 ]
+    //             ];
+    //         }
+    //     } else {
+    //         // Logika untuk mengambil transaksi berdasarkan jenis transaksi yang dipilih
+    //         if ($type === 'transaction_transfer') {
+    //             // Proses untuk transaksi transfer
+    //             $transactionTransfers = Transaction_transfer::with(['transferAccount', 'depositAccount'])
+    //                 ->whereBetween('date', [$startDate, $endDate])
+    //                 ->when($search, function ($query, $search) {
+    //                     return $query->where('no_transaction', 'LIKE', "%{$search}%");
+    //                 })
+    //                 ->when($sort && $order, function ($query) use ($sort, $order) {
+    //                     return $query->orderBy($sort, $order);
+    //                 })
+    //                 ->get();
+
+    //             // Tambahkan detail transaksi transfer ke dalam $transactionDetails
+    //             foreach ($transactionTransfers as $transaction) {
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails[] = [
+    //                     [
+    //                         'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         } elseif ($type === 'transaction_send') {
+    //             // Proses untuk transaksi send
+    //             $transactionSends = Transaction_send::with(['transferAccount', 'depositAccount'])
+    //                 ->whereBetween('date', [$startDate, $endDate])
+    //                 ->get();
+
+    //             // Tambahkan detail transaksi send ke dalam $transactionDetails
+    //             foreach ($transactionSends as $transaction) {
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails[] = [
+    //                     [
+    //                         'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         } elseif ($type === 'transaction_receive') {
+    //             // Proses untuk transaksi receive
+    //             $transactionReceives = Transaction_receive::with(['transferAccount', 'depositAccount'])
+    //                 ->whereBetween('date', [$startDate, $endDate])
+    //                 ->get();
+
+    //             // Tambahkan detail transaksi receive ke dalam $transactionDetails
+    //             foreach ($transactionReceives as $transaction) {
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails[] = [
+    //                     [
+    //                         'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'no_transaction' => $transaction->no_transaction ?? 'N/A',
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         }
+    //     }
+
+    //     // Debugging data yang akan dikirim ke view
+    //     Log::info('Transaction Details: ' . print_r($transactionDetails, true));
+
+    //     return view('components.journal.selected-detail', [
+    //         'transactionDetails' => $transactionDetails,
+    //         'selectedNoTransactions' => array_merge(
+    //             $transactionTransfers->pluck('no_transaction')->toArray(),
+    //             $transactionSends->pluck('no_transaction')->toArray(),
+    //             $transactionReceives->pluck('no_transaction')->toArray()
+    //         ),
+    //     ]);
+    // }
+
 
 
     public function showJournalDetail(Request $request, $id, $type)
@@ -363,133 +696,6 @@ class JournalController extends Controller
         } catch (Exception $e) {
             return abort(500, 'Failed to fetch transaction details.');
         }
-    }
-
-    // public function showSelectedJournalDetail(Request $request)
-    // {
-    //     $selectedNoTransactions = $request->no_transaction ?? [];
-
-    //     // Debugging data yang diterima
-    //     Log::info('Selected No Transactions: ' . print_r($selectedNoTransactions, true));
-
-    //     if (empty($selectedNoTransactions)) {
-    //         return redirect()->route('journal.index')->with('error', 'No items selected.');
-    //     }
-
-    //     $transactionDetails = [];
-
-    //     foreach ($selectedNoTransactions as $noTransaction) {
-    //         $transaction = null;
-
-    //         // Search the transaction across the three types
-    //         $transaction = Transaction_transfer::with(['transferAccount', 'depositAccount'])->where('no_transaction', $noTransaction)->first();
-    //         if (!$transaction) {
-    //             $transaction = Transaction_send::with(['transferAccount', 'depositAccount'])->where('no_transaction', $noTransaction)->first();
-    //         }
-    //         if (!$transaction) {
-    //             $transaction = Transaction_receive::with(['transferAccount', 'depositAccount'])->where('no_transaction', $noTransaction)->first();
-    //         }
-
-    //         if ($transaction) {
-    //             $transferAccount = $transaction->transferAccount;
-    //             $depositAccount = $transaction->depositAccount;
-
-    //             $transactionDetails[] = [
-    //                 [
-    //                     'no_transaction' => $transaction->no_transaction ?? 'N/A',
-    //                     'account_number' => $transferAccount->account_no,
-    //                     'account_name' => $transferAccount->name,
-    //                     'debit' => 0,
-    //                     'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
-    //                     'date' => $transaction->date,
-    //                     'description' => $transaction->description,
-    //                     'created_at' => $transaction->created_at
-    //                 ],
-    //                 [
-    //                     'no_transaction' => $transaction->no_transaction ?? 'N/A',
-    //                     'account_number' => $depositAccount->account_no,
-    //                     'account_name' => $depositAccount->name,
-    //                     'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
-    //                     'credit' => 0,
-    //                     'date' => $transaction->date,
-    //                     'description' => $transaction->description,
-    //                     'created_at' => $transaction->created_at
-    //                 ]
-    //             ];
-    //         }
-    //     }
-
-    //     // Debugging data yang akan dikirim ke view
-    //     Log::info('Transaction Details: ' . print_r($transactionDetails, true));
-
-    //     return view('components.journal.selected-detail', [
-    //         'transactionDetails' => $transactionDetails,
-    //         'selectedNoTransactions' => $selectedNoTransactions, // Tambahkan variabel ini
-
-    //     ]);
-    // }
-
-    public function showSelectedJournalDetail(Request $request)
-    {
-        $selectedNoTransactions = $request->no_transaction ?? [];
-
-        // Debugging data yang diterima
-        Log::info('Selected No Transactions: ' . print_r($selectedNoTransactions, true));
-
-        if (empty($selectedNoTransactions)) {
-            return redirect()->route('journal.index')->with('error', 'No items selected.');
-        }
-
-        $transactionDetails = [];
-
-        foreach ($selectedNoTransactions as $noTransaction) {
-            $transaction = null;
-
-            // Search the transaction across the three types
-            $transaction = Transaction_transfer::with(['transferAccount', 'depositAccount'])->where('no_transaction', $noTransaction)->first();
-            if (!$transaction) {
-                $transaction = Transaction_send::with(['transferAccount', 'depositAccount'])->where('no_transaction', $noTransaction)->first();
-            }
-            if (!$transaction) {
-                $transaction = Transaction_receive::with(['transferAccount', 'depositAccount'])->where('no_transaction', $noTransaction)->first();
-            }
-
-            if ($transaction) {
-                $transferAccount = $transaction->transferAccount;
-                $depositAccount = $transaction->depositAccount;
-
-                $transactionDetails[] = [
-                    [
-                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
-                        'account_number' => $transferAccount->account_no,
-                        'account_name' => $transferAccount->name,
-                        'debit' => 0,
-                        'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
-                        'date' => $transaction->date,
-                        'description' => $transaction->description,
-                        'created_at' => $transaction->created_at
-                    ],
-                    [
-                        'no_transaction' => $transaction->no_transaction ?? 'N/A',
-                        'account_number' => $depositAccount->account_no,
-                        'account_name' => $depositAccount->name,
-                        'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
-                        'credit' => 0,
-                        'date' => $transaction->date,
-                        'description' => $transaction->description,
-                        'created_at' => $transaction->created_at
-                    ]
-                ];
-            }
-        }
-
-        // Debugging data yang akan dikirim ke view
-        Log::info('Transaction Details: ' . print_r($transactionDetails, true));
-
-        return view('components.journal.selected-detail', [
-            'transactionDetails' => $transactionDetails,
-            'selectedNoTransactions' => $selectedNoTransactions, // Tambahkan variabel ini
-        ]);
     }
 
 

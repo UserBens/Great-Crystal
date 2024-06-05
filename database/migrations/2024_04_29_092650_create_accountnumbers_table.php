@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Add unique constraints
-            $table->unique('name');
+            // $table->unique('name');
             $table->unique('account_no');
         });
     }

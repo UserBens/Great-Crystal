@@ -21,9 +21,9 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="sort">Sort By</label>
-                            <select name="sort" class="form-control" id="sort-select">
-                                <option value="">-- Select Sort --</option>
+                            <label>Sort By : <span style="color: red">*</span></label>
+                            <select name="sort" class="form-control select2" id="sort-select">
+                                <option value="" selected disabled>-- Select Sort --</option>
                                 <option value="date"
                                     {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
                                     data-order="asc">Date (Oldest First)</option>
@@ -33,10 +33,15 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="date">Date</label>
-                            <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
+                            <label for="start_date">Start Date</label>
+                            <input type="date" name="start_date" class="form-control"
+                                value="{{ $form->start_date ?? '' }}">
                         </div>
                         <div class="col-md-3">
+                            <label for="end_date">End Date</label>
+                            <input type="date" name="end_date" class="form-control" value="{{ $form->end_date ?? '' }}">
+                        </div>
+                        <div class="col-md-12 mt-3">
                             <label for="search">Search Data</label>
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" placeholder="Search..."
@@ -60,48 +65,58 @@
                             <h3 class="card-title">Report Journal</h3>
                         </div>
                         <div class="card-body p-0">
-                            <form action="{{ route('journal.detail.selected') }}" method="GET">
-                                @csrf
-                                <table class="table table-striped projects">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th>✔ Select Item</th>
-                                            <th>No Transaction</th>
-                                            <th>Transfer Account</th>
-                                            <th>Deposit Account</th>
-                                            <th>Amount</th>
-                                            <th>Date</th>
-                                            <th>Created At</th>
+
+
+                            <table class="table table-striped projects">
+                                <thead>
+                                    <tr class="">
+                                        <th>No Transaction</th>
+                                        <th>Transfer Account</th>
+                                        <th>Deposit Account</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($allData as $item)
+                                        <tr class="">
+
+                                            <td>{{ $item->no_transaction }}</td>
+                                            <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
+                                            <td>{{ $item->transfer_account_no }} - {{ $item->deposit_account_name }}</td>
+                                            <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
+                                                        class="btn btn-primary btn-sm"><i class="fas fa-folder"></i>
+                                                        View</a>
+                                                </div>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($allData as $item)
-                                            <tr class="text-center">
-                                                <td class="text-center">
-                                                    <input type="checkbox" name="no_transaction[]"
-                                                        value="{{ $item->no_transaction }}">
-                                                </td>
-                                                <td>{{ $item->no_transaction }}</td>
-                                                <td>{{ $item->transfer_account_name }}</td>
-                                                <td>{{ $item->deposit_account_name }}</td>
-                                                <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
-                                                            class="btn btn-primary btn-sm"><i class="fas fa-folder"></i>
-                                                            View</a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                                <div class="text-left" style="margin-left: 50px;">
-                                    <button type="submit" class="btn btn-sm btn-primary">View Selected</button>
-                                </div>
-                            </form>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            <div class="mt-3">
+                                <form action="{{ route('journal.detail.selected') }}" method="GET">
+                                    @csrf
+                                    <input type="hidden" name="start_date" value="{{ $form->start_date }}">
+                                    <input type="hidden" name="end_date" value="{{ $form->end_date }}">
+                                    <input type="hidden" name="type" value="{{ $form->type }}">
+                                    <input type="hidden" name="search" value="{{ $form->search }}">
+                                    <input type="hidden" name="sort" value="{{ $form->sort }}">
+                                    <input type="hidden" name="order" value="{{ $form->order }}">
+                                    
+
+                                    <div class="text-left" style="margin-left: 20px;">
+                                        <button type="submit" class="btn btn-sm btn-primary">View Filter</button>
+                                    </div>
+                                </form>
+                            </div>
+
                             <div class="d-flex justify-content-between mt-4 px-3">
                                 <div class="mb-3">
                                     Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of

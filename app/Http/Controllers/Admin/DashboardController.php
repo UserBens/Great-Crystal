@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bill;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Transaction_send;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -38,6 +39,8 @@ class DashboardController extends Controller
          ->take(6)
          ->get();
 
+         $transactionSend = Transaction_send::where('deadline_invoice')->orderBy('id')->take(2)->get();
+
          $teacherData = Teacher::where('is_active', true)->orderBy('id', 'desc')->take(6)->get();
 
          $studentData = Student::where('is_active', true)->orderBy('id', 'desc')->take(6)->get();
@@ -52,6 +55,7 @@ class DashboardController extends Controller
             'dataPastDue' => $pastDueData,
             'dataTeacher' => $teacherData,
             'dataStudent' => $studentData,
+            'transactionSend' => $transactionSend,
          ];
 
          return view('components.dashboard')->with('data', $data);

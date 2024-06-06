@@ -23,7 +23,7 @@
                         <div class="col-md-3">
                             <label>Sort By : <span style="color: red">*</span></label>
                             <select name="sort" class="form-control select2" id="sort-select">
-                                <option value="" selected disabled>-- Select Sort --</option>
+                                {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
                                 <option value="date"
                                     {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
                                     data-order="asc">Date (Oldest First)</option>
@@ -80,8 +80,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($allData as $item)
-                                        <tr class="">
-
+                                        <tr>
                                             <td>{{ $item->no_transaction }}</td>
                                             <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
                                             <td>{{ $item->transfer_account_no }} - {{ $item->deposit_account_name }}</td>

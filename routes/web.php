@@ -243,7 +243,8 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/', [JournalController::class, 'indexJournal'])->name('journal.index');
       Route::get('/detail/{id}/{type}', [JournalController::class, 'showJournalDetail'])->name('journal.detail');
       Route::get('/detail/{id}/{type}/pdf', [JournalController::class, 'generatePdfJournalDetail'])->name('journal.detail.pdf');
-      Route::get('/detail/selected', [JournalController::class, 'showSelectedJournalDetail'])->name('journal.detail.selected');
+      // Route::get('/detail/selected', [JournalController::class, 'showSelectedJournalDetail'])->name('journal.detail.selected');
+      Route::get('/journal/detail', [JournalController::class, 'showFilterJournalDetail'])->name('journal.detail.selected');
       Route::get('/journal/detail/selected/pdf', [JournalController::class, 'generatePdfJournalSelectedDetail'])->name('journal.detail.selected.pdf');
 
    });

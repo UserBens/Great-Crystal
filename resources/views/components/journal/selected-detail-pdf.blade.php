@@ -25,22 +25,16 @@
             margin-top: 40px;
         }
 
-        .header .subtitle {
-            font-size: 21px;
-            margin-top: 30px;
-            text-align: left;
-        }
-
         .header .texttype {
             font-size: 18px;
-            margin-top: 80px;
+            margin-top: 20px;
             text-align: left;
         }
 
         .address {
             text-align: right;
             margin-bottom: 30px;
-            margin-top: 80px;
+            margin-top: 40px;
             color: grey;
         }
 
@@ -74,11 +68,11 @@
 <body>
     <div class="header">
         <div class="title">GREAT CRYSTAL SCHOOL AND COURSE CENTER</div>
-        <div class="texttype">Transaction Detail </div>
+        <div class="texttype">Transaction Detail</div>
     </div>
 
     <table class="transaction-details">
-        <thead class="transaction-details header-table">
+        <thead class="header-table">
             <tr>
                 <th>No Transaction</th>
                 <th>Account Number</th>
@@ -90,7 +84,7 @@
                 <th>Created At</th>
             </tr>
         </thead>
-        <tbody class="body_table">
+        <tbody>
             @php
                 $totalDebit = 0;
                 $totalKredit = 0;

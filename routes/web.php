@@ -245,7 +245,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/detail/{id}/{type}/pdf', [JournalController::class, 'generatePdfJournalDetail'])->name('journal.detail.pdf');
       // Route::get('/detail/selected', [JournalController::class, 'showSelectedJournalDetail'])->name('journal.detail.selected');
       Route::get('/journal/detail', [JournalController::class, 'showFilterJournalDetail'])->name('journal.detail.selected');
-      Route::get('/journal/detail/selected/pdf', [JournalController::class, 'generatePdfJournalSelectedDetail'])->name('journal.detail.selected.pdf');
+      Route::get('/journal/detail/selected/pdf', [JournalController::class, 'showFilterJournalDetailpdf'])->name('journal.detail.selected.pdf');
 
    });
 

@@ -20,6 +20,107 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class JournalController extends Controller
 {
+    // public function indexJournal(Request $request)
+    // {
+    //     session()->flash('page', (object) [
+    //         'page' => 'Journal',
+    //         'child' => 'database Journal',
+    //     ]);
+
+    //     $selectedItems = $request->id ?? [];
+
+    //     $form = (object) [
+    //         'sort' => $request->sort ?? 'date', // Default sort by date
+    //         'order' => $request->order ?? 'desc', // Default descending
+    //         'status' => $request->status ?? null,
+    //         'search' => $request->search ?? null,
+    //         'type' => $request->type ?? null,
+    //         'start_date' => $request->start_date ?? null,
+    //         'end_date' => $request->end_date ?? null,
+    //     ];
+
+
+    //     $transactionTransfers = DB::table('transaction_transfers')
+    //         ->select(
+    //             'transaction_transfers.id',
+    //             'transaction_transfers.no_transaction',
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'transaction_transfers.amount',
+    //             'transaction_transfers.date',
+    //             'transaction_transfers.created_at',
+    //             DB::raw('"transaction_transfer" as type')
+    //         )
+    //         ->join('accountnumbers as accountnumbers_transfer', 'transaction_transfers.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->join('accountnumbers as accountnumbers_deposit', 'transaction_transfers.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $transactionSends = DB::table('transaction_sends')
+    //         ->select(
+    //             'transaction_sends.id',
+    //             'transaction_sends.no_transaction',
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'transaction_sends.amount',
+    //             'transaction_sends.date',
+    //             'transaction_sends.created_at',
+    //             DB::raw('"transaction_send" as type')
+    //         )
+    //         ->join('accountnumbers as accountnumbers_transfer', 'transaction_sends.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->join('accountnumbers as accountnumbers_deposit', 'transaction_sends.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $transactionReceives = DB::table('transaction_receives')
+    //         ->select(
+    //             'transaction_receives.id',
+    //             'transaction_receives.no_transaction',
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'transaction_receives.amount',
+    //             'transaction_receives.date',
+    //             'transaction_receives.created_at',
+    //             DB::raw('"transaction_receive" as type')
+    //         )
+    //         ->join('accountnumbers as accountnumbers_transfer', 'transaction_receives.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->join('accountnumbers as accountnumbers_deposit', 'transaction_receives.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $unionQuery = $transactionTransfers->unionAll($transactionSends)->unionAll($transactionReceives);
+
+    //     $query = DB::table(DB::raw("({$unionQuery->toSql()}) as sub"))
+    //         ->mergeBindings($unionQuery);
+
+    //     if ($form->type) {
+    //         $query->where('type', $form->type);
+    //     }
+
+    //     if ($form->start_date && $form->end_date) {
+    //         $query->whereBetween('date', [$form->start_date, $form->end_date]);
+    //     }
+
+
+    //     if ($form->search) {
+    //         $query->where(function ($query) use ($form) {
+    //             $query->where('no_transaction', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('transfer_account_name', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('deposit_account_name', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('transfer_account_no', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('deposit_account_no', 'like', '%' . $form->search . '%');
+    //         });
+    //     }
+
+    //     if ($form->sort) {
+    //         $query->orderBy($form->sort, $form->order);
+    //     }
+
+    //     $allData = $query->paginate(10);
+
+    //     return view('components.journal.index', compact('allData', 'form', 'selectedItems'));
+    // }
+
     public function indexJournal(Request $request)
     {
         session()->flash('page', (object) [
@@ -38,7 +139,6 @@ class JournalController extends Controller
             'start_date' => $request->start_date ?? null,
             'end_date' => $request->end_date ?? null,
         ];
-
 
         $transactionTransfers = DB::table('transaction_transfers')
             ->select(
@@ -93,14 +193,20 @@ class JournalController extends Controller
         $query = DB::table(DB::raw("({$unionQuery->toSql()}) as sub"))
             ->mergeBindings($unionQuery);
 
+        Log::info('Data sebelum filter tanggal:', $query->get()->toArray());
+
+        if ($form->start_date && $form->end_date) {
+            $start_date = Carbon::createFromFormat('Y-m-d', $form->start_date)->startOfDay();
+            $end_date = Carbon::createFromFormat('Y-m-d', $form->end_date)->endOfDay();
+
+            $query->whereBetween('date', [$start_date, $end_date]);
+        }
+
+        Log::info('Data setelah filter tanggal:', $query->get()->toArray());
+
         if ($form->type) {
             $query->where('type', $form->type);
         }
-
-        if ($form->start_date && $form->end_date) {
-            $query->whereBetween('date', [$form->start_date, $form->end_date]);
-        }
-
 
         if ($form->search) {
             $query->where(function ($query) use ($form) {
@@ -120,6 +226,7 @@ class JournalController extends Controller
 
         return view('components.journal.index', compact('allData', 'form', 'selectedItems'));
     }
+
 
 
     // public function showFilterJournalDetail(Request $request)
@@ -278,6 +385,14 @@ class JournalController extends Controller
 
         // Log debugging
         Log::info('Request Data: ', $request->all());
+
+        // Check for correct date format and parse dates
+        if ($startDate) {
+            $startDate = \Carbon\Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+        }
+        if ($endDate) {
+            $endDate = \Carbon\Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
+        }
 
         $transactionDetails = [];
 
@@ -490,6 +605,14 @@ class JournalController extends Controller
 
         // Log debugging
         Log::info('Request Data: ', $request->all());
+
+        // Check for correct date format and parse dates
+        if ($startDate) {
+            $startDate = \Carbon\Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+        }
+        if ($endDate) {
+            $endDate = \Carbon\Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
+        }
 
         $transactionDetails = [];
 

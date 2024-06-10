@@ -2,19 +2,21 @@
 @section('content')
     <section class="content">
         <div class="container-fluid">
+            <h2 class="text-center display-4 mb-4">Journal Detail</h2>
+
             <div class="row justify-content-center">
                 <div class="col-12">
                     <div class="card card-dark mt-5">
                         <div class="card-header">
-                            <h3 class="card-title">Selected Transaction Details</h3>
+                            <h3 class="card-title">List Transaction Details</h3>
                         </div>
                         <div class="card-body">
                             <table class="table projects">
                                 <thead>
                                     <tr>
-                                        <th>No Transaction</th>
+                                        <th>No Trans.</th>
                                         <th>Account Number</th>
-                                        <th>Account Name</th>
+                                        {{-- <th>Account Name</th> --}}
                                         <th>Debit</th>
                                         <th>Credit</th>
                                         <th>Date</th>
@@ -31,8 +33,8 @@
                                         @foreach ($details as $detail)
                                             <tr>
                                                 <td>{{ $detail['no_transaction'] }}</td>
-                                                <td>{{ $detail['account_number'] }}</td>
-                                                <td>{{ $detail['account_name'] }}</td>
+                                                <td>{{ $detail['account_number'] }} - {{ $detail['account_name'] }}</td>
+                                                {{-- <td></td> --}}
                                                 <td>{{ $detail['debit'] > 0 ? 'Rp ' . number_format($detail['debit'], 0, ',', '.') : '0' }}
                                                 </td>
                                                 <td>{{ $detail['credit'] > 0 ? 'Rp ' . number_format($detail['credit'], 0, ',', '.') : '0' }}

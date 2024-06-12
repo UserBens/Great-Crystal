@@ -228,7 +228,6 @@ class JournalController extends Controller
     }
 
 
-
     // public function showFilterJournalDetail(Request $request)
     // {
     //     $startDate = $request->input('start_date');
@@ -240,6 +239,14 @@ class JournalController extends Controller
 
     //     // Log debugging
     //     Log::info('Request Data: ', $request->all());
+
+    //     // Check for correct date format and parse dates
+    //     if ($startDate) {
+    //         $startDate = \Carbon\Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+    //     }
+    //     if ($endDate) {
+    //         $endDate = \Carbon\Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
+    //     }
 
     //     $transactionDetails = [];
 
@@ -516,14 +523,12 @@ class JournalController extends Controller
             }
         }
 
-        $allTransactions = $transactionTransfers->merge($transactionSends)->merge($transactionReceives);
-
-        // Debugging data yang akan dikirim ke view
-        Log::info('Transaction Details: ' . print_r($transactionDetails, true));
+        // Store transaction details in session for export
+        session(['transactionDetails' => $transactionDetails]);
 
         return view('components.journal.selected-detail', [
             'transactionDetails' => $transactionDetails,
-            'selectedNoTransactions' => $allTransactions->pluck('no_transaction')->toArray(),
+            'selectedNoTransactions' => $transactionDetails,
         ]);
     }
 

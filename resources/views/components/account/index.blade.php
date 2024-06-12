@@ -85,6 +85,8 @@
                                 <th>Name</th>
                                 <th>Category Account</th>
                                 <th>Amount</th>
+                                <th>Beginning Balance</th>
+                                <th>Ending Balance</th>
                                 <th>Date</th>
                                 <th style="width: 15%;" class="text-center">Actions</th>
                             </tr>
@@ -98,6 +100,8 @@
                                     <td>{{ $categories->firstWhere('id', $account->account_category_id)->category_name }}
                                     </td>
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
+                                    <td>Rp.0</td>
+                                    <td>Rp.0</td>
                                     <td>{{ \Carbon\Carbon::parse($account->created_at)->format('Y-m-d') }}</td>
                                     <td class="text-center">
                                         <div class="btn-group">

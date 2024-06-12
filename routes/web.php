@@ -7,8 +7,8 @@ use App\Http\Controllers\Admin\{
    BookController,
    DashboardController,
    GradeController,
-    JournalController,
-    PaymentBookController,
+   JournalController,
+   PaymentBookController,
    PaymentGradeController,
    PaymentStudentController,
    RegisterController,
@@ -42,6 +42,11 @@ use Faker\Provider\ar_EG\Payment;
 use Illuminate\Notifications\Notification;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Mail;
+use App\Exports\JournalDetailExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -231,8 +236,6 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/transaction-receive/create', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
       Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
       Route::delete('/transaction-receive/{id}', [AccountingController::class, 'deleteTransactionReceive'])->name('transaction-receive.destroy');
-
-
    });
 
    // Route::prefix('/bank')->group(function () {
@@ -246,7 +249,17 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       // Route::get('/detail/selected', [JournalController::class, 'showSelectedJournalDetail'])->name('journal.detail.selected');
       Route::get('/journal/detail', [JournalController::class, 'showFilterJournalDetail'])->name('journal.detail.selected');
       Route::get('/journal/detail/selected/pdf', [JournalController::class, 'showFilterJournalDetailpdf'])->name('journal.detail.selected.pdf');
-
+      Route::get('/journal/detail/selected/excel', function (Request $request) {
+         $transactionDetails = session('transactionDetails');
+         return Excel::download(new JournalDetailExport(
+            $request->start_date,
+            $request->end_date,
+            $request->type,
+            $request->search,
+            $request->sort,
+            $request->order
+         ), 'journal-details.xlsx');
+      })->name('journal.detail.selected.excel');
    });
 
    Route::prefix('/account')->group(function () {

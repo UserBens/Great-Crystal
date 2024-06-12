@@ -114,8 +114,8 @@
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Deadline Invoice <span style="color: red">*</span></label>
-                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input name="deadline_invoice" type="text" class="form-control "
+                                            <div class="input-group date" id="deadline_invoiece_date" data-target-input="nearest">
+                                                <input name="deadline_invoice" type="text" class="form-control"
                                                     placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
                                                     data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"
                                                     data-mask required />

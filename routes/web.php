@@ -43,6 +43,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Mail;
 use App\Exports\JournalDetailExport;
+use App\Http\Controllers\Excel\ImportTransactionController;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
@@ -260,6 +261,9 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
             $request->order
          ), 'journal-details.xlsx');
       })->name('journal.detail.selected.excel');
+      Route::post('/journal/import', [ImportTransactionController::class, 'importExcel'])->name('journal.import');
+      Route::get('/journal/templates/import', [ImportTransactionController::class, 'downloadTemplate']);
+
    });
 
    Route::prefix('/account')->group(function () {

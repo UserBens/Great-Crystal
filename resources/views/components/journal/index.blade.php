@@ -21,7 +21,7 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label>Sort By : <span style="color: red">*</span></label>
+                            <label>Sort By </label>
                             <select name="sort" class="form-control select2" id="sort-select">
                                 {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
                                 <option value="date"
@@ -33,12 +33,14 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="start_date">Start Date</label>
+                            <label for="start_date">Start Date <span
+                                    style="font-size: 14px; color:red">(Transaction)</span></label>
                             <input type="date" name="start_date" class="form-control"
                                 value="{{ $form->start_date ?? '' }}">
                         </div>
                         <div class="col-md-3">
-                            <label for="end_date">End Date</label>
+                            <label for="end_date">End Date <span
+                                    style="font-size: 14px; color:red">(Transaction)</span></label>
                             <input type="date" name="end_date" class="form-control" value="{{ $form->end_date ?? '' }}">
                         </div>
                         <div class="col-md-12 mt-3">
@@ -56,6 +58,30 @@
                     </div>
                     <input type="hidden" name="order" id="order" value="{{ $form->order ?? 'desc' }}">
                 </form>
+            </div>
+
+            <div class="row">
+                <div class="btn p-3">
+                    <form action="{{ route('journal.detail.selected') }}" method="GET">
+                        @csrf
+                        <input type="hidden" name="start_date" value="{{ $form->start_date }}">
+                        <input type="hidden" name="end_date" value="{{ $form->end_date }}">
+                        <input type="hidden" name="type" value="{{ $form->type }}">
+                        <input type="hidden" name="search" value="{{ $form->search }}">
+                        <input type="hidden" name="sort" value="{{ $form->sort }}">
+                        <input type="hidden" name="order" value="{{ $form->order }}">
+                        <div class="">
+                            <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-filter fa-bounce"
+                                    style="margin-right: 2px"></i>View Filter</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="btn p-3">
+                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importModal">
+                        <i class="fas fa-file-import fa-bounce" style="margin-right: 4px"></i>Import Data
+                    </button>
+                </div>
             </div>
 
             <div class="row justify-content-center">
@@ -82,8 +108,10 @@
                                     @foreach ($allData as $item)
                                         <tr>
                                             <td>{{ $item->no_transaction }}</td>
-                                            <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
-                                            <td>{{ $item->transfer_account_no }} - {{ $item->deposit_account_name }}</td>
+                                            <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}
+                                            </td>
+                                            <td>{{ $item->transfer_account_no }} - {{ $item->deposit_account_name }}
+                                            </td>
                                             <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
@@ -99,22 +127,7 @@
                                 </tbody>
                             </table>
 
-                            <div class="mt-3">
-                                <form action="{{ route('journal.detail.selected') }}" method="GET">
-                                    @csrf
-                                    <input type="hidden" name="start_date" value="{{ $form->start_date }}">
-                                    <input type="hidden" name="end_date" value="{{ $form->end_date }}">
-                                    <input type="hidden" name="type" value="{{ $form->type }}">
-                                    <input type="hidden" name="search" value="{{ $form->search }}">
-                                    <input type="hidden" name="sort" value="{{ $form->sort }}">
-                                    <input type="hidden" name="order" value="{{ $form->order }}">
-                                    
 
-                                    <div class="text-left" style="margin-left: 20px;">
-                                        <button type="submit" class="btn btn-sm btn-primary">View Filter</button>
-                                    </div>
-                                </form>
-                            </div>
 
                             <div class="d-flex justify-content-between mt-4 px-3">
                                 <div class="mb-3">
@@ -131,6 +144,148 @@
             </div>
         </div>
     </section>
+
+    {{-- Modal --}}
+    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ route('journal.import') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="file-upload">
+                            <button class="download-template-btn" type="button" id="download-template">
+                                Download Template
+                            </button>
+
+                            <div class="image-upload-wrap">
+                                <input type="file" name="import_transaction" class="file-upload-input"
+                                    onchange="readURL(this);"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+
+                                <div class="drag-text">
+                                    <h3>Drag and drop a file or select add Excel</h3>
+                                </div>
+                            </div>
+
+                            <div class="file-upload-content">
+                                <h4 class="file-upload-image"></h4>
+                                <div class="image-title-wrap">
+                                    <button type="button" onclick="removeUpload()" class="remove-image"><i
+                                            class="fa-solid fa-trash fa-2xl" style="margin-bottom: 1em;"></i> <br> Remove
+                                        <span class="image-title">Excel</span></button>
+                                    <button type="submit" role="button" class="upload-image"><i
+                                            class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
+                                            style="margin-bottom: 1em;"></i> <br> Post <span
+                                            class="image-title">Excel</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <link rel="stylesheet" href="{{ asset('template') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+
+    <script>
+        $("body").on("click", "#download-template", function(event) {
+            event.preventDefault();
+            console.log("terklik");
+            window.location.href = 'journal/journal/templates/import';
+        });
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $(".image-upload-wrap").hide();
+                    $(".file-upload-image").html(input.files[0].name);
+                    $(".file-upload-content").show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                removeUpload();
+            }
+        }
+
+        function removeUpload() {
+            $(".file-upload-input").replaceWith($(".file-upload-input").clone());
+            $(".file-upload-content").hide();
+            $(".image-upload-wrap").show();
+
+            $(".file-upload-wrap").bind("dragover", function() {
+                $(".image-upload-wrap").addClass("image-dropping");
+            });
+
+            $("image-upload-wrap").bind("dragleave", function() {
+                $(".image-upload-wrap").removeClass("image-dropping");
+            });
+        }
+    </script>
+
+    @php
+        $code = null;
+        $msg = null;
+        $session = session('import_status');
+        if ($session) {
+            $code = $session['code'];
+            $msg = $session['msg'];
+        }
+    @endphp
+
+    {{-- @if (session('import_status'))
+        <script>
+            const code = "{{ $code }}";
+            const msg = "{{ $msg }}";
+
+            if (code > 200) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Validation errors",
+                    text: msg,
+                    footer: '<a href="#">Why do I have this issue?</a>'
+                });
+                console.log('errors ' + msg);
+            } else {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Your work has been saved",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        </script>
+    @endif --}}
+
+      {{-- SweetAlert --}}
+      @if (session('success'))
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <script>
+          swal({
+              title: "Success!",
+              text: "{{ session('success') }}",
+              icon: "success",
+              button: "OK",
+          });
+      </script>
+  @endif
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

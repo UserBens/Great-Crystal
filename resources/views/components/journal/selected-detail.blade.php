@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <h2 class="text-center display-4 mb-4">Journal Detail</h2>
 
-            <div class="btn">
+            <div class="btn p-1 d-inline-block mt-3 mb-3">
                 <a href="{{ route('journal.detail.selected.pdf', [
                     'start_date' => request('start_date'),
                     'end_date' => request('end_date'),
@@ -19,11 +19,11 @@
                         style="color: white">Print PDF</span>
                 </a>
 
-                <a href="{{ route('journal.detail.selected.excel') }}" class="btn btn-success btn-sm mt-2">
-                    <i class="fa-solid fa-file-excel fa-bounce mr-1" style="color: white; margin-right:4px;"></i>Export
-                    Excel
-                </a>
             </div>
+            <a href="{{ route('journal.detail.selected.excel') }}" class="btn btn-success btn-sm mt-2">
+                <i class="fa-solid fa-file-excel fa-bounce mr-1" style="color: white; margin-right:4px;"></i>Export
+                Excel
+            </a>
 
             <div class="row justify-content-center">
                 <div class="col-12">

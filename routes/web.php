@@ -7,7 +7,8 @@ use App\Http\Controllers\Admin\{
    BookController,
    DashboardController,
    GradeController,
-   JournalController,
+    InvoiceSupplierController,
+    JournalController,
    PaymentBookController,
    PaymentGradeController,
    PaymentStudentController,
@@ -275,6 +276,17 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
       Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
    });
+
+   Route::prefix('/supplier')->group(function () {
+      Route::get('/', [InvoiceSupplierController::class, 'indexsupplier'])->name('supplier.index');
+      Route::get('/create-supplier', [InvoiceSupplierController::class, 'createSupplier'])->name('create-supplier.create');
+      Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplier'])->name('supplier.store');
+      // Route::get('/{id}/edit', [AccountingController::class, 'editAccount'])->name('account.edit');
+      // Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
+      // Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
+      // Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
+   });
+
 });
 
 Route::middleware(['superadmin'])->prefix('admin')->group(function () {

@@ -47,11 +47,13 @@
         .transaction-details th,
         .transaction-details td {
             padding: 5px;
-            border: 1px solid gray;
+            border: 1px solid black;
         }
 
         .transaction-details th {
             text-align: left;
+            border-right: 1px solid black;
+            /* Tambahkan border right */
         }
 
         .transaction-details .total {
@@ -81,7 +83,6 @@
                 <th>Credit</th>
                 <th>Date</th>
                 <th>Description</th>
-                <th>Created At</th>
             </tr>
         </thead>
         <tbody>
@@ -98,7 +99,6 @@
                     <td>{{ $detail['credit'] > 0 ? 'Rp ' . number_format($detail['credit'], 0, ',', '.') : '0' }}</td>
                     <td>{{ \Carbon\Carbon::parse($detail['date'])->format('j F Y') }}</td>
                     <td>{{ $detail['description'] }}</td>
-                    <td>{{ \Carbon\Carbon::parse($detail['created_at'])->format('j F Y') }}</td>
                 </tr>
                 @php
                     $totalDebit += $detail['debit'];
@@ -109,7 +109,7 @@
                 <td colspan="3"><strong>Total</strong></td>
                 <td><strong>{{ 'Rp ' . number_format($totalDebit, 0, ',', '.') }}</strong></td>
                 <td><strong>{{ 'Rp ' . number_format($totalKredit, 0, ',', '.') }}</strong></td>
-                <td colspan="3"></td>
+                <td colspan="2"></td>
             </tr>
         </tbody>
     </table>

@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
 use Illuminate\Support\Facades\Log;
 use App\Models\Transaction_transfer;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
 
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -74,10 +75,10 @@ class JournalImport implements ToCollection, WithHeadingRow
             }
 
             DB::commit();
-            session()->flash('success', 'Data imported successfully');
+            Session::flash('success', 'Data imported successfully');
         } catch (Exception $th) {
-            info('masuk error: ' . $th->getMessage());
-            session()->flash('import_status', [
+            Log::info('Error: ' . $th->getMessage());
+            Session::flash('import_status', [
                 'code' => 500,
                 'msg' => 'Internal server error: ' . $th->getMessage(),
             ]);

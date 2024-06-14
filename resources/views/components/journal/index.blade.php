@@ -2,7 +2,7 @@
 @section('content')
     <section class="content">
         <div class="container-fluid">
-            <h2 class="text-center display-4 mb-4">Journal Search</h2>
+            <h2 class="text-center display-4 mb-5">Journal Search</h2>
             <div class="m-1">
                 <form action="{{ route('journal.index') }}" method="GET" class="mb-3">
                     <div class="row">
@@ -60,88 +60,84 @@
                 </form>
             </div>
 
-            <div class="row">
-                <div class="btn p-3">
-                    <form action="{{ route('journal.detail.selected') }}" method="GET">
-                        @csrf
-                        <input type="hidden" name="start_date" value="{{ $form->start_date }}">
-                        <input type="hidden" name="end_date" value="{{ $form->end_date }}">
-                        <input type="hidden" name="type" value="{{ $form->type }}">
-                        <input type="hidden" name="search" value="{{ $form->search }}">
-                        <input type="hidden" name="sort" value="{{ $form->sort }}">
-                        <input type="hidden" name="order" value="{{ $form->order }}">
-                        <div class="">
-                            <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-filter fa-bounce"
-                                    style="margin-right: 2px"></i>View Filter</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="btn p-3">
-                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importModal">
-                        <i class="fas fa-file-import fa-bounce" style="margin-right: 4px"></i>Import Data
+            <div class="btn p-1 d-inline-block mt-3 mb-3">
+                <form action="{{ route('journal.detail.selected') }}" method="GET">
+                    @csrf
+                    <input type="hidden" name="start_date" value="{{ $form->start_date }}">
+                    <input type="hidden" name="end_date" value="{{ $form->end_date }}">
+                    <input type="hidden" name="type" value="{{ $form->type }}">
+                    <input type="hidden" name="search" value="{{ $form->search }}">
+                    <input type="hidden" name="sort" value="{{ $form->sort }}">
+                    <input type="hidden" name="order" value="{{ $form->order }}">
+                    <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-filter fa-bounce"
+                            style="margin-right: 4px"></i>View Filter
                     </button>
-                </div>
+                </form>
             </div>
 
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="card card-dark mt-5">
-                        <div class="card-header">
-                            <h3 class="card-title">Report Journal</h3>
-                        </div>
-                        <div class="card-body p-0">
+            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importModal">
+                <i class="fas fa-file-import fa-bounce" style="margin-right: 4px"></i>Import Data
+            </button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card card-dark mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">Report Journal</h3>
+                    </div>
+                    <div class="card-body p-0">
 
 
-                            <table class="table table-striped projects">
-                                <thead>
-                                    <tr class="">
-                                        <th>No Transaction</th>
-                                        <th>Transfer Account</th>
-                                        <th>Deposit Account</th>
-                                        <th>Amount</th>
-                                        <th>Date</th>
-                                        <th>Created At</th>
+                        <table class="table table-striped projects">
+                            <thead>
+                                <tr class="">
+                                    <th>No Transaction</th>
+                                    <th>Transfer Account</th>
+                                    <th>Deposit Account</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Created At</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($allData as $item)
+                                    <tr>
+                                        <td>{{ $item->no_transaction }}</td>
+                                        <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}
+                                        </td>
+                                        <td>{{ $item->transfer_account_no }} - {{ $item->deposit_account_name }}
+                                        </td>
+                                        <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
+                                                    class="btn btn-primary btn-sm"><i class="fas fa-folder"></i>
+                                                    View</a>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($allData as $item)
-                                        <tr>
-                                            <td>{{ $item->no_transaction }}</td>
-                                            <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}
-                                            </td>
-                                            <td>{{ $item->transfer_account_no }} - {{ $item->deposit_account_name }}
-                                            </td>
-                                            <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
-                                            <td class="text-center">
-                                                <div class="btn-group">
-                                                    <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
-                                                        class="btn btn-primary btn-sm"><i class="fas fa-folder"></i>
-                                                        View</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                @endforeach
+                            </tbody>
+                        </table>
 
 
 
-                            <div class="d-flex justify-content-between mt-4 px-3">
-                                <div class="mb-3">
-                                    Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of
-                                    {{ $allData->total() }} results
-                                </div>
-                                <div>
-                                    {{ $allData->links('pagination::bootstrap-4') }}
-                                </div>
+                        <div class="d-flex justify-content-between mt-4 px-3">
+                            <div class="mb-3">
+                                Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of
+                                {{ $allData->total() }} results
+                            </div>
+                            <div>
+                                {{ $allData->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 
@@ -176,8 +172,9 @@
 
                             <div class="file-upload-content">
                                 <h4 class="file-upload-image"></h4>
-                                <div class="image-title-wrap">
-                                    <button type="button" onclick="removeUpload()" class="remove-image"><i
+                                <div class="image-title-wrap"
+                                    style="display: flex; justify-content: space-between; align-items: center;">
+                                    <button type="button" onclick="removeUpload()" class="remove-image" style="margin-right: 10px"><i
                                             class="fa-solid fa-trash fa-2xl" style="margin-bottom: 1em;"></i> <br> Remove
                                         <span class="image-title">Excel</span></button>
                                     <button type="submit" role="button" class="upload-image"><i
@@ -248,7 +245,8 @@
         }
     @endphp
 
-    {{-- @if (session('import_status'))
+
+    @if (session('import_status'))
         <script>
             const code = "{{ $code }}";
             const msg = "{{ $msg }}";
@@ -261,30 +259,20 @@
                     footer: '<a href="#">Why do I have this issue?</a>'
                 });
                 console.log('errors ' + msg);
-            } else {
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "Your work has been saved",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+
             }
         </script>
-    @endif --}}
-
-      {{-- SweetAlert --}}
-      @if (session('success'))
-      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-      <script>
-          swal({
-              title: "Success!",
-              text: "{{ session('success') }}",
-              icon: "success",
-              button: "OK",
-          });
-      </script>
-  @endif
+    @elseif (session('success'))
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script>
+            swal({
+                title: "Success!",
+                text: "{{ session('success') }}",
+                icon: "success",
+                button: "OK",
+            });
+        </script>
+    @endif
 
 
     <script>

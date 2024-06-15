@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('account_category_id');
             $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('amount');
+            $table->bigInteger('beginning_balance');
+            $table->bigInteger('ending_balance');
             $table->string('description');
             $table->timestamps();
 

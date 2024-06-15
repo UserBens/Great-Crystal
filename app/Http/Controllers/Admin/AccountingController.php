@@ -81,6 +81,8 @@ class AccountingController extends Controller
                 'account_no' => 'required',
                 'account_category_id' => 'required',
                 'amount' => 'required|numeric',
+                'beginning_balance' => 'required|numeric',
+                'ending_balance' => 'required|numeric',
                 'description' => 'required',
             ]);
 
@@ -89,6 +91,8 @@ class AccountingController extends Controller
                 'account_no' => $request->account_no,
                 'account_category_id' => $request->account_category_id,
                 'amount' => $request->amount,
+                'beginning_balance' => $request->beginning_balance,
+                'ending_balance' => $request->ending_balance,
                 'description' => $request->description,
             ]);
 
@@ -151,6 +155,8 @@ class AccountingController extends Controller
             'account_no' => 'required',
             'account_category_id' => 'required',
             'amount' => 'required|numeric',
+            'beginning_balance' => 'required|numeric',
+            'ending_balance' => 'required|numeric',
             'description' => 'required',
         ]);
 
@@ -161,6 +167,8 @@ class AccountingController extends Controller
             'account_no' => $request->account_no,
             'account_category_id' => $request->account_category_id,
             'amount' => $request->amount,
+            'beginning_balance' => $request->beginning_balance,
+            'ending_balance' => $request->ending_balance,
             'description' => $request->description,
         ]);
 

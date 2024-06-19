@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Accountnumber;
 use App\Models\Accountcategory;
-use App\Http\Controllers\Controller;
 use App\Models\InvoiceSupplier;
 use App\Models\Transaction_send;
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
+use App\Models\TransactionSendSupplier;
 
 class InvoiceSupplierController extends Controller
 {
@@ -31,7 +32,7 @@ class InvoiceSupplierController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = Transaction_send::with(['transferAccount', 'depositAccount']);
+            $query = InvoiceSupplier::query();
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -75,7 +76,11 @@ class InvoiceSupplierController extends Controller
 
     public function createSupplier()
     {
-        return view('components.supplier.create');
+        $suppliers = TransactionSendSupplier::all();
+
+        return view('components.supplier.create', [
+            'suppliers' => $suppliers,
+        ]);
     }
 
     public function storeSupplier(Request $request)
@@ -83,24 +88,37 @@ class InvoiceSupplierController extends Controller
         $request->validate([
             'no_invoice' => 'required',
             'supplier_name' => 'required',
-            'amount' => 'required',
-            'date' => 'required',
+            'amount' => 'required|numeric',
+            'date' => 'required|date_format:Y-m-d',
             'nota' => 'required',
-            'deadline_invoice' => 'required',
+            'deadline_invoice' => 'required|date_format:Y-m-d',
         ]);
 
-        $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+        $invoice = new InvoiceSupplier();
+        $invoice->no_invoice = $request->no_invoice;
+        $invoice->supplier_name = $request->supplier_name;
+        $invoice->amount = $request->amount;
+        $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
+        $invoice->nota = $request->nota;
+        $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
+        $invoice->save();
 
-        InvoiceSupplier::create([
-            'no_invoice' => $request->no_invoice,
-            'supplier_name' => $request->supplier_name,
-            'amount' => $request->amount,
-            'date' => $date,
-            'nota' => $request->nota,
-            'deadline_invoice' => $request->no_invoice,
+        return redirect()->route('supplier.index')->with('success', 'Invoice Supplier berhasil dibuat!');
+    }
 
-        ]);
 
-        return redirect()->route('components.supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
+    public function destroySupplier($id)
+    {
+        try {
+            // Cari data transaksi transfer berdasarkan ID
+            $invoiceSupplier = InvoiceSupplier::findOrFail($id);
+
+            // Hapus data transaksi transfer
+            $invoiceSupplier->delete();
+
+            return redirect()->back()->with('success', 'Invoice Supplier Deleted Successfully!');
+        } catch (Exception $err) {
+            return dd($err);
+        }
     }
 }

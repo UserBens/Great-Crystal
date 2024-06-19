@@ -1,8 +1,5 @@
 @extends('layouts.admin.master')
 @section('content')
-    <!-- Content Header (Page header) -->
-    <!-- /.content-header -->
-
     @php
         $user = session('role');
         $cardStudent = 'col-lg-3 col-6';
@@ -35,702 +32,315 @@
         }
     @endphp
 
-    <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                @if ($user == 'admin' || $user == 'superadmin')
-                    <div class="{{ $cardStudent }}">
-                        <!-- small box -->
-                        <div class="small-box bg-info">
-                            <div class="inner">
-                                <h3>{{ $data->student }}</h3>
-
-                                <p>Total Students Active</p>
-                            </div>
-                            <div class="icon">
-                                {{-- <i class="ion ion-bag"></i> --}}
-                                <i class="fa-solid fa-graduation-cap"></i>
-                            </div>
-                            <a href="/admin/list" class="small-box-footer">More info <i
-                                    class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- ./col -->
-                    <div class="{{ $cardTeacher }}">
-                        <!-- small box -->
-                        <div class="small-box bg-success">
-                            <div class="inner">
-                                <h3>{{ $data->teacher }}
-                                    {{-- <sup style="font-size: 20px">%</sup> --}}
-                                </h3>
-
-                                <p>Total Teachers Active</p>
-                            </div>
-                            <div class="icon">
-                                {{-- <i class="ion ion-stats-bars"></i> --}}
-                                <i class="fa-solid fa-chalkboard-user"></i>
-                            </div>
-                            @if (session('role') !== 'accounting')
-                                <a href="/admin/teachers" class="small-box-footer">More info <i
-                                        class="fas fa-arrow-circle-right"></i></a>
-                            @else
-                                <div class="small-box-footer" style="padding: 0.93rem"></div>
-                            @endif
-                        </div>
-                    </div>
-
-
-                    <!-- ./col -->
-                    <div class="{{ $cardBill }}">
-                        <!-- small box -->
-                        <div class="small-box bg-warning">
-                            <div class="inner">
-                                <h3>{{ $data->bill }}</h3>
-
-                                <p>Bills last 30 days</p>
-                            </div>
-                            <div class="icon">
-                                {{-- <i class="ion ion-person-add"></i> --}}
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-                            @if (session('role') !== 'admin')
-                                <a href="/admin/bills" class="small-box-footer">More info <i
-                                        class="fas fa-arrow-circle-right"></i></a>
-                            @else
-                                <div class="small-box-footer" style="padding:0.93rem;"></div>
-                            @endif
-                        </div>
-                    </div>
-                    <!-- ./col -->
-                    <div class="{{ $cardPastDue }}">
-                        <!-- small box -->
-                        <div class="small-box bg-danger">
-                            <div class="inner">
-                                <h3>{{ $data->pastDue }}</h3>
-
-                                <p>Bills Past Due</p>
-                            </div>
-                            <div class="icon">
-                                {{-- <i class="ion ion-pie-graph"></i> --}}
-                                <i class="fa-solid fa-calendar-xmark"></i>
-                            </div>
-                            @if (session('role') != 'admin')
-                                <a href="/admin/bills?grade=all&invoice=pastdue&type=all&status=false&search="
-                                    class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                            @else
-                                <div class="small-box-footer" style="padding:0.93rem;"></div>
-                            @endif
-                        </div>
-                    </div>
-                    <!-- ./col -->
-                @endif
-
                 @if ($user == 'HR')
                     <div class="{{ $cardStudent }}">
-                        <!-- small box -->
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h3>{{ $data->student }}</h3>
-
+                                <h3>{{ $data->transactionTransfer }}</h3>
                                 <p>Total Transaction Transfer</p>
                             </div>
                             <div class="icon">
-                                {{-- <i class="ion ion-bag"></i> --}}
-                                <i class="fa-solid fa-graduation-cap"></i>
+                                <i class="fa-solid fa-money-bill-transfer"></i>
                             </div>
-                            <a href="/admin/list" class="small-box-footer">More info <i
+                            <a href="{{ route('transaction-transfer.index') }}" class="small-box-footer">More info <i
                                     class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
-
-                    <!-- ./col -->
-                    <div class="{{ $cardTeacher }}">
-                        <!-- small box -->
-                        <div class="small-box bg-success">
-                            <div class="inner">
-                                <h3>{{ $data->teacher }}
-                                    {{-- <sup style="font-size: 20px">%</sup> --}}
-                                </h3>
-
-                                <p>Total Transaction Sned</p>
-                            </div>
-                            <div class="icon">
-                                {{-- <i class="ion ion-stats-bars"></i> --}}
-                                <i class="fa-solid fa-chalkboard-user"></i>
-                            </div>
-                            @if (session('role') !== 'accounting')
-                                <a href="/admin/teachers" class="small-box-footer">More info <i
-                                        class="fas fa-arrow-circle-right"></i></a>
-                            @else
-                                <div class="small-box-footer" style="padding: 0.93rem"></div>
-                            @endif
-                        </div>
-                    </div>
-
-
-                    <!-- ./col -->
-                    <div class="{{ $cardBill }}">
-                        <!-- small box -->
-                        <div class="small-box bg-warning">
-                            <div class="inner">
-                                <h3>{{ $data->bill }}</h3>
-
-                                <p>Total Transaction Receive</p>
-                            </div>
-                            <div class="icon">
-                                {{-- <i class="ion ion-person-add"></i> --}}
-                                <i class="fa-solid fa-receipt"></i>
-                            </div>
-                            @if (session('role') !== 'admin')
-                                <a href="/admin/bills" class="small-box-footer">More info <i
-                                        class="fas fa-arrow-circle-right"></i></a>
-                            @else
-                                <div class="small-box-footer" style="padding:0.93rem;"></div>
-                            @endif
-                        </div>
-                    </div>
-                    <!-- ./col -->
-                    <div class="{{ $cardPastDue }}">
-                        <!-- small box -->
-                        <div class="small-box bg-danger">
-                            <div class="inner">
-                                <h3>{{ $data->pastDue }}</h3>
-
-                                <p>Bills Past Due</p>
-                            </div>
-                            <div class="icon">
-                                {{-- <i class="ion ion-pie-graph"></i> --}}
-                                <i class="fa-solid fa-calendar-xmark"></i>
-                            </div>
-                            @if (session('role') != 'admin')
-                                <a href="/admin/bills?grade=all&invoice=pastdue&type=all&status=false&search="
-                                    class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                            @else
-                                <div class="small-box-footer" style="padding:0.93rem;"></div>
-                            @endif
-                        </div>
-                    </div>
-                    <!-- ./col -->
                 @endif
 
+                <div class="{{ $cardTeacher }}">
+                    <!-- small box -->
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ $data->transactionReceive }}
+                                {{-- <sup style="font-size: 20px">%</sup> --}}
+                            </h3>
+
+                            <p>Total Transaction Receive</p>
+                        </div>
+                        <div class="icon">
+                            {{-- <i class="ion ion-stats-bars"></i> --}}
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <a href="{{ route('transaction-receive.index') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="{{ $cardBill }}">
+                    <!-- small box -->
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>{{ $data->transactionSend }}</h3>
+
+                            <p>Total Transaction Send</p>
+                        </div>
+                        <div class="icon">
+                            {{-- <i class="ion ion-person-add"></i> --}}
+                            <i class="fa-solid fa-money-bill-trend-up"></i>
+                        </div>
+                        <a href="{{ route('transaction-send.index') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
             </div>
-            <!-- /.row -->
-            <!-- Main row -->
-            <div class="row">
-                <!-- Left col -->
-                <section class="col-lg-7 connectedSortable">
-
-
-
-                    @if ($user == 'admin' || $user == 'superadmin')
-                        <!-- Custom tabs (Charts with tabs)-->
-                        <div class="{{ $listBill }} card">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fa-solid fa-hourglass-end mr-1"></i>
-                                    Past due bills
-                                </h3>
-                            </div><!-- /.card-header -->
-                            <div class="card-body">
-                                <div class="tab-content p-0">
-                                    <!-- Morris chart - Sales -->
-                                    <div class="chart tab-pane active" id="revenue-chart"
-                                        style="position: relative; height: 310px;">
-
-                                        @if (sizeof($data->dataPastDue) == 0)
-                                            <div class="d-flex justify-content-center">
-
-                                                <h2>Data past due does not exist !!!</h2>
-
-                                            </div>
-                                        @else
-                                            {{-- <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas> --}}
-                                            <div>
-                                                <!-- /.card-header -->
-                                                <div>
-                                                    <ul class="todo-list" data-widget="todo-list">
-
-                                                        @php
-                                                            $currentDate = date('y-m-d');
-                                                        @endphp
-
-                                                        @foreach ($data->dataPastDue as $el)
-                                                            <li>
-                                                                <!-- drag handle -->
-                                                                <span class="handle">
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                </span>
-                                                                <!-- checkbox -->
-                                                                <div class="icheck-primary d-inline ml-2">
-                                                                    <span class="text-muted">[
-                                                                        {{ date('d F Y', strtotime($el->deadline_invoice)) }}
-                                                                        ]</span>
-                                                                </div>
-                                                                <!-- todo text -->
-                                                                <span class="text">( {{ $el->type }} )
-                                                                    {{ $el->student->name }}</span>
-                                                                <!-- Emphasis label -->
-
-
-                                                                @if ($el->paidOf)
-                                                                    <small class="badge badge-success"><i
-                                                                            class="far fa-checklist"></i> Success</small>
-                                                                @elseif (strtotime($el->deadline_invoice) < strtotime($currentDate))
-                                                                    <small class="badge badge-danger"><i
-                                                                            class="far fa-clock"></i> Past Due</small>
-                                                                @else
-                                                                    @php
-                                                                        $date1 = date_create($currentDate);
-                                                                        $date2 = date_create(
-                                                                            date(
-                                                                                'y-m-d',
-                                                                                strtotime($el->deadline_invoice),
-                                                                            ),
-                                                                        );
-                                                                        $dateWarning = date_diff($date1, $date2);
-                                                                        $dateDiff = $dateWarning->format('%a days');
-                                                                    @endphp
-                                                                    <small class="badge badge-warning"><i
-                                                                            class="far fa-clock"></i>
-                                                                        {{ $dateDiff }}</small>
-                                                                @endif
-                                                                <!-- General tools such as edit or delete-->
-                                                                @if (session('role') !== 'admin')
-                                                                    <div class="tools">
-                                                                        <a href="/admin/bills/detail-payment/{{ $el->id }}"
-                                                                            target="_blank">
-                                                                            <i class="fas fa-search"></i>
-                                                                        </a>
-                                                                    </div>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        @endif
-
-
-                                    </div>
-                                </div>
-                            </div><!-- /.card-body -->
-                        </div>
-                        <!-- /.card -->
-                    @endif
-
-                    {{-- ROLE HR/ACCOUTING --}}
-                    @if ($user == 'HR')
-                        <!-- Custom tabs (Charts with tabs)-->
-                        <div class="{{ $listBill }} card">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fa-solid fa-hourglass-end mr-1"></i>
-                                    Past due Supplier
-                                </h3>
-                            </div><!-- /.card-header -->
-                            <div class="card-body">
-                                <div class="tab-content p-0">
-                                    <!-- Morris chart - Sales -->
-                                    <div class="chart tab-pane active" id="revenue-chart"
-                                        style="position: relative; height: 310px;">
-
-                                        @if (sizeof($data->dataPastDue) == 0)
-                                            <div class="d-flex justify-content-center">
-
-                                                <h2>Data Invoice Supplier does not exist !!!</h2>
-
-                                            </div>
-                                        @else
-                                            {{-- <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas> --}}
-                                            <div>
-                                                <!-- /.card-header -->
-                                                <div>
-                                                    <ul class="todo-list" data-widget="todo-list">
-
-                                                        @php
-                                                            $currentDate = date('y-m-d');
-                                                        @endphp
-
-                                                        @foreach ($data->dataPastDue as $el)
-                                                            <li>
-                                                                <!-- drag handle -->
-                                                                <span class="handle">
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                </span>
-                                                                <!-- checkbox -->
-                                                                <div class="icheck-primary d-inline ml-2">
-                                                                    <span class="text-muted">[
-                                                                        {{ date('d F Y', strtotime($el->deadline_invoice)) }}
-                                                                        ]</span>
-                                                                </div>
-                                                                <!-- todo text -->
-                                                                <span class="text">( {{ $el->type }} )
-                                                                    {{ $el->student->name }}</span>
-                                                                <!-- Emphasis label -->
-
-
-                                                                @if ($el->paidOf)
-                                                                    <small class="badge badge-success"><i
-                                                                            class="far fa-checklist"></i> Success</small>
-                                                                @elseif (strtotime($el->deadline_invoice) < strtotime($currentDate))
-                                                                    <small class="badge badge-danger"><i
-                                                                            class="far fa-clock"></i> Past Due</small>
-                                                                @else
-                                                                    @php
-                                                                        $date1 = date_create($currentDate);
-                                                                        $date2 = date_create(
-                                                                            date(
-                                                                                'y-m-d',
-                                                                                strtotime($el->deadline_invoice),
-                                                                            ),
-                                                                        );
-                                                                        $dateWarning = date_diff($date1, $date2);
-                                                                        $dateDiff = $dateWarning->format('%a days');
-                                                                    @endphp
-                                                                    <small class="badge badge-warning"><i
-                                                                            class="far fa-clock"></i>
-                                                                        {{ $dateDiff }}</small>
-                                                                @endif
-                                                                <!-- General tools such as edit or delete-->
-                                                                @if (session('role') !== 'admin')
-                                                                    <div class="tools">
-                                                                        <a href="/admin/bills/detail-payment/{{ $el->id }}"
-                                                                            target="_blank">
-                                                                            <i class="fas fa-search"></i>
-                                                                        </a>
-                                                                    </div>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        @endif
-
-
-                                    </div>
-                                </div>
-                            </div><!-- /.card-body -->
-                        </div>
-                        <!-- /.card -->
-                    @endif
-
-                    {{-- ROLE ADMIN & SUPER ADMIN --}}
-                    @if ($user == 'admin' || $user == 'superadmin')
-                        <!-- Map card -->
-                        <div class="{{ $listStudent }} card bg-gradient-info">
-                            <div class="card-header border-0">
-                                <h3 class="card-title">
-                                    <i class="fas fa-map-marker-alt mr-1"></i>
-                                    Student's
-                                </h3>
-                                <!-- card tools -->
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-info btn-sm" data-card-widget="collapse"
-                                        title="Collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-                                <!-- /.card-tools -->
-                            </div>
-                            <div class="card-body">
-                                <table class="table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Place Birth</th>
-                                            <th scope="col">Register Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        @foreach ($data->dataStudent as $el)
-                                            <tr>
-                                                <td scope="row">{{ $loop->index + 1 }}</td>
-                                                <td>{{ $el->name }}</td>
-                                                <td>{{ $el->place_birth }}</td>
-                                                <td>{{ date('d/m/Y', strtotime($el->created_at)) }}</td>
-                                            </tr>
-                                        @endforeach
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <div class="d-none row">
-                                    <div class="col-4 text-center">
-                                        <div id="sparkline-1"></div>
-                                        <div class="text-white">Visitors</div>
-                                        <div class="col-4 text-center">
-                                            <div id="sparkline-2"></div>
-                                            <div class="text-white">Online</div>
-                                            <div class="col-4 text-center">
-                                                <div id="sparkline-3"></div>
-                                                <div class="text-white">Sales</div>
-                                            </div>
-                                            <!-- /.row -->
-                                        </div>
-                                    </div>
-                                    <!-- /.card -->
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </section>
-                <!-- /.Left col -->
-
-                <!-- right col (We are only adding the ID to make the widgets sortable)-->
-                <section class="col-lg-5 connectedSortable">
-                    {{-- ROLE ADMIN & SUPERADMIN --}}
-                    @if ($user == 'admin' || $user == 'superadmin')
-
-                        <!-- Custom tabs (Charts with tabs)-->
-                        <div class="{{ $listBill }} card">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-chart-pie mr-1"></i>
-                                    New bills
-                                </h3>
-                            </div><!-- /.card-header -->
-                            <div class="card-body">
-                                <div class="tab-content p-0">
-                                    <!-- Morris chart - Sales -->
-                                    <div class="chart tab-pane active" id="revenue-chart"
-                                        style="position: relative; height: 310px;">
-
-
-                                        @if (sizeof($data->dataBill) == 0)
-                                            <div class="d-flex justify-content-center">
-
-                                                <h2>Data bill does not exist !!!</h2>
-
-                                            </div>
-                                        @else
-                                            {{-- <h1>New Bills</h1> --}}
-                                            <div>
-                                                <!-- /.card-header -->
-                                                <div>
-                                                    <ul class="todo-list" data-widget="todo-list">
-
-                                                        @php
-                                                            $currentDate = date('y-m-d');
-                                                        @endphp
-
-                                                        @foreach ($data->dataBill as $el)
-                                                            <li>
-                                                                <!-- drag handle -->
-                                                                <span class="handle">
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                </span>
-                                                                <!-- checkbox -->
-                                                                <div class="icheck-primary d-inline ml-2">
-                                                                    <span class="text-muted">[
-                                                                        {{ date('d F Y', strtotime($el->deadline_invoice)) }}
-                                                                        ]</span>
-                                                                </div>
-                                                                <!-- todo text -->
-                                                                <span class="text">( {{ $el->type }} )
-                                                                    {{ $el->student->name }}</span>
-                                                                <!-- Emphasis label -->
-
-
-                                                                @if ($el->paidOf)
-                                                                    <small class="badge badge-success"><i
-                                                                            class="far fa-checklist"></i> Success</small>
-                                                                @elseif (strtotime($el->deadline_invoice) < strtotime($currentDate))
-                                                                    <small class="badge badge-danger"><i
-                                                                            class="far fa-clock"></i> Past Due</small>
-                                                                @else
-                                                                    @php
-                                                                        $date1 = date_create($currentDate);
-                                                                        $date2 = date_create(
-                                                                            date(
-                                                                                'y-m-d',
-                                                                                strtotime($el->deadline_invoice),
-                                                                            ),
-                                                                        );
-                                                                        $dateWarning = date_diff($date1, $date2);
-                                                                        $dateDiff =
-                                                                            $dateWarning->format('%a') == 0
-                                                                                ? 'Today'
-                                                                                : $dateWarning->format('%a') . ' days';
-                                                                    @endphp
-                                                                    <small class="badge badge-warning"><i
-                                                                            class="far fa-clock"></i>
-                                                                        {{ $dateDiff }}</small>
-                                                                @endif
-                                                                <!-- General tools such as edit or delete-->
-                                                                @if (session('role') !== 'admin')
-                                                                    <div class="tools">
-                                                                        <a href="/admin/bills/detail-payment/{{ $el->id }}"
-                                                                            target="_blank">
-                                                                            <i class="fas fa-search"></i>
-                                                                        </a>
-                                                                    </div>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div><!-- /.card-body -->
-                        </div>
-                    @endif
-
-                    {{-- ROLE HR/ACCOUNTING --}}
-                    @if ($user == 'HR')
-
-                        <!-- Custom tabs (Charts with tabs)-->
-                        <div class="{{ $listBill }} card">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-chart-pie mr-1"></i>
-                                    New Invoice
-                                </h3>
-                            </div><!-- /.card-header -->
-                            <div class="card-body">
-                                <div class="tab-content p-0">
-                                    <!-- Morris chart - Sales -->
-                                    <div class="chart tab-pane active" id="revenue-chart"
-                                        style="position: relative; height: 310px;">
-
-
-                                        @if (sizeof($data->dataBill) == 0)
-                                            <div class="d-flex justify-content-center">
-
-                                                <h2>Data Invoice does not exist !!!</h2>
-
-                                            </div>
-                                        @else
-                                            {{-- <h1>New Bills</h1> --}}
-                                            <div>
-                                                <!-- /.card-header -->
-                                                <div>
-                                                    <ul class="todo-list" data-widget="todo-list">
-
-                                                        @php
-                                                            $currentDate = date('y-m-d');
-                                                        @endphp
-
-                                                        @foreach ($data->dataBill as $el)
-                                                            <li>
-                                                                <!-- drag handle -->
-                                                                <span class="handle">
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                </span>
-                                                                <!-- checkbox -->
-                                                                <div class="icheck-primary d-inline ml-2">
-                                                                    <span class="text-muted">[
-                                                                        {{ date('d F Y', strtotime($el->deadline_invoice)) }}
-                                                                        ]</span>
-                                                                </div>
-                                                                <!-- todo text -->
-                                                                <span class="text">( {{ $el->type }} )
-                                                                    {{ $el->student->name }}</span>
-                                                                <!-- Emphasis label -->
-
-
-                                                                @if ($el->paidOf)
-                                                                    <small class="badge badge-success"><i
-                                                                            class="far fa-checklist"></i> Success</small>
-                                                                @elseif (strtotime($el->deadline_invoice) < strtotime($currentDate))
-                                                                    <small class="badge badge-danger"><i
-                                                                            class="far fa-clock"></i> Past Due</small>
-                                                                @else
-                                                                    @php
-                                                                        $date1 = date_create($currentDate);
-                                                                        $date2 = date_create(
-                                                                            date(
-                                                                                'y-m-d',
-                                                                                strtotime($el->deadline_invoice),
-                                                                            ),
-                                                                        );
-                                                                        $dateWarning = date_diff($date1, $date2);
-                                                                        $dateDiff =
-                                                                            $dateWarning->format('%a') == 0
-                                                                                ? 'Today'
-                                                                                : $dateWarning->format('%a') . ' days';
-                                                                    @endphp
-                                                                    <small class="badge badge-warning"><i
-                                                                            class="far fa-clock"></i>
-                                                                        {{ $dateDiff }}</small>
-                                                                @endif
-                                                                <!-- General tools such as edit or delete-->
-                                                                @if (session('role') !== 'admin')
-                                                                    <div class="tools">
-                                                                        <a href="/admin/bills/detail-payment/{{ $el->id }}"
-                                                                            target="_blank">
-                                                                            <i class="fas fa-search"></i>
-                                                                        </a>
-                                                                    </div>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                    </div>
-                                </div>
-                            </div><!-- /.card-body -->
-                        </div>
-                    @endif
-
-                    <!-- /.card -->
-
-                    @if ($user == 'admin' || $user == 'superadmin')
-                        <!-- Teacher List -->
-                        <div class="{{ $listTeacher }} card bg-gradient-success">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="ion ion-clipboard mr-1"></i>
-                                    Teacher's
-                                </h3>
-                                <!-- /.card-header -->
-                                <div class="card-body">
-                                    <table class="table table-borderless">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Place Birth</th>
-                                                <th scope="col">Register Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            @foreach ($data->dataTeacher as $el)
-                                                <tr>
-                                                    <td scope="row">{{ $loop->index + 1 }}</td>
-                                                    <td>{{ $el->name }}</td>
-                                                    <td>{{ $el->place_birth }}</td>
-                                                    <td>{{ date('d/m/Y', strtotime($el->created_at)) }}</td>
-                                                </tr>
-                                            @endforeach
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- /.card -->
-                            </div>
-                        </div>
-                    @endif
-                </section>
-                <!-- right col -->
-            </div>
-            <!-- /.row (main row) -->
-        </div><!-- /.container-fluid -->
     </section>
+    <div class="row">
+        <section class="col-lg-7 connectedSortable">
+            @if ($user == 'HR')
+                <div class="{{ $listBill }} card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fa-solid fa-hourglass-end mr-1"></i>
+                            Deadline Invoice Supplier
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content p-0">
+                            <div class="card-body">
+                                <div class="tab-content p-0">
+                                    <div class="chart tab-pane active" id="revenue-chart"
+                                        style="position: relative; height: 360px;">
+                                        @if ($data->invoiceSuppliers->isEmpty())
+                                            <div class="d-flex justify-content-center">
+                                                <h2>Data Invoice Supplier does not exist !!!</h2>
+                                            </div>
+                                        @else
+                                            <div>
+                                                <div style="overflow-y: auto; max-height: 300px;">
+                                                    <ul class="todo-list" data-widget="todo-list">
+                                                        @php
+                                                            $currentDate = \Carbon\Carbon::now();
+                                                        @endphp
+                                                        @foreach ($data->invoiceSuppliers as $invoiceSupplier)
+                                                            @php
+                                                                $deadline = \Carbon\Carbon::parse(
+                                                                    $invoiceSupplier->deadline_invoice,
+                                                                );
+                                                                $daysLeft = $currentDate->diffInDays($deadline, false);
+                                                                $isDueSoon = $daysLeft <= 3 && $deadline > $currentDate;
+                                                            @endphp
+                                                            <li>
+                                                                <span class="handle">
+                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                                </span>
+                                                                <div class="icheck-primary d-inline ml-2">
+                                                                    <span
+                                                                        class="{{ $isDueSoon ? 'text-danger' : 'text-muted' }}">
+                                                                        [{{ date('d F Y', strtotime($invoiceSupplier->deadline_invoice)) }}]
+                                                                    </span>
+                                                                    <span
+                                                                        class="{{ $isDueSoon ? 'text-danger' : 'text-muted' }}">
+                                                                        Deadline Invoice -
+                                                                    </span>
+                                                                    <span
+                                                                        class="{{ $isDueSoon ? 'text-danger' : 'text-muted' }}">
+                                                                        {{ $invoiceSupplier->supplier_name }}
+                                                                        ({{ $invoiceSupplier->no_invoice }})
+                                                                    </span>
+                                                                    @if ($isDueSoon)
+                                                                        @if ($daysLeft == 1)
+                                                                            <span class="text-danger">1 days left</span>
+                                                                        @else
+                                                                            <span class="text-danger">{{ $daysLeft }}
+                                                                                days left</span>
+                                                                        @endif
+                                                                    @endif
+                                                                    <a href="{{ route('supplier.index') }}"
+                                                                        class="small-box-footer" style="color: orange"><i class="fas fa-arrow-circle-right"></i></a>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+
+
+
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </section>
+
+        <section class="col-lg-5 connectedSortable">
+            @if ($user == 'HR')
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Income Chart
+                        </div>
+                        <div class="card-body">
+                            <div id="income_chart"></div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </section>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Pie Chart
+                </div>
+                <div class="card-body">
+                    <div id="pie_chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Line Chart
+                </div>
+                <div class="card-body">
+                    <div id="line_chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Column Chart
+                </div>
+                <div class="card-body">
+                    <div id="column_chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Highcharts.chart('pie_chart', {
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Transaction Types Distribution'
+                },
+                series: [{
+                    name: 'Transactions',
+                    colorByPoint: true,
+                    data: @json($data->pie)
+                }]
+            });
+
+            Highcharts.chart('income_chart', {
+                title: {
+                    text: 'Monthly Income'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Total Income'
+                    }
+                },
+                xAxis: {
+                    categories: {!! json_encode($data->income['categories']) !!}
+                },
+                series: [{
+                    name: 'Income',
+                    data: {!! json_encode($data->income['data']) !!}
+                }],
+                plotOptions: {
+                    line: {
+                        marker: {
+                            enabled: true, // Aktifkan marker
+                            symbol: 'circle', // Ubah simbol marker
+                            // radius: 4 // Ubah ukuran marker
+                        }
+                    }
+                }
+            });
+
+            Highcharts.chart('line_chart', {
+                title: {
+                    text: 'Monthly Transaction Counts'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Number of Transactions'
+                    }
+                },
+                xAxis: {
+                    categories: @json($data->line['categories'])
+                },
+                series: [{
+                    name: 'Transactions',
+                    data: @json($data->line['data'])
+                }]
+            });
+
+            Highcharts.chart('column_chart', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Yearly Transaction Amounts'
+                },
+                xAxis: {
+                    categories: @json($data->column['categories']),
+                    crosshair: true
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Amount'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: @json(array_values($data->column['series']))
+            });
+
+            Highcharts.chart('income_chart', {
+                title: {
+                    text: 'Monthly Income'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Total Income'
+                    }
+                },
+                xAxis: {
+                    categories: @json($data->income['categories'])
+                },
+                series: [{
+                    name: 'Transactions',
+                    data: @json($data->income['data'])
+                }]
+            });
+
+
+        });
+    </script>
+
 @endsection

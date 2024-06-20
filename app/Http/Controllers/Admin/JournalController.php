@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use Exception;
 use Carbon\Carbon;
+
 use App\Models\Cash;
 use Barryvdh\DomPDF\PDF;
+use Illuminate\Http\Request;
 use App\Models\Accountnumber;
+use App\Imports\JournalImport;
 use App\Models\Accountcategory;
 use App\Models\Transaction_send;
 use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use App\Models\Transaction_transfer;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class JournalController extends Controller
@@ -755,27 +757,6 @@ class JournalController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function showJournalDetail(Request $request, $id, $type)
     {
         $selectedItems = $request->id ?? [];
@@ -1015,4 +996,6 @@ class JournalController extends Controller
             return abort(500, 'Failed to fetch transaction details.');
         }
     }
+
+
 }

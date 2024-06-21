@@ -57,25 +57,30 @@
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Pay From : <span style="color: red">*</span></label>
-                                            <select name="transfer_account_id" class="form-control">
+                                            <select name="transfer_account_id" id="transfer_account_id"
+                                                class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
-                                                        {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
-                                                    </option>
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
+
                                         <div class="col-md-6">
                                             <label>For : <span style="color: red">*</span></label>
-                                            <select name="deposit_account_id" class="form-control">
+                                            <select name="deposit_account_id" id="deposit_account_id"
+                                                class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
-                                                        {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
-                                                    </option>
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
+
                                     </div>
+                                    
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
@@ -114,7 +119,8 @@
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Deadline Invoice <span style="color: red">*</span></label>
-                                            <div class="input-group date" id="deadline_invoiece_date" data-target-input="nearest">
+                                            <div class="input-group date" id="deadline_invoiece_date"
+                                                data-target-input="nearest">
                                                 <input name="deadline_invoice" type="text" class="form-control"
                                                     placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
                                                     data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"

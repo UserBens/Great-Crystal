@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    .transaction {
+        /* Adjust this value as needed */
+        margin-bottom: 10 px;
+        /* border: none; */
+        border-top: 1px solid #ccc;
+        /* Adjust border color as needed */
+    }
+</style>
 
 <head>
     @include('layouts.header')
-    
+
+
+    {{-- Link to your local Select2 CSS --}}
+    <link href="{{ asset('vendor/select2/select2.min.css') }}" rel="stylesheet">
+
+    {{-- Other CSS links --}}
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ asset('template') }}/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ asset('template') }}/dist/css/adminlte.min.css">
+    <!-- Other stylesheets -->
+
 </head>
 
 {{-- @php
@@ -13,13 +33,17 @@
 @endphp --}}
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
     <div class="wrapper">
 
         <!-- Preloader -->
         @if (session('preloader'))
             <div class="preloader flex-column justify-content-center align-items-center">
-                <img class="animation__shake" src="{{ asset('images') }}/logo-school.png" alt="SchoolLogo" height="120"
-                    width="290">
+                <img class="animation__shake" src="{{ asset('images') }}/logo-school.png" alt="SchoolLogo"
+                    height="120" width="290">
             </div>
         @endif
 
@@ -95,6 +119,13 @@
     </div>
     <!-- /.content-wrapper -->
 
+    {{-- Script for Select2 --}}
+    <script src="{{ asset('vendor/select2/select2.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2();
+        });
+    </script>
 </body>
 
 </html>

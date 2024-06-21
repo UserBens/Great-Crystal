@@ -37,7 +37,7 @@
                                         <div class="col-md-6 mt-3">
                                             <label>Category : <span style="color: red"></span></label>
                                             <div class="input-group">
-                                                <select name="account_category_id" class="form-control"
+                                                <select name="account_category_id" class="form-control select2"
                                                     id="account_category_id">
                                                     @foreach ($categories as $category)
                                                         <option value="{{ $category->id }}">{{ $category->category_name }}
@@ -73,14 +73,16 @@
 
                                     <div class="form-group row">
                                         <div class="col-md-6 mt-2">
-                                            <label for="beginning_balance">Beginning Balance<span style="color: red">*</span>
+                                            <label for="beginning_balance">Beginning Balance<span
+                                                    style="color: red">*</span>
                                                 :</label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input name="beginning_balance" type="text" class="form-control" id="beginning_balance"
-                                                    placeholder="Enter Beginning Balance" autocomplete="off"
+                                                <input name="beginning_balance" type="text" class="form-control"
+                                                    id="beginning_balance" placeholder="Enter Beginning Balance"
+                                                    autocomplete="off"
                                                     value="{{ old('beginning_balance') ? number_format(old('beginning_balance'), 0, ',', '.') : '' }}"
                                                     required>
                                             </div>
@@ -89,13 +91,15 @@
                                             @endif
                                         </div>
                                         <div class="col-md-6 mt-2">
-                                            <label for="ending_balance">Ending Balance<span style="color: red">*</span> :</label>
+                                            <label for="ending_balance">Ending Balance<span style="color: red">*</span>
+                                                :</label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">Rp.</span>
                                                 </div>
-                                                <input name="ending_balance" type="text" class="form-control" id="ending_balance"
-                                                    placeholder="Enter Ending Balance" autocomplete="off"
+                                                <input name="ending_balance" type="text" class="form-control"
+                                                    id="ending_balance" placeholder="Enter Ending Balance"
+                                                    autocomplete="off"
                                                     value="{{ old('ending_balance') ? number_format(old('ending_balance'), 0, ',', '.') : '' }}"
                                                     required>
                                             </div>

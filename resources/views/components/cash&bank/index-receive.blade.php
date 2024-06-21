@@ -107,7 +107,9 @@
                                         {{ $item->depositAccount->name }}</td> --}}
 
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->date)->format('Y-m-d') }}</td>
+                                    {{-- <td>{{ \Carbon\Carbon::parse($item->date)->format('Y-m-d') }}</td> --}}
+                                    <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
+
                                     <td>
                                         <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
                                             style="margin-right: 5px;">

@@ -47,22 +47,24 @@
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Receive From : <span style="color: red">*</span></label>
-                                            <select name="transfer_account_id" class="form-control select2">
+                                            <select name="transfer_account_id" id="transfer_account_id"
+                                                class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
-                                                        {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
-                                                    </option>
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
 
                                         <div class="col-md-6">
                                             <label>Deposit To : <span style="color: red">*</span></label>
-                                            <select name="deposit_account_id" class="form-control select2">
+                                            <select name="deposit_account_id" id="deposit_account_id"
+                                                class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
                                                     <option value="{{ $accountNumber->id }}">
-                                                        {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
-                                                    </option>
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -106,8 +108,8 @@
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
-                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
-                                                rows="10" placeholder="Enter description">{{ old('description') }}</textarea>
+                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="10"
+                                                placeholder="Enter description">{{ old('description') }}</textarea>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('description') }}</p>
                                             @endif
@@ -143,7 +145,7 @@
             document.getElementById("transferForm").submit();
         }
 
-     
+
 
         // Inisialisasi Select2 pada elemen select
         $(document).ready(function() {

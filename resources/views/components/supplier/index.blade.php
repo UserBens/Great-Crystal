@@ -56,7 +56,7 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Transaction Send!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('transaction-send.create') }}" class="btn btn-success mt-3">
+                        <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Create Invoice
                         </a>
                     </div>
@@ -64,7 +64,7 @@
             </div>
         @else
             <div class="btn-group">
-                <a type="button" href="{{ route('transaction-send.create') }}" class="btn btn-success mt-3">
+                <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success mt-3">
                     <i class="fa-solid fa-plus"></i> Create Invoice
                 </a>
             </div>
@@ -82,14 +82,14 @@
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>No. Invoice</th>
                                 <th>Supplier Name</th>
-                                <th>Account Number</th>
                                 <th>Amount</th>
                                 <th>Date</th>
                                 <th>Nota</th>
                                 <th>Deadline Invoice</th>
-                                <th style="width: 8%;" class="text-center">Actions</th>
+                                {{-- <th>Actions</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -97,26 +97,24 @@
                             @foreach ($data as $item)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>
-                                        @if ($item->transferAccount)
-                                            {{ $item->transferAccount->account_no }} -
-                                            {{ $item->transferAccount->name }}
-                                        @endif
-                                    </td>
-                                    {{-- <td>{{ $item->depositAccount->account_no }} -
-                                        {{ $item->depositAccount->name }}</td> --}}
-                                        <td>{{ $item->transferAccount->account_no }} </td>
-                                        <td>{{ $item->transferAccount->account_no }} </td>
-                                        <td>{{ $item->transferAccount->account_no }} </td>
 
+
+                                    <td>{{ $item->no_invoice }} </td>
+                                    <td>{{ $item->supplier_name }} </td>
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                    <td>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
-                                            style="margin-right: 5px;">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
+                                    <td>{{ $item->nota }} </td>
+                                    <td>{{ \Carbon\Carbon::parse($item->deadline_invoice)->format('j F Y') }}</td>
+
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-danger btn-sm delete-btn"
+                                                data-toggle="modal" data-id="{{ $item->id }}">
+                                                <i class="fas fa-trash mr-1"></i>Delete
+                                            </button>
+                                        </div>
                                     </td>
+
                                     <td class="project-actions text-right">
                                         <!-- Modal Konfirmasi Penghapusan -->
                                         <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
@@ -136,8 +134,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-dismiss="modal">Batal</button>
-                                                        <form
-                                                            action="{{ route('transaction-send.destroy', $item->id) }}"
+                                                        <form action="{{ route('supplier.destroy', $item->id) }}"
                                                             method="POST" style="display: inline;">
                                                             @csrf
                                                             @method('DELETE')

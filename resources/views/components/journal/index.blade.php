@@ -34,13 +34,13 @@
                         </div>
                         <div class="col-md-3">
                             <label for="start_date">Start Date <span
-                                    style="font-size: 14px; color:red">(Transaction)</span></label>
+                                    style="font-size: 14px; color:black">(Transaction)</span></label>
                             <input type="date" name="start_date" class="form-control"
                                 value="{{ $form->start_date ?? '' }}">
                         </div>
                         <div class="col-md-3">
                             <label for="end_date">End Date <span
-                                    style="font-size: 14px; color:red">(Transaction)</span></label>
+                                    style="font-size: 14px; color:black">(Transaction)</span></label>
                             <input type="date" name="end_date" class="form-control" value="{{ $form->end_date ?? '' }}">
                         </div>
                         <div class="col-md-12 mt-3">

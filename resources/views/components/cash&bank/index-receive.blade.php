@@ -5,7 +5,7 @@
         <h2 class="text-center display-4 mb-3">Transaction Receive Search</h2>
         <form action="{{ route('transaction-receive.index') }}" method="GET" class="mb-3">
             <div class="row">
-                <div class="col-md-3">
+                {{-- <div class="col-md-3">
                     <label for="date">Type Transaction</label>
                     <select name="type" class="form-control">
                         <option value="">-- All Data --</option>
@@ -15,20 +15,32 @@
                         <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
                             Transaction Send</option>
                     </select>
-                </div>
-                <div class="col-md-3">
+                </div> --}}
+                {{-- <div class="col-md-3">
                     <label for="date">Sort By</label>
                     <select name="sort" class="form-control">
                         <option value="">-- All Data --</option>
                         <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
                         <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
                     </select>
+                </div> --}}
+
+                <div class="col-md-4">
+                    <label>Sort By </label>
+                    <select name="sort" class="form-control" id="sort-select">
+                        {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
+                        <option value="date" {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
+                            data-order="asc">Date (Oldest First)</option>
+                        <option value="date" {{ $form->sort === 'date' && $form->order === 'desc' ? 'selected' : '' }}
+                            data-order="desc">Date (Newest First)</option>
+                    </select>
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-4">
                     <label for="date">Date</label>
                     <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="date">Search Data</label>
                     <div class="input-group">
                         <input type="text" name="search" class="form-control" placeholder="Search..."

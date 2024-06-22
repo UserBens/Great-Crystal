@@ -7,8 +7,7 @@
                 <div class="col-md-6">
                     <!-- general form elements -->
                     <div>
-                        <form id="transferForm" method="POST" action="{{ route('transaction-send.store') }}"
-                            onsubmit="submitForm()">
+                        <form id="transferForm" method="POST" action="{{ route('supplier.store') }}" onsubmit="submitForm()">
                             @csrf
                             <div class="card card-dark">
                                 <div class="card-header">
@@ -31,21 +30,22 @@
                                             @endif
                                         </div>
                                         <div class="col-md-6">
-                                            <label>Supplier Name : <span style="color: red">*</span></label>
-                                            <select name="transaction_send_supplier_id" class="form-control select2"
-                                                id="supplierSelect">
-                                                <option value="" selected disabled>Select a Supplier</option>
-                                                {{-- @foreach ($suppliers as $supplier)
-                                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} -
-                                                        {{ $supplier->supplier_role }}
-                                                    </option>
-                                                @endforeach --}}
-                                            </select>
+                                            <label for="supplier_name">Supplier Name<span style="color: red">*</span>
+                                                :</label>
+                                            <div class="input-group">
 
-                                            <button class="btn text-primary" data-toggle="modal"
+                                                <input name="supplier_name" type="text" class="form-control"
+                                                    id="supplier_name" placeholder="" autocomplete="off"
+                                                    value="{{ old('supplier_name') }}" required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('supplier_name') }}</p>
+                                            @endif
+
+                                            {{-- <button class="btn text-primary" data-toggle="modal"
                                                 data-target="#addSupplierModal">
                                                 + Add Supplier
-                                            </button>
+                                            </button> --}}
                                             <div class="row">
                                                 @if ($errors->has('supplier_name'))
                                                     <span class="text-danger">{{ $errors->first('supplier_name') }}</span>
@@ -72,10 +72,10 @@
                                             @endif
                                         </div>
 
-                                        <div class="col-md-6">
+                                        {{-- <div class="col-md-6">
                                             <label>Date <span style="color: red">*</span></label>
                                             <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input name="date" type="text" class="form-control "
+                                                <input name="date" type="text" class="form-control"
                                                     placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
                                                     data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"
                                                     data-mask required />
@@ -87,46 +87,52 @@
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('date') }}</p>
                                             @endif
+                                        </div> --}}
+
+                                        <div class="col-md-6">
+                                            <label for="date">Date<span style="color: red">*</span> :</label>
+                                            <input type="date" name="date" class="form-control" data-inputmask-inputformat="dd/mm/yyyy"
+                                            data-mask required>
+
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('date') }}</p>
+                                            @endif
                                         </div>
+
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="no_invoice">Nota<span style="color: red">*</span> :</label>
+                                            <label for="nota">Nota<span style="color: red">*</span> :</label>
                                             <div class="input-group">
 
-                                                <input name="no_invoice" type="text" class="form-control" id="no_invoice"
+                                                <input name="nota" type="text" class="form-control" id="nota"
                                                     placeholder="Example : S-100031" autocomplete="off"
-                                                    value="{{ old('no_invoice') }}" required>
+                                                    value="{{ old('nota') }}" required>
                                             </div>
                                             @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('no_invoice') }}</p>
+                                                <p style="color: red">{{ $errors->first('nota') }}</p>
                                             @endif
                                         </div>
+
                                         <div class="col-md-6">
-                                            <label>Deadline Invoice <span style="color: red">*</span></label>
-                                            <div class="input-group date" id="deadline_invoiece_date"
-                                                data-target-input="nearest">
-                                                <input name="deadline_invoice" type="text" class="form-control"
-                                                    placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
-                                                    data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"
-                                                    data-mask required />
-                                                <div class="input-group-append" data-target="#reservationdate"
-                                                    data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
+                                            <label for="deadline_invoice">Deadline Invoice<span style="color: red">*</span>
+                                                :</label>
+                                            <input type="date" name="deadline_invoice" class="form-control" data-inputmask-inputformat="dd/mm/yyyy"
+                                            data-mask required>
+
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('deadline_invoice') }}</p>
                                             @endif
                                         </div>
+
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
-                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
-                                                rows="10" placeholder="Enter description">{{ old('description') }}</textarea>
+                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="10"
+                                                placeholder="Enter description">{{ old('description') }}</textarea>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('description') }}</p>
                                             @endif

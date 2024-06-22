@@ -16,14 +16,26 @@
                                 Transaction Send</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3">
                         <label for="date">Sort By</label>
                         <select name="sort" class="form-control">
                             <option value="">-- All Data --</option>
                             <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
                             <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
                         </select>
+                    </div> --}}
+
+                    <div class="col-md-3">
+                        <label>Sort By </label>
+                        <select name="sort" class="form-control" id="sort-select">
+                            {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
+                            <option value="date" {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
+                                data-order="asc">Date (Oldest First)</option>
+                            <option value="date" {{ $form->sort === 'date' && $form->order === 'desc' ? 'selected' : '' }}
+                                data-order="desc">Date (Newest First)</option>
+                        </select>
                     </div>
+
                     <div class="col-md-3">
                         <label for="date">Date</label>
                         <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
@@ -80,7 +92,7 @@
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
-                                <th style="width: 3%">#</th>
+                                <th>#</th>
                                 <th>Account Number</th>
                                 <th>Name</th>
                                 <th>Category Account</th>
@@ -88,7 +100,7 @@
                                 <th>Beginning Balance</th>
                                 <th>Ending Balance</th>
                                 <th>Date</th>
-                                <th style="width: 15%;" class="text-center">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -101,10 +113,14 @@
                                     </td>
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
                                     <td>Rp.{{ number_format($account->beginning_balance, 0, ',', '.') }}</td>
-                                    <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td>                                    
-                                    <td>{{ \Carbon\Carbon::parse($account->created_at)->format('Y-m-d') }}</td>
-                                    <td class="text-center">
-                                        <div class="btn-group">
+                                    <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($account->created_at)->format('j F Y') }}</td>
+                                    <td>
+                                        <div class="row">
+                                            <a class="btn btn-success btn-sm mr-2"
+                                                href="/admin/account/{{ $account->id }}/edit">
+                                                <i class="fas fa-pencil"></i> Total
+                                            </a>
                                             <a class="btn btn-warning btn-sm mr-2"
                                                 href="/admin/account/{{ $account->id }}/edit">
                                                 <i class="fas fa-pencil"></i> Edit
@@ -113,7 +129,7 @@
                                                 data-toggle="modal" data-id="{{ $account->id }}">
                                                 <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
-                                        </div>
+                                        {{-- </div> --}}
                                     </td>
                                 </tr>
                                 <!-- Modal Konfirmasi Penghapusan -->

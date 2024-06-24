@@ -10,5 +10,9 @@ class InvoiceSupplierStatus extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
-    
+
+    public function invoiceSupplier()
+    {
+        return $this->belongsTo(InvoiceSupplier::class, 'no_invoice', 'no_invoice');
+    }
 }

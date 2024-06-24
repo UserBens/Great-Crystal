@@ -15,6 +15,11 @@ return new class extends Migration
             $table->id();
             $table->enum('payment_status', ['Paid', 'Not Yet'])->default('Paid');
             $table->string('description')->nullable();
+            $table->string('image_path')->nullable(); 
+            $table->string('no_invoice'); 
+            $table->foreign('no_invoice')->references('no_invoice')->on('invoice_suppliers')->cascadeOnDelete()->cascadeOnUpdate(); 
+            $table->string('supplier_name', 255);
+            $table->foreign('supplier_name')->references('name')->on('supplier_data')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

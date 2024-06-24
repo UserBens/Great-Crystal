@@ -114,7 +114,7 @@
                                             </button>
 
                                             <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
-                                                data-target="#importModal">
+                                                data-target="#importModal" data-id="{{ $item->id }}">
                                                 <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
                                             </button>
                                         </div>

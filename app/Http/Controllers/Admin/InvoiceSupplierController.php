@@ -76,6 +76,43 @@ class InvoiceSupplierController extends Controller
         }
     }
 
+    public function uploadProofOfPayment(Request $request, $id)
+    {
+        try {
+            $invoice = InvoiceSupplier::findOrFail($id);
+
+            // Validate request data
+            $request->validate([
+                'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'description' => 'required|string',
+                'payment_status' => 'required|in:Paid,Not Yet',
+            ]);
+
+            // Handle file upload
+            if ($request->hasFile('image_path')) {
+                $image = $request->file('image_path');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads'), $imageName);
+
+                // Update invoice supplier data
+                $invoice->update([
+                    'image_path' => $imageName,
+                    'payment_status' => $request->payment_status,
+                    'description' => $request->description,
+                ]);
+
+                return redirect()->route('invoice-supplier.index')->with('success', 'Proof of payment uploaded successfully.');
+            } else {
+                return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
+            }
+        } catch (\Exception $err) {
+            return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
+        }
+    }
+
+
+
+
     public function createInvoiceSupplier()
     {
         $supplierDatas = SupplierData::all();
@@ -105,7 +142,7 @@ class InvoiceSupplierController extends Controller
         $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
         $invoice->save();
 
-        return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier berhasil dibuat!');
+        return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfull!');
     }
 
 

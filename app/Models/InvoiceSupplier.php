@@ -15,4 +15,9 @@ class InvoiceSupplier extends Model
     {
         return $this->belongsTo(SupplierData::class, 'supplier_name', 'name');
     }
+
+    public function statuses()
+    {
+        return $this->hasMany(InvoiceSupplierStatus::class, 'no_invoice', 'no_invoice');
+    }
 }

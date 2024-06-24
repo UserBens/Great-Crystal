@@ -115,66 +115,83 @@
                                             </button>
 
                                             <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
-                                                data-target="#importModal">
+                                                data-target="#importModal{{ $item->id }}">
                                                 <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
                                             </button>
                                         </div>
                                     </td>
 
                                     <td class="project-actions">
-                                        <!-- Modal Konfirmasi Penghapusan -->
-                                        {{-- <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Konfirmasi Penghapusan</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Anda yakin ingin menghapus data ini?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Batal</button>
-                                                        <form action="{{ route('supplier.destroy', $item->id) }}"
-                                                            method="POST" style="display: inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Ya,
-                                                                Hapus</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> --}}
-                                        <!-- /Modal Konfirmasi Penghapusan -->
 
-                                        <div class="modal fade" id="importModal" tabindex="-1" role="dialog"
-                                            aria-labelledby="importModalLabel" aria-hidden="true">
+
+                                        <div class="modal fade" id="importModal{{ $item->id }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
                                             <div class="modal-dialog" role="document"
                                                 style="max-width: 60%; margin: 1.75rem auto;">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="importModalLabel">Upload Image</h5>
+                                                        <h4 class="modal-title" id="importModalLabel">Upload Proof of
+                                                            Payment </h4>
                                                         <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <form action="{{ route('journal.import') }}" method="post"
-                                                        enctype="multipart/form-data">
+                                                    <form action="{{ route('invoice-supplier.upload-proof', $item->id) }}"
+                                                        method="post" enctype="multipart/form-data">
                                                         @csrf
                                                         <div class="modal-body" style="width: 100%; height: auto;">
+                                                            {{-- <label># No. Invoice : <span
+                                                                    id="invoice_number">{{ $item->no_invoice }}</span></label> --}}
                                                             <div class="file-upload"
                                                                 style=" display: flex; justify-content: center; align-items: center;">
                                                                 <div class="form-group row">
-                                                                   
                                                                     <div class="col-md-6">
-                                                                        <label for="description">Description :</label>
+
+                                                                        <label for="no_invoice"># No. Invoice :
+                                                                        </label>
+                                                                        <div class="input-group">
+                                                                            <input name="no_invoice" type="text"
+                                                                                class="form-control" id="no_invoice"
+                                                                                placeholder="" autocomplete="off"
+                                                                                value="{{ $item->no_invoice }}"
+                                                                                required>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label for="name">Supplier
+                                                                            Name<span></span>:</label>
+                                                                        <div class="input-group">
+                                                                            <input name="supplier_name" type="text"
+                                                                                class="form-control" id="supplier_name"
+                                                                                placeholder="" autocomplete="off"
+                                                                                value="{{ $item->supplier_name }}"
+                                                                                required>
+                                                                        </div>
+                                                                        @if ($errors->any())
+                                                                            <p style="color: red">
+                                                                                {{ $errors->first('name') }}</p>
+                                                                        @endif
+                                                                    </div>
+
+                                                                    <div class="col-md-6">
+                                                                        <label for="nota">Nota<span></span>:</label>
+                                                                        <div class="input-group">
+                                                                            <input name="nota" type="text"
+                                                                                class="form-control" id="nota"
+                                                                                placeholder="" autocomplete="off"
+                                                                                value="{{ $item->nota }}" required>
+                                                                        </div>
+                                                                        @if ($errors->any())
+                                                                            <p style="color: red">
+                                                                                {{ $errors->first('nota') }}</p>
+                                                                        @endif
+                                                                    </div>
+
+                                                                    <div class="col-md-6 mt-3">
+                                                                        <label for="description">Description<span
+                                                                                style="color: red">*</span>:</label>
                                                                         <textarea autocomplete="off" name="description" class="form-control" id="description"
                                                                             placeholder="Enter description">{{ old('description') }}</textarea>
                                                                         @if ($errors->any())
@@ -183,24 +200,25 @@
                                                                         @endif
                                                                     </div>
 
-
-                                                                    <div class="col-md-3">
-                                                                        <label for="sort">Payment Status</label>
-                                                                        <select name="sort" class="form-control"
-                                                                            id="sort-select">
-                                                                            <option value="oldest">
-                                                                                Paid</option>
-                                                                            <option value="newest">
-                                                                                Not Yet </option>
+                                                                    <div class="col-md-6 mt-3">
+                                                                        <label for="payment_status">Payment Status<span
+                                                                                style="color: red">*</span>:</label>
+                                                                        <select name="payment_status" class="form-control"
+                                                                            id="payment_status">
+                                                                            <option value="Paid">Paid</option>
+                                                                            <option value="Not Yet">Not Yet</option>
                                                                         </select>
+                                                                        @if ($errors->any())
+                                                                            <p style="color: red">
+                                                                                {{ $errors->first('payment_status') }}</p>
+                                                                        @endif
                                                                     </div>
 
-
                                                                     <div class="col-md-12 mt-3">
-                                                                        <label for="Upload File">Upload Image</label>
+                                                                        <label for="upload_image">Upload Image<span
+                                                                                style="color: red">*</span>:</label>
                                                                         <div class="image-upload-wrap">
-                                                                            <input type="file"
-                                                                                name="import_transaction"
+                                                                            <input type="file" name="image_path"
                                                                                 class="file-upload-input"
                                                                                 onchange="readURL(this);"
                                                                                 accept="image/*">
@@ -236,9 +254,12 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
                                                                 data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Upload</button>
+
                                                         </div>
                                                     </form>
                                                 </div>
@@ -325,4 +346,5 @@
             });
         });
     </script>
+
 @endsection

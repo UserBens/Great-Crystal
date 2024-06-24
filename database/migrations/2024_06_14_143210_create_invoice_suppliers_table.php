@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('invoice_suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('no_invoice')->unique();
-            $table->string('supplier_name');
+            $table->string('supplier_name', 255);
+            $table->foreign('supplier_name')->references('name')->on('supplier_data')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('amount');
             $table->dateTime('date')->default(now());
             $table->string('nota');

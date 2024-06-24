@@ -282,9 +282,13 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/create-supplier', [InvoiceSupplierController::class, 'createSupplier'])->name('create-supplier.create');
       Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplier'])->name('supplier.store');
       Route::delete('/{id}', [InvoiceSupplierController::class, 'destroySupplier'])->name('supplier.destroy');
-      // Route::get('/{id}/edit', [AccountingController::class, 'editAccount'])->name('account.edit');
-      // Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
-      // Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
+   });
+
+   Route::prefix('/invoice-supplier')->group(function () {
+      Route::get('/', [InvoiceSupplierController::class, 'indexInvoiceSupplier'])->name('invoice-supplier.index');
+      Route::get('/create-invoice-supplier', [InvoiceSupplierController::class, 'createInvoiceSupplier'])->name('create-invoice-supplier.create');
+      Route::post('/create-invoice-supplier/store', [InvoiceSupplierController::class, 'storeInvoiceSupplier'])->name('invoice-supplier.store');
+      Route::delete('/{id}', [InvoiceSupplierController::class, 'destroyInvoiceSupplier'])->name('invoice-supplier.destroy');
    });
 
 });

@@ -280,6 +280,35 @@
                         </ul>
                     </li>
 
+                    <li
+                        class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Supplier' ? 'menu-open' : '') : '' }}">
+                        <a href="#"
+                            class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Supplier' ? 'active' : '') : '' }}">
+                            <i class="nav-icon fa-solid fa-boxes-packing"></i>
+                            <p>
+                                Supplier
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('invoice-supplier.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Invoice Supplier' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Invoice</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('supplier.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Supplier Data' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Supplier</p>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
                     {{-- Cash & Bank Page --}}
                     <li
                         class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Transaction' ? 'menu-open' : '') : '' }}">

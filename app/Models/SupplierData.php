@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InvoiceSupplier extends Model
+class SupplierData extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
 
-    public function supplier()
+    public function invoices()
     {
-        return $this->belongsTo(SupplierData::class, 'supplier_name', 'name');
+        return $this->hasMany(InvoiceSupplier::class, 'supplier_name', 'name');
     }
 }

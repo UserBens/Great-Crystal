@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use Exception;
 use Carbon\Carbon;
+use App\Models\SupplierData;
 use Illuminate\Http\Request;
 use App\Models\Accountnumber;
 use App\Models\Accountcategory;
 use App\Models\InvoiceSupplier;
 use App\Models\Transaction_send;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\SupplierData;
 use App\Models\TransactionSendSupplier;
 
 class InvoiceSupplierController extends Controller
@@ -38,16 +39,11 @@ class InvoiceSupplierController extends Controller
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->whereHas('transferAccount', function ($q) use ($searchTerm) {
-                        $q->where('name', 'LIKE', $searchTerm)
-                            ->orWhere('account_no', 'LIKE', $searchTerm);
-                    })->orWhereHas('depositAccount', function ($q) use ($searchTerm) {
-                        $q->where('name', 'LIKE', $searchTerm)
-                            ->orWhere('account_no', 'LIKE', $searchTerm);
-                    })->orWhere('amount', 'LIKE', $searchTerm)
-                        ->orWhere('date', 'LIKE', $searchTerm);
-                });
+                $query->where('supplier_name', 'LIKE', $searchTerm)
+                      ->orWhere('no_invoice', 'LIKE', $searchTerm)
+                      ->orWhere('nota', 'LIKE', $searchTerm)
+                      ->orWhere('amount', 'LIKE', $searchTerm)
+                      ->orWhere('date', 'LIKE', $searchTerm);
             }
 
             // Mengatur urutan berdasarkan parameter yang dipilih
@@ -79,9 +75,10 @@ class InvoiceSupplierController extends Controller
     public function uploadProofOfPayment(Request $request, $id)
     {
         try {
+            // Ambil invoice berdasarkan ID
             $invoice = InvoiceSupplier::findOrFail($id);
 
-            // Validate request data
+            // Validasi data request
             $request->validate([
                 'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'description' => 'required|string',
@@ -101,14 +98,20 @@ class InvoiceSupplierController extends Controller
                     'description' => $request->description,
                 ]);
 
+                // Debugging log
+                Log::info('Invoice updated: ', $invoice->toArray());
+
                 return redirect()->route('invoice-supplier.index')->with('success', 'Proof of payment uploaded successfully.');
             } else {
                 return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
             }
         } catch (\Exception $err) {
+            Log::error('Error uploading proof of payment: ' . $err->getMessage());
             return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
         }
     }
+
+
 
 
 

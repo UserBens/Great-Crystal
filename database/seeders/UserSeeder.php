@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
          [
             'username' => 'accounting',
             'password' => Hash::make('accounting'),
-            'role' => 'Accounting',
+            'role' => 'accounting',
             
          ],
       ];

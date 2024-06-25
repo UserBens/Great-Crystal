@@ -105,25 +105,35 @@
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
                                     <td>{{ $item->nota }} </td>
                                     <td>{{ \Carbon\Carbon::parse($item->deadline_invoice)->format('j F Y') }}</td>
+                                    {{-- @if ($item->image_path)
+                                        <div class="image-container">
+                                            <img src="{{ asset('uploads/' . $item->image_path) }}" alt="Proof of Payment"
+                                                class="img-thumbnail">
+                                        </div>
+                                    @endif --}}
 
                                     <td>
-                                        <div class="btn-group">
+                                        {{-- <div class="btn-group"> --}}
                                             <button type="button" class="btn btn-danger btn-sm delete-btn"
-                                                style="margin-right: 12px" data-toggle="modal"
+                                                style="margin-right: 10px" data-toggle="modal"
                                                 data-id="{{ $item->id }}">
                                                 <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
 
                                             <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
-                                                data-target="#importModal{{ $item->id }}">
+                                                data-target="#importModal{{ $item->id }}" style="margin-right: 10px">
                                                 <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
                                             </button>
-                                        </div>
+
+                                            <!-- New Button to Show Image Modal -->
+                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
+                                                data-target="#showImageModal{{ $item->id }}">
+                                                <i class="fas fa-eye" style="margin-right: 4px"></i>Show Image
+                                            </button>
+                                        {{-- </div> --}}
                                     </td>
 
                                     <td class="project-actions">
-
-
                                         <div class="modal fade" id="importModal{{ $item->id }}" tabindex="-1"
                                             role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
                                             <div class="modal-dialog" role="document"
@@ -154,8 +164,7 @@
                                                                             <input name="no_invoice" type="text"
                                                                                 class="form-control" id="no_invoice"
                                                                                 placeholder="" autocomplete="off"
-                                                                                value="{{ $item->no_invoice }}"
-                                                                                required>
+                                                                                value="{{ $item->no_invoice }}" required>
                                                                         </div>
                                                                     </div>
 
@@ -175,7 +184,7 @@
                                                                         @endif
                                                                     </div>
 
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-6 mt-3">
                                                                         <label for="nota">Nota<span></span>:</label>
                                                                         <div class="input-group">
                                                                             <input name="nota" type="text"
@@ -200,13 +209,13 @@
                                                                         @endif
                                                                     </div>
 
-                                                                    <div class="col-md-6 mt-3">
+                                                                    <div class="col-md-6">
                                                                         <label for="payment_status">Payment Status<span
                                                                                 style="color: red">*</span>:</label>
                                                                         <select name="payment_status" class="form-control"
                                                                             id="payment_status">
-                                                                            <option value="Paid">Paid</option>
                                                                             <option value="Not Yet">Not Yet</option>
+                                                                            <option value="Paid">Paid</option>
                                                                         </select>
                                                                         @if ($errors->any())
                                                                             <p style="color: red">
@@ -269,6 +278,40 @@
 
 
                                     </td>
+                                    <div class="modal fade" id="showImageModal{{ $item->id }}" tabindex="-1"
+                                        role="dialog" aria-labelledby="showImageModalLabel{{ $item->id }}"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog" role="document"
+                                            style="max-width: 60%; margin: 1.75rem auto;">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title" id="showImageModalLabel{{ $item->id }}">
+                                                        Proof of Payment</h4>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body" style="width: 100%; height: auto;">
+                                                    @if ($item->image_path)
+                                                        <div class="image-container text-center">
+                                                            <img src="{{ asset('uploads/' . $item->image_path) }}"
+                                                                alt="Proof of Payment" class="img-thumbnail"
+                                                                style="max-width: 100%;">
+                                                        </div>
+                                                    @else
+                                                        <div class="text-center">
+                                                            <p>No image uploaded.</p>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </tr>
                             @endforeach
                         </tbody>

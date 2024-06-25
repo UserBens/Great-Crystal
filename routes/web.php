@@ -7,8 +7,8 @@ use App\Http\Controllers\Admin\{
    BookController,
    DashboardController,
    GradeController,
-    InvoiceSupplierController,
-    JournalController,
+   InvoiceSupplierController,
+   JournalController,
    PaymentBookController,
    PaymentGradeController,
    PaymentStudentController,
@@ -264,7 +264,6 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       })->name('journal.detail.selected.excel');
       Route::post('/journal/import', [ImportTransactionController::class, 'importExcel'])->name('journal.import');
       Route::get('/journal/templates/import', [ImportTransactionController::class, 'downloadTemplate']);
-
    });
 
    Route::prefix('/account')->group(function () {
@@ -286,11 +285,11 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
    Route::prefix('/invoice-supplier')->group(function () {
       Route::get('/', [InvoiceSupplierController::class, 'indexInvoiceSupplier'])->name('invoice-supplier.index');
+      Route::post('/upload-proof-of-payment/{id}', [InvoiceSupplierController::class, 'uploadProofOfPayment'])->name('invoice-supplier.upload-proof');
       Route::get('/create-invoice-supplier', [InvoiceSupplierController::class, 'createInvoiceSupplier'])->name('create-invoice-supplier.create');
       Route::post('/create-invoice-supplier/store', [InvoiceSupplierController::class, 'storeInvoiceSupplier'])->name('invoice-supplier.store');
       Route::delete('/{id}', [InvoiceSupplierController::class, 'destroyInvoiceSupplier'])->name('invoice-supplier.destroy');
    });
-
 });
 
 Route::middleware(['superadmin'])->prefix('admin')->group(function () {

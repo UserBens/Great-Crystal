@@ -20,6 +20,9 @@ return new class extends Migration
             $table->dateTime('date')->default(now());
             $table->string('nota');
             $table->dateTime('deadline_invoice')->default(now());
+            $table->enum('payment_status', ['Paid', 'Not Yet'])->default('Not Yet');
+            $table->string('description')->nullable();
+            $table->string('image_path')->nullable();
             $table->timestamps();
         });
     }

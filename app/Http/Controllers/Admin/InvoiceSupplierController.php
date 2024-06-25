@@ -40,10 +40,10 @@ class InvoiceSupplierController extends Controller
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
                 $query->where('supplier_name', 'LIKE', $searchTerm)
-                      ->orWhere('no_invoice', 'LIKE', $searchTerm)
-                      ->orWhere('nota', 'LIKE', $searchTerm)
-                      ->orWhere('amount', 'LIKE', $searchTerm)
-                      ->orWhere('date', 'LIKE', $searchTerm);
+                    ->orWhere('no_invoice', 'LIKE', $searchTerm)
+                    ->orWhere('nota', 'LIKE', $searchTerm)
+                    ->orWhere('amount', 'LIKE', $searchTerm)
+                    ->orWhere('date', 'LIKE', $searchTerm);
             }
 
             // Mengatur urutan berdasarkan parameter yang dipilih
@@ -112,10 +112,6 @@ class InvoiceSupplierController extends Controller
     }
 
 
-
-
-
-
     public function createInvoiceSupplier()
     {
         $supplierDatas = SupplierData::all();
@@ -134,19 +130,34 @@ class InvoiceSupplierController extends Controller
             'date' => 'required|date_format:Y-m-d',
             'nota' => 'required',
             'deadline_invoice' => 'required|date_format:Y-m-d',
+            'ppn_status' => 'required'
         ]);
+
+        $amount = $request->amount;
+        $pph_percentage = 0;
+
+        // Calculate the amount after PPH deduction
+        if ($request->ppn_status === '2%') {
+            $pph_percentage = 2;
+            $amount *= 0.98; // Deduct 2%
+        } else if ($request->ppn_status === '15%') {
+            $pph_percentage = 15;
+            $amount *= 0.85; // Deduct 15%
+        }
 
         $invoice = new InvoiceSupplier();
         $invoice->no_invoice = $request->no_invoice;
         $invoice->supplier_name = $request->supplier_name;
-        $invoice->amount = $request->amount;
+        $invoice->amount = $amount;
+        $invoice->pph_percentage = $pph_percentage;
         $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
         $invoice->nota = $request->nota;
         $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
         $invoice->save();
 
-        return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfull!');
+        return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
     }
+
 
 
     public function destroyInvoiceSupplier($id)

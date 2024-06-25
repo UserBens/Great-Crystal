@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('supplier_name', 255);
             $table->foreign('supplier_name')->references('name')->on('supplier_data')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('amount');
+            $table->integer('pph_percentage'); 
             $table->dateTime('date')->default(now());
             $table->string('nota');
             $table->dateTime('deadline_invoice')->default(now());

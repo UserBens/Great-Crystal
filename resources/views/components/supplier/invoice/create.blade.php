@@ -60,7 +60,7 @@
                                         <div class="col-md-6">
                                             <label for="date">Date<span style="color: red">*</span> :</label>
                                             <input type="date" name="date" class="form-control"
-                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask >
+                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
 
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('date') }}</p>
@@ -76,7 +76,7 @@
 
                                                 <input name="nota" type="text" class="form-control" id="nota"
                                                     placeholder="Example : S-100031" autocomplete="off"
-                                                    value="{{ old('nota') }}" >
+                                                    value="{{ old('nota') }}">
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('nota') }}</p>
@@ -87,13 +87,28 @@
                                             <label for="deadline_invoice">Deadline Invoice<span style="color: red">*</span>
                                                 :</label>
                                             <input type="date" name="deadline_invoice" class="form-control"
-                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask >
+                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
 
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('deadline_invoice') }}</p>
                                             @endif
                                         </div>
 
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="ppn">PPH 23<span style="color: red">*</span> :</label>
+                                            <select name="ppn_status" class="form-control" id="ppn_status">
+                                                <option value="null">null</option>
+                                                <option value="2%">2%</option>
+                                                <option value="15%">15%</option>
+                                            </select>
+                                            @if ($errors->any())
+                                                <p style="color: red">
+                                                    {{ $errors->first('payment_status') }}</p>
+                                            @endif
+                                        </div>
                                     </div>
 
                                     <div class="form-group row">
@@ -135,6 +150,29 @@
             // Submit formulir
             document.getElementById("transferForm").submit();
         }
+
+        // function submitForm() {
+        //     // Hapus pemisah ribuan dari input amount_spent
+        //     let amountInput = document.getElementById("amount");
+        //     removeThousandSeparator(amountInput);
+
+        //     // Get the selected PPH status
+        //     let pphStatus = document.getElementById("ppn_status").value;
+
+        //     // Calculate the amount after PPH deduction
+        //     let amount = parseFloat(amountInput.value);
+        //     if (pphStatus === 'pph23') {
+        //         amount = amount * 0.98; // Deduct 2%
+        //     } else if (pphStatus === 'pph24') {
+        //         amount = amount * 0.85; // Deduct 15%
+        //     }
+
+        //     // Update the input value with the new amount
+        //     amountInput.value = amount.toFixed(2);
+
+        //     // Submit the form
+        //     document.getElementById("transferForm").submit();
+        // }
 
         // Inisialisasi Select2 pada elemen select
         $(document).ready(function() {

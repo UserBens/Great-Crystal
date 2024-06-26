@@ -281,7 +281,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/', [InvoiceSupplierController::class, 'indexsupplier'])->name('supplier.index');
       Route::get('/create-supplier', [InvoiceSupplierController::class, 'createSupplier'])->name('create-supplier.create');
       Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplier'])->name('supplier.store');
-      Route::delete('/{id}', [InvoiceSupplierController::class, 'destroySupplier'])->name('supplier.destroy');
+      Route::delete('/supplier/{id}', [InvoiceSupplierController::class, 'destroySupplier'])->name('supplier.destroy');
    });
 
    Route::prefix('/invoice-supplier')->group(function () {

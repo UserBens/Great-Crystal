@@ -37,6 +37,9 @@ class InvoiceSupplierController extends Controller
             // Query data berdasarkan parameter pencarian yang diberikan
             $query = InvoiceSupplier::query();
 
+            $invoices = InvoiceSupplier::all();
+
+
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
                 $query->where('supplier_name', 'LIKE', $searchTerm)
@@ -65,7 +68,7 @@ class InvoiceSupplierController extends Controller
             $data = $query->paginate(10);
 
             // Menampilkan view dengan data dan form
-            return view('components.supplier.invoice.index', compact('data', 'form'));
+            return view('components.supplier.invoice.index', compact('data', 'form', 'invoices'));
         } catch (Exception $err) {
             // Menampilkan pesan error jika terjadi kesalahan
             return dd($err);
@@ -164,9 +167,9 @@ class InvoiceSupplierController extends Controller
     {
         try {
             $invoice = InvoiceSupplier::findOrFail($id);
-            
+
             $invoice->delete();
-            
+
             return response()->json(['message' => 'Invoice supplier deleted successfully.']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to delete invoice supplier.']);
@@ -212,17 +215,17 @@ class InvoiceSupplierController extends Controller
 
             // Mengatur urutan berdasarkan parameter yang dipilih
             if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'date') {
-                    $query->orderBy('date', $request->order);
+                if ($request->sort === 'created_at') {
+                    $query->orderBy('created_at', $request->order);
                 } else {
                     $query->orderBy($request->sort, $request->order);
                 }
             }
 
             // Filter data berdasarkan tanggal
-            if ($request->filled('date')) {
+            if ($request->filled('created_at')) {
                 $searchDate = date('Y-m-d', strtotime($request->date));
-                $query->whereDate('date', $searchDate);
+                $query->whereDate('created_at', $searchDate);
             }
 
             // Memuat data dengan pagination
@@ -255,21 +258,19 @@ class InvoiceSupplierController extends Controller
             'no_rek' => $request->no_rek,
         ]);
 
-        return redirect()->route('supplier.index')->with('success', 'Invoice Supplier berhasil dibuat!');
+        return redirect()->route('supplier.index')->with('success', 'Invoice Supplier Created successfully!');
     }
 
     public function destroySupplier($id)
     {
         try {
-            // Cari data transaksi transfer berdasarkan ID
-            $invoiceSupplier = InvoiceSupplier::findOrFail($id);
+            $invoice = SupplierData::findOrFail($id);
 
-            // Hapus data transaksi transfer
-            $invoiceSupplier->delete();
+            $invoice->delete();
 
-            return redirect()->back()->with('success', 'Invoice Supplier Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
+            return response()->json(['message' => 'Supplier Data deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete Supplier Data.']);
         }
     }
 }

@@ -5,26 +5,6 @@
         <h2 class="text-center display-4 mb-3">Transaction Receive Search</h2>
         <form action="{{ route('transaction-receive.index') }}" method="GET" class="mb-3">
             <div class="row">
-                {{-- <div class="col-md-3">
-                    <label for="date">Type Transaction</label>
-                    <select name="type" class="form-control">
-                        <option value="">-- All Data --</option>
-                        <option value="transaction_transfer"
-                            {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
-                            Transaction Transfer</option>
-                        <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
-                            Transaction Send</option>
-                    </select>
-                </div> --}}
-                {{-- <div class="col-md-3">
-                    <label for="date">Sort By</label>
-                    <select name="sort" class="form-control">
-                        <option value="">-- All Data --</option>
-                        <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
-                        <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
-                    </select>
-                </div> --}}
-
                 <div class="col-md-4">
                     <label>Sort By </label>
                     <select name="sort" class="form-control" id="sort-select">
@@ -69,19 +49,18 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Transaction Receive!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('transaction-receive.create') }}"
-                            class="btn btn-success mt-3">
+                        <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Create Transaction
                         </a>
                     </div>
                 </div>
             </div>
         @else
-        <div class="btn-group">
-            <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success mt-3">
-                <i class="fa-solid fa-plus"></i> Create Transaction
-            </a>
-        </div>
+            <div class="btn-group">
+                <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success mt-3">
+                    <i class="fa-solid fa-plus"></i> Create Transaction
+                </a>
+            </div>
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-4">
                 <div class="card-header">
@@ -96,12 +75,12 @@
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
-                                <th style="width: 3%">#</th>
+                                <th>#</th>
                                 <th>Account Number</th>
                                 <th>Amount</th>
                                 <th>Date</th>
                                 {{-- <th>Type</th> --}}
-                                <th style="width: 8%;" class="text-center">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -123,43 +102,12 @@
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
 
                                     <td>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
-                                            style="margin-right: 5px;">
-                                            <i class="fas fa-trash"></i> Delete
+                                        <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
+                                            data-id="{{ $item->id }}">
+                                            <i class="fas fa-trash mr-1"></i>Delete
                                         </button>
                                     </td>
                                     <td class="project-actions text-right">
-                                        <!-- Modal Konfirmasi Penghapusan -->
-                                        <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Konfirmasi Penghapusan</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Anda yakin ingin menghapus data ini?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Batal</button>
-                                                        <form
-                                                            action="{{ route('transaction-receive.destroy', $item->id) }}"
-                                                            method="POST" style="display: inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Ya,
-                                                                Hapus</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- /Modal Konfirmasi Penghapusan -->
                                     </td>
                                 </tr>
                             @endforeach
@@ -181,7 +129,7 @@
     </div>
 
     {{-- SweetAlert --}}
-    @if (session('success'))
+    {{-- @if (session('success'))
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script>
             swal({
@@ -191,7 +139,79 @@
                 button: "OK",
             });
         </script>
-    @endif
+    @endif --}}
+
+    <!-- Include jQuery and SweetAlert library -->
+    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/projects.js') }}" defer></script>
+
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            $('.delete-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mengirim request DELETE menggunakan Ajax
+                        $.ajax({
+                            url: '{{ route('transaction-receive.destroy', ['id' => ':id']) }}'
+                                .replace(':id', id),
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                        .reload(); // Refresh halaman setelah menghapus
+                                });
+                            },
+                            error: function(response) {
+                                Swal.fire(
+                                    'Failed!',
+                                    response.responseJSON.error ? response
+                                    .responseJSON.error :
+                                    'There was an error deleting the invoice supplier.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
+
+        });
+    </script>
 
     {{-- search button --}}
     <script>

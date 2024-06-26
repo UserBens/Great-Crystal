@@ -119,14 +119,14 @@
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
 
                                     <td>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $item->id }}"
-                                            style="margin-right: 5px;">
-                                            <i class="fas fa-trash"></i> Delete
+                                        <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
+                                            data-id="{{ $item->id }}">
+                                            <i class="fas fa-trash mr-1"></i>Delete
                                         </button>
                                     </td>
                                     <td class="project-actions text-right">
                                         <!-- Modal Konfirmasi Penghapusan -->
-                                        <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
+                                        {{-- <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
                                             role="dialog">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
@@ -154,7 +154,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <!-- /Modal Konfirmasi Penghapusan -->
                                     </td>
                                 </tr>
@@ -176,7 +176,7 @@
         @endif
     </div>
 
-    {{-- SweetAlert --}}
+    {{-- SweetAlert
     @if (session('success'))
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script>
@@ -187,7 +187,79 @@
                 button: "OK",
             });
         </script>
-    @endif
+    @endif --}}
+
+    <!-- Include jQuery and SweetAlert library -->
+    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/projects.js') }}" defer></script>
+
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            $('.delete-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mengirim request DELETE menggunakan Ajax
+                        $.ajax({
+                            url: '{{ route('transaction-transfer.destroy', ['id' => ':id']) }}'
+                                .replace(':id', id),
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                        .reload(); // Refresh halaman setelah menghapus
+                                });
+                            },
+                            error: function(response) {
+                                Swal.fire(
+                                    'Failed!',
+                                    response.responseJSON.error ? response
+                                    .responseJSON.error :
+                                    'There was an error deleting the invoice supplier.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
+
+        });
+    </script>
 
     {{-- search button --}}
     <script>

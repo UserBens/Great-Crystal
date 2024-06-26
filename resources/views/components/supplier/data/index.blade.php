@@ -2,10 +2,10 @@
 @section('content')
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
-        <h2 class="text-center display-4 mb-3">Invoice Supplier Search</h2>
+        <h2 class="text-center display-4 mb-3">Supplier Data Search</h2>
         <form action="{{ route('supplier.index') }}" method="GET" class="mb-3">
             <div class="row">
-                <div class="col-md-3">
+                {{-- <div class="col-md-3">
                     <label for="date">Type Transaction</label>
                     <select name="type" class="form-control">
                         <option value="">-- All Data --</option>
@@ -14,8 +14,8 @@
                         <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
                             Transaction Send</option>
                     </select>
-                </div>
-                <div class="col-md-3">
+                </div> --}}
+                <div class="col-md-4">
                     <label for="sort">Sort By</label>
                     <select name="sort" class="form-control" id="sort-select">
                         <option>-- All Data --</option>
@@ -23,11 +23,11 @@
                         <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="date">Date</label>
                     <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="date">Search Data</label>
                     <div class="input-group">
                         <input type="text" name="search" class="form-control" placeholder="Search..."
@@ -86,8 +86,8 @@
                                 <th>Name</th>
                                 <th>Intansi Supplier</th>
                                 <th>No. Rek</th>
-                                <th>Deadline Invoice</th>
-                                <th>Actions</th>
+                                <th>Created At</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -105,53 +105,21 @@
                                     {{-- <td>{{ $item->nota }} </td> --}}
                                     {{-- <td>{{ \Carbon\Carbon::parse($item->deadline_invoice)->format('j F Y') }}</td> --}}
 
-                                    <td>
+                                    <td class="text-center">
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-danger btn-sm delete-btn"
-                                                style="margin-right: 12px" data-toggle="modal"
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
                                                 data-id="{{ $item->id }}">
                                                 <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
 
-                                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
+                                            {{-- <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
                                                 data-target="#importModal" data-id="{{ $item->id }}">
                                                 <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
-                                            </button>
+                                            </button> --}}
                                         </div>
                                     </td>
 
                                     <td class="project-actions">
-                                        <!-- Modal Konfirmasi Penghapusan -->
-                                        {{-- <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Konfirmasi Penghapusan</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Anda yakin ingin menghapus data ini?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Batal</button>
-                                                        <form action="{{ route('supplier.destroy', $item->id) }}"
-                                                            method="POST" style="display: inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Ya,
-                                                                Hapus</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> --}}
-                                        <!-- /Modal Konfirmasi Penghapusan -->
-
                                         <div class="modal fade" id="importModal" tabindex="-1" role="dialog"
                                             aria-labelledby="importModalLabel" aria-hidden="true">
                                             <div class="modal-dialog" role="document"
@@ -171,7 +139,7 @@
                                                             <div class="file-upload"
                                                                 style=" display: flex; justify-content: center; align-items: center;">
                                                                 <div class="form-group row">
-                                                                   
+
                                                                     <div class="col-md-6">
                                                                         <label for="description">Description :</label>
                                                                         <textarea autocomplete="off" name="description" class="form-control" id="description"
@@ -266,7 +234,78 @@
         @endif
     </div>
 
-    {{-- SweetAlert --}}
+    <!-- Include jQuery and SweetAlert library -->
+    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/projects.js') }}" defer></script>
+
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            $('.delete-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mengirim request DELETE menggunakan Ajax
+                        $.ajax({
+                            url: '{{ route('supplier.destroy', ['id' => ':id']) }}'
+                                .replace(':id', id),
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                        .reload(); // Refresh halaman setelah menghapus
+                                });
+                            },
+                            error: function(response) {
+                                Swal.fire(
+                                    'Failed!',
+                                    response.responseJSON.error ? response
+                                    .responseJSON.error :
+                                    'There was an error deleting the invoice supplier.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+
+    {{-- SweetAlert
     @if (session('success'))
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script>
@@ -277,8 +316,7 @@
                 button: "OK",
             });
         </script>
-    @endif
-
+    @endif --}}
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

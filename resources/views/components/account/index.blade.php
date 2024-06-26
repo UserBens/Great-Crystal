@@ -125,9 +125,11 @@
                                                 data-beginning-balance="{{ $account->beginning_balance }}">
                                                 <i class="fas fa-calculator"></i> Total
                                             </a> --}}
-                                            <form action="{{ route('account.calculateTotal', $account->id) }}" method="POST">
+                                            <form action="{{ route('account.calculateTotal', $account->id) }}"
+                                                method="POST">
                                                 @csrf
-                                                <button type="submit" class="btn btn-success btn-sm mr-2" name="calculate_total">
+                                                <button type="submit" class="btn btn-success btn-sm mr-2"
+                                                    name="calculate_total">
                                                     <i class="fas fa-calculator"></i> Total
                                                 </button>
                                                 <input type="hidden" name="name" value="{{ $account->name }}">
@@ -139,15 +141,15 @@
                                                 href="/admin/account/{{ $account->id }}/edit">
                                                 <i class="fas fa-pencil"></i> Edit
                                             </a>
-                                            <button type="button" class="btn btn-danger btn-sm delete-btn"
-                                                data-toggle="modal" data-id="{{ $account->id }}">
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
+                                                data-id="{{ $account->id }}">
                                                 <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
                                             {{-- </div> --}}
                                     </td>
                                 </tr>
                                 <!-- Modal Konfirmasi Penghapusan -->
-                                <div id="deleteModal{{ $account->id }}" class="modal fade" tabindex="-1" role="dialog">
+                                {{-- <div id="deleteModal{{ $account->id }}" class="modal fade" tabindex="-1" role="dialog">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -172,7 +174,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <!-- /Modal Konfirmasi Penghapusan -->
                             @endforeach
                         </tbody>
@@ -191,7 +193,7 @@
     </div>
 
     {{-- SweetAlert --}}
-    @if (session('success'))
+    {{-- @if (session('success'))
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script>
             swal({
@@ -201,7 +203,79 @@
                 button: "OK",
             });
         </script>
-    @endif
+    @endif --}}
+
+    <!-- Include jQuery and SweetAlert library -->
+    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/projects.js') }}" defer></script>
+
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            $('.delete-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mengirim request DELETE menggunakan Ajax
+                        $.ajax({
+                            url: '{{ route('account.destroy', ['id' => ':id']) }}'
+                                .replace(':id', id),
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                        .reload(); // Refresh halaman setelah menghapus
+                                });
+                            },
+                            error: function(response) {
+                                Swal.fire(
+                                    'Failed!',
+                                    response.responseJSON.error ? response
+                                    .responseJSON.error :
+                                    'There was an error deleting the invoice supplier.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
+
+        });
+    </script>
 
     {{-- delete button --}}
     <script>

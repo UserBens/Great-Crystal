@@ -97,7 +97,7 @@ class AccountingController extends Controller
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-            return redirect()->route('account.index')->with('success', 'Account created successfully!');
+            return redirect()->route('account.index')->with('success', 'Accountnumber created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle the integrity constraint violation error
@@ -177,16 +177,26 @@ class AccountingController extends Controller
 
     public function destroyAccount($id)
     {
+        // try {
+        //     // Cari data transaksi transfer berdasarkan ID
+        //     $accountNumbers = Accountnumber::findOrFail($id);
+
+        //     // Hapus data transaksi transfer
+        //     $accountNumbers->delete();
+
+        //     return redirect()->back()->with('success', 'Account Number Deleted Successfully!');
+        // } catch (Exception $err) {
+        //     return dd($err);
+        // }
+
         try {
-            // Cari data transaksi transfer berdasarkan ID
             $accountNumbers = Accountnumber::findOrFail($id);
 
-            // Hapus data transaksi transfer
             $accountNumbers->delete();
 
-            return redirect()->back()->with('success', 'Account Number Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
+            return response()->json(['message' => 'Accountnumber deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete Accountnumber.']);
         }
     }
 
@@ -403,117 +413,21 @@ class AccountingController extends Controller
         }
     }
 
-    // public function editTransactionTransfer($id)
-    // {
-    //     $transaction = Transaction_transfer::findOrFail($id);
-    //     $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
-
-    //     return view('components.cash&bank.edit-transaction-transfer', [
-    //         'transaction' => $transaction,
-    //         'accountNumbers' => $accountNumbers,
-    //     ]);
-    // }
-
-    // public function updateTransactionTransfer(Request $request, $id)
-    // {
-    //     try {
-    //         $request->validate([
-    //             'transfer_account_id' => 'required',
-    //             'deposit_account_id' => 'required',
-    //             'amount' => 'required|numeric',
-    //             'date' => 'required|date_format:d/m/Y',
-    //             'description' => 'required',
-    //         ]);
-
-    //         $transaction_transfer = Transaction_transfer::findOrFail($id);
-
-    //         $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
-
-    //         $transaction_transfer::update([
-    //             'transfer_account_id' => $request->transfer_account_id,
-    //             'deposit_account_id' => $request->deposit_account_id,
-    //             'amount' => $request->amount,
-    //             'date' => $date,
-    //             'description' => $request->description,
-    //         ]);
-
-    //         return redirect()->route('cash.index')->with('success', 'Transaction Transfer Updated Successfully!');
-    //     } catch (Exception $err) {
-    //         // Tangani kesalahan di sini
-    //         return dd($err);
-    //     }
-    // }
-
-
     public function deleteTransactionTransfer($id)
     {
         try {
-            // Cari data transaksi transfer berdasarkan ID
             $transactionTransfer = Transaction_transfer::findOrFail($id);
 
-            // Hapus data transaksi transfer
             $transactionTransfer->delete();
 
-            return redirect()->back()->with('success', 'Transaction Transfer Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
+            return response()->json(['message' => 'Transaction Transfer deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete Transaction Transfer.']);
         }
     }
 
     public function indexTransactionSend(Request $request)
     {
-        // session()->flash('page', (object)[
-        //     'page' => 'Transaction',
-        //     'child' => 'Database Transaction Send',
-        // ]);
-
-        // try {
-        //     // Inisialisasi objek form dengan nilai default
-        //     $form = (object) [
-        //         'sort' => $request->sort ?? 'date', // Default sort by date
-        //         'order' => $request->order ?? 'desc', // Default descending
-        //         'status' => $request->status ?? null,
-        //         'search' => $request->search ?? null,
-        //         'type' => $request->type ?? null,
-        //         'date' => $request->date ?? null,
-        //     ];
-
-        //     // Query data berdasarkan parameter pencarian yang diberikan
-        //     $query = Transaction_send::with(['transferAccount', 'depositAccount']);
-
-        //     if ($request->filled('search')) {
-        //         $searchTerm = '%' . $request->search . '%';
-        //         $query->where(function ($q) use ($searchTerm) {
-        //             $q->whereHas('transferAccount', function ($q) use ($searchTerm) {
-        //                 $q->where('name', 'LIKE', $searchTerm)
-        //                     ->orWhere('account_no', 'LIKE', $searchTerm);
-        //             })->orWhereHas('depositAccount', function ($q) use ($searchTerm) {
-        //                 $q->where('name', 'LIKE', $searchTerm)
-        //                     ->orWhere('account_no', 'LIKE', $searchTerm);
-        //             })->orWhere('amount', 'LIKE', $searchTerm)
-        //                 ->orWhere('date', 'LIKE', $searchTerm);
-        //         });
-        //     }
-
-        //     if ($form->sort === 'date') {
-        //         $query->orderBy('date', $form->order);
-        //     } elseif ($form->sort === 'oldest') {
-        //         $query->orderBy('date', 'asc');
-        //     } elseif ($form->sort === 'newest') {
-        //         $query->orderBy('date', 'desc');
-        //     }
-
-
-        //     // Memuat data dengan pagination
-        //     $data = $query->paginate(10);
-
-        //     // Menampilkan view dengan data dan form
-        //     return view('components.cash&bank.index-send', compact('data', 'form'));
-        // } catch (Exception $err) {
-        //     // Menampilkan pesan error jika terjadi kesalahan
-        //     return dd($err);
-        // }
-
         session()->flash('page', (object)[
             'page' => 'Transaction',
             'child' => 'Database Transaction Send',
@@ -645,15 +559,13 @@ class AccountingController extends Controller
     public function deleteTransactionSend($id)
     {
         try {
-            // Cari data transaksi transfer berdasarkan ID
             $transactionSend = Transaction_send::findOrFail($id);
 
-            // Hapus data transaksi transfer
             $transactionSend->delete();
 
-            return redirect()->back()->with('success', 'Transaction Send Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
+            return response()->json(['message' => 'Transaction Send deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete Transaction Send.']);
         }
     }
 
@@ -772,16 +684,26 @@ class AccountingController extends Controller
 
     public function deleteTransactionReceive($id)
     {
+        // try {
+        //     // Cari data transaksi transfer berdasarkan ID
+        //     $transactionReceive = Transaction_receive::findOrFail($id);
+
+        //     // Hapus data transaksi transfer
+        //     $transactionReceive->delete();
+
+        //     return redirect()->back()->with('success', 'Transaction Receive Deleted Successfully!');
+        // } catch (Exception $err) {
+        //     return dd($err);
+        // }
+
         try {
-            // Cari data transaksi transfer berdasarkan ID
             $transactionReceive = Transaction_receive::findOrFail($id);
 
-            // Hapus data transaksi transfer
             $transactionReceive->delete();
 
-            return redirect()->back()->with('success', 'Transaction Receive Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
+            return response()->json(['message' => 'Transaction Receive deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete Transaction Receive.']);
         }
     }
 }

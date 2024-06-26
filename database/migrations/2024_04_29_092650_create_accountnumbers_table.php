@@ -20,9 +20,9 @@ return new class extends Migration
             $table->bigInteger('amount');
             $table->bigInteger('beginning_balance');
             $table->bigInteger('ending_balance');
+            $table->bigInteger('transactions_total')->default(0);
             $table->string('description');
             $table->timestamps();
-
             // Add unique constraints
             // $table->unique('name');
             $table->unique('account_no');

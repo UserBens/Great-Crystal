@@ -3,7 +3,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
         <h2 class="text-center display-4 mb-3">Invoice Supplier Search</h2>
-        <form action="{{ route('invoice-supplier.index') }}" method="GET" class="mb-3">
+        <form action="{{ route('supplier.index') }}" method="GET" class="mb-3">
             <div class="row">
                 <div class="col-md-3">
                     <label for="date">Type Transaction</label>
@@ -54,7 +54,7 @@
             <!-- Display message when no transfer data found -->
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
-                    <h3>Click the button below to create Invoice Supplier!</h3>
+                    <h3>Click the button below to create Supplier Data!</h3>
                     <div class="btn-group">
                         <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Create Supplier
@@ -71,7 +71,7 @@
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-4">
                 <div class="card-header">
-                    <h3 class="card-title">Invoice Supplier List</h3>
+                    <h3 class="card-title">Supplier Data List</h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>

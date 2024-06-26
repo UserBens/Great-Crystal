@@ -89,7 +89,7 @@
                                 <th>Date</th>
                                 <th>Nota</th>
                                 <th>Deadline Invoice</th>
-                                <th>Actions</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,27 +112,27 @@
                                         </div>
                                     @endif --}}
 
-                                    <td>
+                                    <td class="text-center">
                                         {{-- <div class="btn-group"> --}}
-                                            <button type="button" class="btn btn-danger btn-sm delete-btn"
-                                                style="margin-right: 10px" data-toggle="modal"
-                                                data-id="{{ $item->id }}">
-                                                <i class="fas fa-trash mr-1"></i>Delete
-                                            </button>
+                                        <button type="button" class="btn btn-sm delete-btn btn-danger"
+                                            data-id="{{ $item->id }}">
+                                            <i class="fas fa-trash mr-1"></i>Delete
+                                        </button>
 
-                                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
-                                                data-target="#importModal{{ $item->id }}" style="margin-right: 10px">
-                                                <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
-                                            </button>
+                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal"
+                                            data-target="#importModal{{ $item->id }}" style="" >
+                                            <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
+                                        </button>
 
-                                            <!-- New Button to Show Image Modal -->
-                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
-                                                data-target="#showImageModal{{ $item->id }}">
-                                                <i class="fas fa-eye" style="margin-right: 4px"></i>Show Image
-                                            </button>
+                                        <!-- New Button to Show Image Modal -->
+                                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
+                                            data-target="#showImageModal{{ $item->id }}">
+                                            <i class="fas fa-eye" style="margin-right: 4px"></i>Preview
+                                        </button>
                                         {{-- </div> --}}
                                     </td>
 
+                                    {{-- start modal upload image --}}
                                     <td class="project-actions">
                                         <div class="modal fade" id="importModal{{ $item->id }}" tabindex="-1"
                                             role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
@@ -227,10 +227,16 @@
                                                                         <label for="upload_image">Upload Image<span
                                                                                 style="color: red">*</span>:</label>
                                                                         <div class="image-upload-wrap">
+                                                                            {{-- <input type="file" name="image_path"
+                                                                                class="file-upload-input"
+                                                                                onchange="readURL(this);"
+                                                                                accept="image/*"> --}}
+
                                                                             <input type="file" name="image_path"
                                                                                 class="file-upload-input"
                                                                                 onchange="readURL(this);"
                                                                                 accept="image/*">
+
                                                                             <div class="drag-text">
                                                                                 <h3>Drag and drop a file or select add Image
                                                                                 </h3>
@@ -245,7 +251,17 @@
                                                                         style="max-width: 100%; max-height: 100%;" />
                                                                     <div class="image-title-wrap"
                                                                         style="display: flex; justify-content: space-between; align-items: center;">
-                                                                        <button type="button" onclick="removeUpload()"
+                                                                        {{-- <button type="button" onclick="removeUpload()"
+                                                                            class="remove-image"
+                                                                            style="margin-right: 10px">
+                                                                            <i class="fa-solid fa-trash fa-2xl"
+                                                                                style="margin-bottom: 1em;"></i> <br>
+                                                                            Remove
+                                                                            <span class="image-title">Image</span>
+                                                                        </button> --}}
+
+                                                                        <button type="button"
+                                                                            onclick="removeUpload(this)"
                                                                             class="remove-image"
                                                                             style="margin-right: 10px">
                                                                             <i class="fa-solid fa-trash fa-2xl"
@@ -264,20 +280,20 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="modal-footer">
+                                                        {{-- <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
                                                                 data-dismiss="modal">Close</button>
                                                             <button type="submit" class="btn btn-primary">Upload</button>
 
-                                                        </div>
+                                                        </div> --}}
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
-
-
-
                                     </td>
+                                    {{-- end modal upload image --}}
+
+                                    {{-- start modal show image --}}
                                     <div class="modal fade" id="showImageModal{{ $item->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="showImageModalLabel{{ $item->id }}"
                                         aria-hidden="true">
@@ -312,6 +328,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- end modal show image --}}
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -331,61 +349,122 @@
         @endif
     </div>
 
-    {{-- SweetAlert --}}
-    @if (session('success'))
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
+    <!-- Include jQuery and SweetAlert library -->
+    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/projects.js') }}" defer></script>
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            $('.delete-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mengirim request DELETE menggunakan Ajax
+                        $.ajax({
+                            url: '{{ route('invoice-supplier.destroy', ['id' => ':id']) }}'
+                                .replace(':id', id),
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                .reload(); // Refresh halaman setelah menghapus
+                                });
+                            },
+                            error: function(response) {
+                                Swal.fire(
+                                    'Failed!',
+                                    response.responseJSON.error ? response
+                                    .responseJSON.error :
+                                    'There was an error deleting the invoice supplier.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
             });
-        </script>
-    @endif
+
+
+        });
+    </script>
 
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            document.querySelector("body").addEventListener("click", function(event) {
-                if (event.target.id === "download-template") {
-                    event.preventDefault();
-                    console.log("terklik");
-                    window.location.href = 'journal/journal/templates/import';
-                }
-            });
-
             function readURL(input) {
                 if (input.files && input.files[0]) {
                     var reader = new FileReader();
                     reader.onload = function(e) {
-                        document.querySelector(".image-upload-wrap").style.display = 'none';
-                        document.querySelector(".file-upload-image").src = e.target.result;
-                        document.querySelector(".file-upload-content").style.display = 'block';
-                        document.querySelector(".image-title").innerHTML = input.files[0].name;
+                        var modal = input.closest('.modal');
+                        modal.querySelector(".image-upload-wrap").style.display = 'none';
+                        modal.querySelector(".file-upload-image").src = e.target.result;
+                        modal.querySelector(".file-upload-content").style.display = 'block';
+                        modal.querySelector(".image-title").innerHTML = input.files[0].name;
                     };
                     reader.readAsDataURL(input.files[0]);
                 } else {
-                    removeUpload();
+                    removeUpload(input);
                 }
             }
 
             window.readURL = readURL; // Ensure readURL is globally available
 
-            function removeUpload() {
-                document.querySelector(".file-upload-input").value = '';
-                document.querySelector(".file-upload-content").style.display = 'none';
-                document.querySelector(".image-upload-wrap").style.display = 'block';
+            function removeUpload(button) {
+                var modal = button.closest('.modal');
+                var input = modal.querySelector(".file-upload-input");
+                input.value = '';
+                modal.querySelector(".file-upload-content").style.display = 'none';
+                modal.querySelector(".image-upload-wrap").style.display = 'block';
             }
 
             window.removeUpload = removeUpload; // Ensure removeUpload is globally available
 
-            document.querySelector(".image-upload-wrap").addEventListener("dragover", function() {
-                document.querySelector(".image-upload-wrap").classList.add("image-dropping");
+            document.querySelectorAll(".image-upload-wrap").forEach(function(element) {
+                element.addEventListener("dragover", function() {
+                    element.classList.add("image-dropping");
+                });
+
+                element.addEventListener("dragleave", function() {
+                    element.classList.remove("image-dropping");
+                });
             });
 
-            document.querySelector(".image-upload-wrap").addEventListener("dragleave", function() {
-                document.querySelector(".image-upload-wrap").classList.remove("image-dropping");
+            document.querySelectorAll(".file-upload-input").forEach(function(input) {
+                input.addEventListener("change", function() {
+                    readURL(input);
+                });
             });
         });
     </script>

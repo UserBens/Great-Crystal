@@ -163,17 +163,16 @@ class InvoiceSupplierController extends Controller
     public function destroyInvoiceSupplier($id)
     {
         try {
-            // Cari data transaksi transfer berdasarkan ID
-            $invoiceSupplier = InvoiceSupplier::findOrFail($id);
-
-            // Hapus data transaksi transfer
-            $invoiceSupplier->delete();
-
-            return redirect()->back()->with('success', 'Invoice Supplier Deleted Successfully!');
-        } catch (Exception $err) {
-            return dd($err);
+            $invoice = InvoiceSupplier::findOrFail($id);
+            
+            $invoice->delete();
+            
+            return response()->json(['message' => 'Invoice supplier deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete invoice supplier.']);
         }
     }
+
 
 
     // Punya Supplier

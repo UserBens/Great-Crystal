@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
          TransactionTransferSeeder::class,
          TransactionSendSeeder::class,
          TransactionReceiveSeeder::class,
+         InvoiceSupplierSeeder::class,
       ]);
     }
 }

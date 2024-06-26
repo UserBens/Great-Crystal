@@ -99,8 +99,8 @@
                                 <th>Amount</th>
                                 <th>Beginning Balance</th>
                                 <th>Ending Balance</th>
-                                <th>Date</th>
-                                <th>Actions</th>
+                                {{-- <th>Date</th> --}}
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -114,13 +114,27 @@
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
                                     <td>Rp.{{ number_format($account->beginning_balance, 0, ',', '.') }}</td>
                                     <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($account->created_at)->format('j F Y') }}</td>
-                                    <td>
+                                    {{-- <td>{{ \Carbon\Carbon::parse($account->created_at)->format('j F Y') }}</td> --}}
+                                    {{-- <td>
+                                      
+                                    </td> --}}
+                                    <td class="text-center">
                                         <div class="row">
-                                            <a class="btn btn-success btn-sm mr-2"
-                                                href="/admin/account/{{ $account->id }}/edit">
-                                                <i class="fas fa-pencil"></i> Total
-                                            </a>
+                                            {{-- <a class="btn btn-success btn-sm mr-2 calculate-total"
+                                                data-id="{{ $account->id }}" data-name="{{ $account->name }}"
+                                                data-beginning-balance="{{ $account->beginning_balance }}">
+                                                <i class="fas fa-calculator"></i> Total
+                                            </a> --}}
+                                            <form action="{{ route('account.calculateTotal', $account->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm mr-2" name="calculate_total">
+                                                    <i class="fas fa-calculator"></i> Total
+                                                </button>
+                                                <input type="hidden" name="name" value="{{ $account->name }}">
+                                                <input type="hidden" name="beginning_balance"
+                                                    value="{{ $account->beginning_balance }}">
+                                            </form>
+
                                             <a class="btn btn-warning btn-sm mr-2"
                                                 href="/admin/account/{{ $account->id }}/edit">
                                                 <i class="fas fa-pencil"></i> Edit
@@ -129,7 +143,7 @@
                                                 data-toggle="modal" data-id="{{ $account->id }}">
                                                 <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
-                                        {{-- </div> --}}
+                                            {{-- </div> --}}
                                     </td>
                                 </tr>
                                 <!-- Modal Konfirmasi Penghapusan -->
@@ -149,8 +163,8 @@
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-dismiss="modal">Batal</button>
-                                                <form action="{{ route('account.destroy', $account->id) }}" method="POST"
-                                                    style="display: inline;">
+                                                <form action="{{ route('account.destroy', $account->id) }}"
+                                                    method="POST" style="display: inline;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger">Ya, Hapus</button>
@@ -199,4 +213,52 @@
             });
         });
     </script>
+
+    {{-- <script>
+        $(document).ready(function() {
+            // Event handler untuk tombol "Total"
+            $('.calculate-total').click(function() {
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                var beginning_balance = $(this).data('beginning-balance');
+
+                // Ajax request untuk menghitung saldo akhir
+                $.ajax({
+                    url: '{{ route('account.calculateTotal') }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        id: id,
+                        name: name,
+                        beginning_balance: beginning_balance
+                    },
+                    success: function(response) {
+                        // Update tampilan saldo akhir di baris terkait
+                        $('#ending-balance-' + id).text('Rp.' + response
+                            .ending_balance_formatted);
+                        // Tampilkan pesan sukses jika perlu
+                        swal({
+                            title: "Success!",
+                            text: "Ending balance calculated successfully.",
+                            icon: "success",
+                            button: "OK",
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                        // Tampilkan pesan error jika ada masalah
+                        swal({
+                            title: "Error!",
+                            text: "Failed to calculate ending balance.",
+                            icon: "error",
+                            button: "OK",
+                        });
+                    }
+                });
+            });
+        });
+    </script> --}}
+
+
+
 @endsection

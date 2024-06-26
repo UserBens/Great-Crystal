@@ -82,7 +82,6 @@ class AccountingController extends Controller
                 'account_category_id' => 'required',
                 'amount' => 'required|numeric',
                 'beginning_balance' => 'required|numeric',
-                'ending_balance' => 'required|numeric',
                 'description' => 'required',
             ]);
 
@@ -94,6 +93,7 @@ class AccountingController extends Controller
                 'beginning_balance' => $request->beginning_balance,
                 'ending_balance' => $request->ending_balance,
                 'description' => $request->description,
+                'transactions_total' => 0, // Set transactions_total default ke 0
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
@@ -156,7 +156,6 @@ class AccountingController extends Controller
             'account_category_id' => 'required',
             'amount' => 'required|numeric',
             'beginning_balance' => 'required|numeric',
-            'ending_balance' => 'required|numeric',
             'description' => 'required',
         ]);
 
@@ -168,8 +167,8 @@ class AccountingController extends Controller
             'account_category_id' => $request->account_category_id,
             'amount' => $request->amount,
             'beginning_balance' => $request->beginning_balance,
-            'ending_balance' => $request->ending_balance,
             'description' => $request->description,
+
         ]);
 
         // Redirect ke halaman indeks pengeluaran dengan pesan sukses
@@ -190,6 +189,31 @@ class AccountingController extends Controller
             return dd($err);
         }
     }
+
+    public function calculateTotal(Request $request, $id)
+    {
+        try {
+            $name = $request->name;
+            $beginning_balance = $request->beginning_balance;
+
+            // Misalnya, lakukan perhitungan sederhana, tambahkan jumlah transaksi
+            $account = Accountnumber::findOrFail($id);
+            $ending_balance = $beginning_balance + $account->transactions_total;
+
+            // Update data saldo akhir di database (jika diperlukan)
+            $account->update(['ending_balance' => $ending_balance]);
+
+            // Redirect kembali ke halaman index dengan pesan sukses
+            return redirect()->route('account.index')->with('success', 'Ending balance calculated successfully.');
+        } catch (\Exception $ex) {
+            return redirect()->route('account.index')->with('error', 'Failed to calculate ending balance.');
+        }
+    }
+
+
+
+
+
 
     // milik transfer transaction
 

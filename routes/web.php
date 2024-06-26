@@ -274,6 +274,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
       Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
       Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
+      Route::post('/calculate-total/{id}', [AccountingController::class, 'calculateTotal'])->name('account.calculateTotal');
    });
 
    Route::prefix('/supplier')->group(function () {

@@ -8,7 +8,7 @@
                 <div class="col-md-4">
                     <label for="sort">Sort By</label>
                     <select name="sort" class="form-control" id="sort-select">
-                        <option>-- All Data --</option>
+                        <option value="">-- All Data --</option>
                         <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)</option>
                         <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
                     </select>
@@ -149,149 +149,7 @@
                                         </div>
                                         {{-- end modal show image --}}
                                     </td>
-                                    {{-- start modal upload image --}}
-                                    {{-- <td class="project-actions">
-                                        @foreach ($invoices as $item)
-                                            <div class="modal fade" id="importModal{{ $item->id }}" tabindex="-1"
-                                                role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog" role="document"
-                                                    style="max-width: 60%; margin: 1.75rem auto;">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h4 class="modal-title" id="importModalLabel">Upload Proof of
-                                                                Payment</h4>
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <form
-                                                            action="{{ route('invoice-supplier.upload-proof', $item->id) }}"
-                                                            method="post" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <div class="modal-body" style="width: 100%; height: auto;">
-                                                                <div class="file-upload"
-                                                                    style=" display: flex; justify-content: center; align-items: center;">
-                                                                    <div class="form-group row">
-                                                                        <div class="col-md-6">
-                                                                            <label for="no_invoice"># No. Invoice:</label>
-                                                                            <div class="input-group">
-                                                                                <input name="no_invoice" type="text"
-                                                                                    class="form-control" id="no_invoice"
-                                                                                    value="{{ $item->no_invoice }}"
-                                                                                    readonly>
-                                                                            </div>
-                                                                        </div>
 
-                                                                        <div class="col-md-6">
-                                                                            <label for="name">Supplier
-                                                                                Name<span></span>:</label>
-                                                                            <div class="input-group">
-                                                                                <input name="supplier_name" type="text"
-                                                                                    class="form-control"
-                                                                                    id="supplier_name"
-                                                                                    value="{{ $item->supplier_name }}"
-                                                                                    readonly>
-                                                                            </div>
-                                                                            @if ($errors->any())
-                                                                                <p style="color: red">
-                                                                                    {{ $errors->first('name') }}</p>
-                                                                            @endif
-                                                                        </div>
-
-                                                                        <div class="col-md-6 mt-3">
-                                                                            <label
-                                                                                for="nota">Nota<span></span>:</label>
-                                                                            <div class="input-group">
-                                                                                <input name="nota" type="text"
-                                                                                    class="form-control" id="nota"
-                                                                                    value="{{ $item->nota }}" readonly>
-                                                                            </div>
-                                                                            @if ($errors->any())
-                                                                                <p style="color: red">
-                                                                                    {{ $errors->first('nota') }}</p>
-                                                                            @endif
-                                                                        </div>
-
-                                                                        <div class="col-md-6 mt-3">
-                                                                            <label for="description">Description<span
-                                                                                    style="color: red">*</span>:</label>
-                                                                            <textarea autocomplete="off" name="description" class="form-control" id="description"
-                                                                                placeholder="Enter description">{{ $item->description }}</textarea>
-                                                                            @if ($errors->any())
-                                                                                <p style="color: red">
-                                                                                    {{ $errors->first('description') }}</p>
-                                                                            @endif
-                                                                        </div>
-
-                                                                        <div class="col-md-6">
-                                                                            <label for="payment_status">Payment Status<span
-                                                                                    style="color: red">*</span>:</label>
-                                                                            <select name="payment_status"
-                                                                                class="form-control" id="payment_status">
-                                                                                <option value="Not Yet"
-                                                                                    {{ $item->payment_status == 'Not Yet' ? 'selected' : '' }}>
-                                                                                    Not Yet</option>
-                                                                                <option value="Paid"
-                                                                                    {{ $item->payment_status == 'Paid' ? 'selected' : '' }}>
-                                                                                    Paid</option>
-                                                                            </select>
-                                                                            @if ($errors->any())
-                                                                                <p style="color: red">
-                                                                                    {{ $errors->first('payment_status') }}
-                                                                                </p>
-                                                                            @endif
-                                                                        </div>
-
-                                                                        <div class="col-md-12 mt-3">
-                                                                            <label for="upload_image">Upload Image<span
-                                                                                    style="color: red">*</span>:</label>
-                                                                            <div class="image-upload-wrap">
-                                                                                <input type="file" name="image_path"
-                                                                                    class="file-upload-input"
-                                                                                    onchange="readURL(this);"
-                                                                                    accept="image/*">
-                                                                                <div class="drag-text">
-                                                                                    <h3>Drag and drop a file or select add
-                                                                                        Image</h3>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="file-upload-content"
-                                                                        style="display:none;">
-                                                                        <img class="file-upload-image" src="#"
-                                                                            alt="your image"
-                                                                            style="max-width: 100%; max-height: 100%;" />
-                                                                        <div class="image-title-wrap"
-                                                                            style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <button type="button"
-                                                                                onclick="removeUpload(this)"
-                                                                                class="remove-image"
-                                                                                style="margin-right: 10px">
-                                                                                <i class="fa-solid fa-trash fa-2xl"
-                                                                                    style="margin-bottom: 1em;"></i> <br>
-                                                                                Remove
-                                                                                <span class="image-title">Image</span>
-                                                                            </button>
-                                                                            <button type="submit" role="button"
-                                                                                class="upload-image">
-                                                                                <i class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
-                                                                                    style="margin-bottom: 1em;"></i> <br>
-                                                                                Post
-                                                                                <span class="image-title">Image</span>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </td> --}}
                                     <td class="project-actions">
                                         @foreach ($invoices as $item)
                                             <div class="modal fade" id="importModal{{ $item->id }}" tabindex="-1"

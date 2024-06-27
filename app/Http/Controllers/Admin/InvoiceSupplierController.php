@@ -13,6 +13,8 @@ use App\Models\Transaction_send;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\TransactionSendSupplier;
+use Illuminate\Support\Facades\File;
+
 
 class InvoiceSupplierController extends Controller
 {
@@ -32,6 +34,7 @@ class InvoiceSupplierController extends Controller
                 'sort' => $request->sort ?? null,
                 'order' => $request->order ?? null,
                 'status' => $request->status ?? null,
+                'date' => $request->date ?? null,
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
@@ -49,19 +52,28 @@ class InvoiceSupplierController extends Controller
                     ->orWhere('date', 'LIKE', $searchTerm);
             }
 
-            // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'date') {
-                    $query->orderBy('date', $request->order);
-                } else {
-                    $query->orderBy($request->sort, $request->order);
-                }
-            }
+            // // Mengatur urutan berdasarkan parameter yang dipilih
+            // if ($request->filled('sort') && $request->filled('order')) {
+            //     if ($request->sort === 'date') {
+            //         $query->orderBy('date', $request->order);
+            //     } else {
+            //         $query->orderBy($request->sort, $request->order);
+            //     }
+            // }
 
             // Filter data berdasarkan tanggal
             if ($request->filled('date')) {
                 $searchDate = date('Y-m-d', strtotime($request->date));
                 $query->whereDate('date', $searchDate);
+            }
+
+            // Mengatur urutan berdasarkan parameter yang dipilih
+            if ($request->filled('sort')) {
+                if ($request->sort === 'oldest') {
+                    $query->orderBy('date', 'asc');
+                } elseif ($request->sort === 'newest') {
+                    $query->orderBy('date', 'desc');
+                }
             }
 
             // Memuat data dengan pagination
@@ -163,11 +175,33 @@ class InvoiceSupplierController extends Controller
 
 
 
+    // public function destroyInvoiceSupplier($id)
+    // {
+    //     try {
+    //         $invoice = InvoiceSupplier::findOrFail($id);
+
+    //         $invoice->delete();
+
+    //         return response()->json(['message' => 'Invoice supplier deleted successfully.']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to delete invoice supplier.']);
+    //     }
+    // }
+
     public function destroyInvoiceSupplier($id)
     {
         try {
             $invoice = InvoiceSupplier::findOrFail($id);
 
+            // Ambil path gambar
+            $imagePath = public_path('uploads/' . $invoice->image_path);
+
+            // Hapus file gambar jika ada
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+
+            // Hapus data invoice dari database
             $invoice->delete();
 
             return response()->json(['message' => 'Invoice supplier deleted successfully.']);
@@ -194,6 +228,7 @@ class InvoiceSupplierController extends Controller
                 'sort' => $request->sort ?? null,
                 'order' => $request->order ?? null,
                 'status' => $request->status ?? null,
+                'created_at' => $request->created_at ?? null,
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
@@ -201,31 +236,41 @@ class InvoiceSupplierController extends Controller
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->whereHas('transferAccount', function ($q) use ($searchTerm) {
-                        $q->where('name', 'LIKE', $searchTerm)
-                            ->orWhere('account_no', 'LIKE', $searchTerm);
-                    })->orWhereHas('depositAccount', function ($q) use ($searchTerm) {
-                        $q->where('name', 'LIKE', $searchTerm)
-                            ->orWhere('account_no', 'LIKE', $searchTerm);
-                    })->orWhere('amount', 'LIKE', $searchTerm)
-                        ->orWhere('date', 'LIKE', $searchTerm);
-                });
+                $query->where('name', 'LIKE', $searchTerm)
+                    ->orWhere('instansi_name', 'LIKE', $searchTerm)
+                    ->orWhere('no_rek', 'LIKE', $searchTerm)
+                    ->orWhere('created_at', 'LIKE', $searchTerm);
+            }
+
+            // // Mengatur urutan berdasarkan parameter yang dipilih
+            // if ($request->filled('sort') && $request->filled('order')) {
+            //     if ($request->sort === 'created_at') {
+            //         $query->orderBy('created_at', $request->order);
+            //     } else {
+            //         $query->orderBy($request->sort, $request->order);
+            //     }
+            // }
+
+            // // Filter data berdasarkan tanggal
+            // if ($request->filled('created_at')) {
+            //     $searchDate = date('Y-m-d', strtotime($request->date));
+            //     $query->whereDate('created_at', $searchDate);
+            // }
+
+            
+            // Filter data berdasarkan tanggal
+            if ($request->filled('created_at')) {
+                $searchDate = date('Y-m-d', strtotime($request->created_at));
+                $query->whereDate('created_at', $searchDate);
             }
 
             // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'created_at') {
-                    $query->orderBy('created_at', $request->order);
-                } else {
-                    $query->orderBy($request->sort, $request->order);
+            if ($request->filled('sort')) {
+                if ($request->sort === 'oldest') {
+                    $query->orderBy('created_at', 'asc');
+                } elseif ($request->sort === 'newest') {
+                    $query->orderBy('created_at', 'desc');
                 }
-            }
-
-            // Filter data berdasarkan tanggal
-            if ($request->filled('created_at')) {
-                $searchDate = date('Y-m-d', strtotime($request->date));
-                $query->whereDate('created_at', $searchDate);
             }
 
             // Memuat data dengan pagination
@@ -258,7 +303,7 @@ class InvoiceSupplierController extends Controller
             'no_rek' => $request->no_rek,
         ]);
 
-        return redirect()->route('supplier.index')->with('success', 'Invoice Supplier Created successfully!');
+        return redirect()->route('supplier.index')->with('success', 'Supplier Data Created successfully!');
     }
 
     public function destroySupplier($id)

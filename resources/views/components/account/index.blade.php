@@ -5,42 +5,37 @@
         <div class="m-1">
             <form action="{{ route('account.index') }}" method="GET" class="mb-3">
                 <div class="row">
-                    <div class="col-md-3">
-                        <label for="date">Type Transaction</label>
-                        <select name="type" class="form-control">
-                            <option value="">-- All Data --</option>
-                            <option value="transaction_transfer"
-                                {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
-                                Transaction Transfer</option>
-                            <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
-                                Transaction Send</option>
-                        </select>
-                    </div>
-                    {{-- <div class="col-md-3">
-                        <label for="date">Sort By</label>
-                        <select name="sort" class="form-control">
-                            <option value="">-- All Data --</option>
-                            <option value="amount" {{ $form->sort === 'amount' ? 'selected' : '' }}>Amount</option>
-                            <option value="date" {{ $form->sort === 'date' ? 'selected' : '' }}>Date</option>
-                        </select>
-                    </div> --}}
-
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-4">
                         <label>Sort By </label>
                         <select name="sort" class="form-control" id="sort-select">
-                            {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
-                            <option value="date" {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
+                            <option value="created_at"
+                                {{ $form->sort === 'created_at' && $form->order === 'asc' ? 'selected' : '' }}
                                 data-order="asc">Date (Oldest First)</option>
-                            <option value="date" {{ $form->sort === 'date' && $form->order === 'desc' ? 'selected' : '' }}
+                            <option value="created_at"
+                                {{ $form->sort === 'created_at' && $form->order === 'desc' ? 'selected' : '' }}
                                 data-order="desc">Date (Newest First)</option>
                         </select>
+                        <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
+                    </div> --}}
+
+                    <div class="col-md-4">
+                        <label for="sort">Sort By</label>
+                        <select name="sort" class="form-control" id="sort-select">
+                            <option value="">-- All Data --</option>
+                            <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)
+                            </option>
+                            <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)
+                            </option>
+                        </select>
+                        <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
+
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label for="date">Date</label>
                         <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label for="date">Search Data</label>
                         <div class="input-group">
                             <input type="text" name="search" class="form-control" placeholder="Search..."
@@ -333,6 +328,12 @@
         });
     </script> --}}
 
-
+    <script>
+        document.getElementById('sort-select').addEventListener('change', function() {
+            let order = this.options[this.selectedIndex].getAttribute('data-order');
+            document.getElementById('sort-order').value = order;
+            this.form.submit();
+        });
+    </script>
 
 @endsection

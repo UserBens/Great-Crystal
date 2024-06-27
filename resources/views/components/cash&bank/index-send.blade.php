@@ -5,33 +5,14 @@
         <h2 class="text-center display-4 mb-3">Transaction Send Search</h2>
         <form action="{{ route('transaction-send.index') }}" method="GET" class="mb-3">
             <div class="row">
-                {{-- <div class="col-md-3">
-                    <label for="date">Type Transaction</label>
-                    <select name="type" class="form-control">
-                        <option value="">-- All Data --</option>
-                        <option value="transaction_transfer" {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
-                            Transaction Transfer</option>
-                        <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
-                            Transaction Send</option>
-                    </select>
-                </div> --}}
-                {{-- <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="sort">Sort By</label>
                     <select name="sort" class="form-control" id="sort-select">
-                        <option>-- All Data --</option>
+                        <option value="">-- All Data --</option>
                         <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)</option>
                         <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
                     </select>
-                </div> --}}
-                <div class="col-md-4">
-                    <label>Sort By </label>
-                    <select name="sort" class="form-control" id="sort-select">
-                        {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
-                        <option value="date" {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
-                            data-order="asc">Date (Oldest First)</option>
-                        <option value="date" {{ $form->sort === 'date' && $form->order === 'desc' ? 'selected' : '' }}
-                            data-order="desc">Date (Newest First)</option>
-                    </select>
+                    <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
                 </div>
 
                 <div class="col-md-4">
@@ -97,8 +78,8 @@
                                 <th>Account Number</th>
                                 <th>Amount</th>
                                 <th>Date</th>
-                                {{-- <th>Type</th> --}}
-                                <th style="width: 8%;" class="text-center">Actions</th>
+                                <th>Supplier</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,42 +99,17 @@
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
                                     <td>
+                                        @if ($item->transactionSendSupplier)
+                                            {{ $item->transactionSendSupplier->supplier_name }}
+                                        @endif
+                                    </td>                                    <td>
                                         <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
                                             data-id="{{ $item->id }}">
                                             <i class="fas fa-trash mr-1"></i>Delete
                                         </button>
                                     </td>
                                     <td class="project-actions text-right">
-                                        <!-- Modal Konfirmasi Penghapusan -->
-                                        {{-- <div id="deleteModal{{ $item->id }}" class="modal fade" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Konfirmasi Penghapusan</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Anda yakin ingin menghapus data ini?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Batal</button>
-                                                        <form action="{{ route('transaction-send.destroy', $item->id) }}"
-                                                            method="POST" style="display: inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger">Ya,
-                                                                Hapus</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> --}}
-                                        <!-- /Modal Konfirmasi Penghapusan -->
+                                      
                                     </td>
                                 </tr>
                             @endforeach
@@ -174,24 +130,10 @@
         @endif
     </div>
 
-    {{-- SweetAlert --}}
-    {{-- @if (session('success'))
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
-            });
-        </script>
-    @endif --}}
-
     <!-- Include jQuery and SweetAlert library -->
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
-
 
     <script>
         $(document).ready(function() {
@@ -259,32 +201,11 @@
         });
     </script>
 
-
-    {{-- search button --}}
     <script>
-        // Tangani klik tombol pencarian
-        document.getElementById('searchButton').addEventListener('click', function() {
-            // Dapatkan nilai dari input pencarian
-            var searchValue = document.getElementById('searchInput').value;
-
-            // Redirect ke halaman pencarian dengan parameter 'search'
-            window.location.href = '/admin/expenditure?search=' + searchValue;
-        });
-    </script>
-
-    {{-- delete button --}}
-    <script>
-        // Tangani klik tombol delete
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                let expenditureId = this.getAttribute('data-id');
-
-                // Tampilkan modal konfirmasi penghapusan
-                $('#deleteModal' + expenditureId).modal('show');
-
-                // Hentikan tindakan default penghapusan
-                return false;
-            });
+        document.getElementById('sort-select').addEventListener('change', function() {
+            let order = this.options[this.selectedIndex].getAttribute('data-order');
+            document.getElementById('sort-order').value = order;
+            this.form.submit();
         });
     </script>
 @endsection

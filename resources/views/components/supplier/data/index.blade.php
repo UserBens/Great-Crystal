@@ -5,16 +5,6 @@
         <h2 class="text-center display-4 mb-3">Supplier Data Search</h2>
         <form action="{{ route('supplier.index') }}" method="GET" class="mb-3">
             <div class="row">
-                {{-- <div class="col-md-3">
-                    <label for="date">Type Transaction</label>
-                    <select name="type" class="form-control">
-                        <option value="">-- All Data --</option>
-                        <option value="transaction_transfer" {{ $form->type === 'transaction_transfer' ? 'selected' : '' }}>
-                            Transaction Transfer</option>
-                        <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
-                            Transaction Send</option>
-                    </select>
-                </div> --}}
                 <div class="col-md-4">
                     <label for="sort">Sort By</label>
                     <select name="sort" class="form-control" id="sort-select">
@@ -25,7 +15,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="date">Date</label>
-                    <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
+                    <input type="date" name="created_at" class="form-control" value="{{ $form->created_at ?? '' }}">
                 </div>
                 <div class="col-md-4">
                     <label for="date">Search Data</label>

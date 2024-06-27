@@ -6,14 +6,13 @@
         <form action="{{ route('transaction-receive.index') }}" method="GET" class="mb-3">
             <div class="row">
                 <div class="col-md-4">
-                    <label>Sort By </label>
+                    <label for="sort">Sort By</label>
                     <select name="sort" class="form-control" id="sort-select">
-                        {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
-                        <option value="date" {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
-                            data-order="asc">Date (Oldest First)</option>
-                        <option value="date" {{ $form->sort === 'date' && $form->order === 'desc' ? 'selected' : '' }}
-                            data-order="desc">Date (Newest First)</option>
+                        <option value="">-- All Data --</option>
+                        <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)</option>
+                        <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
                     </select>
+                    <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
                 </div>
 
                 <div class="col-md-4">
@@ -79,7 +78,6 @@
                                 <th>Account Number</th>
                                 <th>Amount</th>
                                 <th>Date</th>
-                                {{-- <th>Type</th> --}}
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -98,9 +96,7 @@
                                         {{ $item->depositAccount->name }}</td> --}}
 
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                    {{-- <td>{{ \Carbon\Carbon::parse($item->date)->format('Y-m-d') }}</td> --}}
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-
                                     <td>
                                         <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
                                             data-id="{{ $item->id }}">
@@ -127,19 +123,6 @@
             </div>
         @endif
     </div>
-
-    {{-- SweetAlert --}}
-    {{-- @if (session('success'))
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
-            });
-        </script>
-    @endif --}}
 
     <!-- Include jQuery and SweetAlert library -->
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
@@ -213,31 +196,11 @@
         });
     </script>
 
-    {{-- search button --}}
     <script>
-        // Tangani klik tombol pencarian
-        document.getElementById('searchButton').addEventListener('click', function() {
-            // Dapatkan nilai dari input pencarian
-            var searchValue = document.getElementById('searchInput').value;
-
-            // Redirect ke halaman pencarian dengan parameter 'search'
-            window.location.href = '/admin/expenditure?search=' + searchValue;
-        });
-    </script>
-
-    {{-- delete button --}}
-    <script>
-        // Tangani klik tombol delete
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                let expenditureId = this.getAttribute('data-id');
-
-                // Tampilkan modal konfirmasi penghapusan
-                $('#deleteModal' + expenditureId).modal('show');
-
-                // Hentikan tindakan default penghapusan
-                return false;
-            });
+        document.getElementById('sort-select').addEventListener('change', function() {
+            let order = this.options[this.selectedIndex].getAttribute('data-order');
+            document.getElementById('sort-order').value = order;
+            this.form.submit();
         });
     </script>
 @endsection

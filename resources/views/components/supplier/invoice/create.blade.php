@@ -23,7 +23,7 @@
                                             <div class="input-group">
 
                                                 <input name="no_invoice" type="text" class="form-control" id="no_invoice"
-                                                    placeholder="Example : S-100031" autocomplete="off"
+                                                    placeholder="" autocomplete="off"
                                                     value="{{ old('no_invoice') }}">
                                             </div>
                                             @if ($errors->any())
@@ -75,7 +75,7 @@
                                             <div class="input-group">
 
                                                 <input name="nota" type="text" class="form-control" id="nota"
-                                                    placeholder="Example : S-100031" autocomplete="off"
+                                                    placeholder="" autocomplete="off"
                                                     value="{{ old('nota') }}">
                                             </div>
                                             @if ($errors->any())

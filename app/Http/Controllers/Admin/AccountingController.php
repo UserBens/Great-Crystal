@@ -21,6 +21,48 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class AccountingController extends Controller
 {
+    // public function indexAccount(Request $request)
+    // {
+    //     session()->flash('page', (object)[
+    //         'page' => 'Transaction',
+    //         'child' => 'database Account Number',
+    //     ]);
+
+    //     try {
+    //         $form = (object) [
+    //             'sort' => $request->sort ? $request->sort : null,
+    //             'order' => $request->order ? $request->order : null,
+    //             'status' => $request->status ? $request->status : null,
+    //             'search' => $request->search ? $request->search : null,
+    //             'type' => $request->type ? $request->type :  null,
+    //         ];
+
+    //         $data = [];
+
+    //         // Mengatur default urutan
+    //         $order = $request->sort ? $request->sort : 'desc';
+
+    //         // Query data berdasarkan parameter yang diberikan
+    //         if ($request->has('search')) {
+    //             $data = Accountnumber::where('name', 'LIKE', '%' . $request->search . '%')
+    //                 ->orWhere('account_no', 'LIKE', '%' . $request->search . '%')
+    //                 ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
+    //                 ->orWhere('created_at', 'LIKE', '%' . $request->search . '%')
+    //                 ->orderBy($request->order ?? 'created_at', $order)
+    //                 ->paginate(15);
+    //         } else {
+    //             $data = Accountnumber::orderBy('created_at', $order)->paginate(15);
+    //         }
+
+    //         $categories = Accountcategory::all();
+
+
+    //         return view('components.account.index')->with('data', $data)->with('categories', $categories)->with('form', $form);
+    //     } catch (Exception $err) {
+    //         return dd($err);
+    //     }
+    // }
+
     public function indexAccount(Request $request)
     {
         session()->flash('page', (object)[
@@ -30,38 +72,47 @@ class AccountingController extends Controller
 
         try {
             $form = (object) [
-                'sort' => $request->sort ? $request->sort : null,
-                'order' => $request->order ? $request->order : null,
-                'status' => $request->status ? $request->status : null,
-                'search' => $request->search ? $request->search : null,
-                'type' => $request->type ? $request->type :  null,
+                'sort' => $request->sort ?? null,
+                'order' => $request->order ?? 'desc',
+                'search' => $request->search ?? null,
+                'date' => $request->date ?? null,
             ];
 
-            $data = [];
+            $query = Accountnumber::query();
 
-            // Mengatur default urutan
-            $order = $request->sort ? $request->sort : 'desc';
-
-            // Query data berdasarkan parameter yang diberikan
-            if ($request->has('search')) {
-                $data = Accountnumber::where('name', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('account_no', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('created_at', 'LIKE', '%' . $request->search . '%')
-                    ->orderBy($request->order ?? 'created_at', $order)
-                    ->paginate(15);
-            } else {
-                $data = Accountnumber::orderBy('created_at', $order)->paginate(15);
+            // Filter berdasarkan parameter pencarian
+            if ($request->filled('search')) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('account_no', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('created_at', 'LIKE', '%' . $request->search . '%');
+                });
             }
 
-            $categories = Accountcategory::all();
+            // Filter berdasarkan tanggal
+            if ($request->filled('date')) {
+                $searchDate = date('Y-m-d', strtotime($request->date));
+                $query->whereDate('created_at', $searchDate);
+            }
 
+            // Mengatur urutan berdasarkan parameter yang dipilih
+            if ($request->filled('sort') && $request->filled('order')) {
+                $query->orderBy($request->sort, $request->order);
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $data = $query->paginate(15);
+
+            $categories = Accountcategory::all();
 
             return view('components.account.index')->with('data', $data)->with('categories', $categories)->with('form', $form);
         } catch (Exception $err) {
             return dd($err);
         }
     }
+
 
     public function createAccount()
     {
@@ -177,18 +228,6 @@ class AccountingController extends Controller
 
     public function destroyAccount($id)
     {
-        // try {
-        //     // Cari data transaksi transfer berdasarkan ID
-        //     $accountNumbers = Accountnumber::findOrFail($id);
-
-        //     // Hapus data transaksi transfer
-        //     $accountNumbers->delete();
-
-        //     return redirect()->back()->with('success', 'Account Number Deleted Successfully!');
-        // } catch (Exception $err) {
-        //     return dd($err);
-        // }
-
         try {
             $accountNumbers = Accountnumber::findOrFail($id);
 
@@ -229,77 +268,6 @@ class AccountingController extends Controller
 
     public function indexTransfer(Request $request)
     {
-        // session()->flash('page', (object)[
-        //     'page' => 'Transaction',
-        //     'child' => 'Database Transaction Transfer',
-        // ]);
-
-        // try {
-        //     // Inisialisasi objek form dengan nilai default
-        //     $form = (object) [
-        //         'sort' => $request->sort ?? 'date', // Default sort by date
-        //         'order' => $request->order ?? 'desc', // Default descending
-        //         'status' => $request->status ?? null,
-        //         'search' => $request->search ?? null,
-        //         'type' => $request->type ?? null,
-        //         'date' => $request->date ?? null,
-        //     ];
-
-
-        //     // Query data berdasarkan parameter pencarian yang diberikan
-        //     $query = Transaction_transfer::with(['transferAccount', 'depositAccount']);
-
-        //     if ($form->date) {
-        //         $query->whereDate('date', $form->date);
-        //     }
-
-        //     // if ($request->filled('search')) {
-        //     //     $searchTerm = '%' . $request->search . '%';
-        //     //     $query->where(function ($q) use ($searchTerm) {
-        //     //         $q->whereHas('transferAccount', function ($q) use ($searchTerm) {
-        //     //             $q->where('name', 'LIKE', $searchTerm)
-        //     //                 ->orWhere('account_no', 'LIKE', $searchTerm);
-        //     //         })->orWhereHas('depositAccount', function ($q) use ($searchTerm) {
-        //     //             $q->where('name', 'LIKE', $searchTerm)
-        //     //                 ->orWhere('account_no', 'LIKE', $searchTerm);
-        //     //         })->orWhere('amount', 'LIKE', $searchTerm)
-        //     //             ->orWhere('date', 'LIKE', $searchTerm);
-        //     //     });
-        //     // }
-
-        //     if ($request->filled('search')) {
-        //         $searchTerm = '%' . $request->search . '%';
-        //         $query->where(function ($q) use ($searchTerm) {
-        //             $q->whereHas('transferAccount', function ($q) use ($searchTerm) {
-        //                 $q->where('name', 'LIKE', $searchTerm)
-        //                     ->orWhere('account_no', 'LIKE', $searchTerm);
-        //             })->orWhereHas('depositAccount', function ($q) use ($searchTerm) {
-        //                 $q->where('name', 'LIKE', $searchTerm)
-        //                     ->orWhere('account_no', 'LIKE', $searchTerm);
-        //             })->orWhere('amount', 'LIKE', $searchTerm)
-        //                 ->orWhere('date', 'LIKE', $searchTerm);
-        //         });
-        //     }
-
-        //     if ($form->sort === 'date') {
-        //         $query->orderBy('date', $form->order);
-        //     } elseif ($form->sort === 'oldest') {
-        //         $query->orderBy('date', 'asc');
-        //     } elseif ($form->sort === 'newest') {
-        //         $query->orderBy('date', 'desc');
-        //     }
-
-
-        //     // Memuat data dengan pagination
-        //     $data = $query->paginate(10);
-
-        //     // Menampilkan view dengan data dan form
-        //     return view('components.cash&bank.index-transfer', compact('data', 'form'));
-        // } catch (Exception $err) {
-        //     // Menampilkan pesan error jika terjadi kesalahan
-        //     return dd($err);
-        // }
-
         session()->flash('page', (object)[
             'page' => 'Transaction',
             'child' => 'Database Transaction Transfer',
@@ -313,6 +281,7 @@ class AccountingController extends Controller
                 'sort' => $request->sort ?? null,
                 'order' => $request->order ?? null,
                 'status' => $request->status ?? null,
+                'date' => $request->date ?? null,
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
@@ -332,19 +301,19 @@ class AccountingController extends Controller
                 });
             }
 
-            // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'date') {
-                    $query->orderBy('date', $request->order);
-                } else {
-                    $query->orderBy($request->sort, $request->order);
-                }
-            }
-
             // Filter data berdasarkan tanggal
             if ($request->filled('date')) {
                 $searchDate = date('Y-m-d', strtotime($request->date));
                 $query->whereDate('date', $searchDate);
+            }
+
+            // Mengatur urutan berdasarkan parameter yang dipilih
+            if ($request->filled('sort')) {
+                if ($request->sort === 'oldest') {
+                    $query->orderBy('date', 'asc');
+                } elseif ($request->sort === 'newest') {
+                    $query->orderBy('date', 'desc');
+                }
             }
 
             // Memuat data dengan pagination
@@ -426,6 +395,12 @@ class AccountingController extends Controller
         }
     }
 
+
+
+
+
+
+    // milik transaction send
     public function indexTransactionSend(Request $request)
     {
         session()->flash('page', (object)[
@@ -441,6 +416,7 @@ class AccountingController extends Controller
                 'sort' => $request->sort ?? null,
                 'order' => $request->order ?? null,
                 'status' => $request->status ?? null,
+                'date' => $request->date ?? null,
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
@@ -460,19 +436,19 @@ class AccountingController extends Controller
                 });
             }
 
-            // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'date') {
-                    $query->orderBy('date', $request->order);
-                } else {
-                    $query->orderBy($request->sort, $request->order);
-                }
-            }
-
             // Filter data berdasarkan tanggal
             if ($request->filled('date')) {
                 $searchDate = date('Y-m-d', strtotime($request->date));
                 $query->whereDate('date', $searchDate);
+            }
+
+            // Mengatur urutan berdasarkan parameter yang dipilih
+            if ($request->filled('sort')) {
+                if ($request->sort === 'oldest') {
+                    $query->orderBy('date', 'asc');
+                } elseif ($request->sort === 'newest') {
+                    $query->orderBy('date', 'desc');
+                }
             }
 
             // Memuat data dengan pagination
@@ -569,6 +545,11 @@ class AccountingController extends Controller
         }
     }
 
+
+
+
+
+    // milik transaction receive
     public function indexTransactionReceive(Request $request)
     {
         session()->flash('page', (object)[
@@ -584,6 +565,7 @@ class AccountingController extends Controller
                 'sort' => $request->sort ?? null,
                 'order' => $request->order ?? null,
                 'status' => $request->status ?? null,
+                'date' => $request->date ?? null,
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
@@ -603,19 +585,19 @@ class AccountingController extends Controller
                 });
             }
 
-            // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                if ($request->sort === 'date') {
-                    $query->orderBy('date', $request->order);
-                } else {
-                    $query->orderBy($request->sort, $request->order);
-                }
-            }
-
             // Filter data berdasarkan tanggal
             if ($request->filled('date')) {
                 $searchDate = date('Y-m-d', strtotime($request->date));
                 $query->whereDate('date', $searchDate);
+            }
+
+            // Mengatur urutan berdasarkan parameter yang dipilih
+            if ($request->filled('sort')) {
+                if ($request->sort === 'oldest') {
+                    $query->orderBy('date', 'asc');
+                } elseif ($request->sort === 'newest') {
+                    $query->orderBy('date', 'desc');
+                }
             }
 
             // Memuat data dengan pagination

@@ -290,46 +290,20 @@
 
                                         <td class="project-actions toastsDefaultSuccess text-center">
                                             <div class="btn-group" role="group">
-                                                <a class="btn btn-primary mr-2"
+                                                <a class="btn btn-sm btn-primary mr-2"
                                                     href="/admin/bills/detail-payment/{{ $el->id }}">
                                                     <i class="fas fa-folder"></i> View
                                                 </a>
-                                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                {{-- <button type="button" class="btn btn-sm btn-warning" data-toggle="modal"
                                                     data-target="#emailModal{{ $el->id }}">
-                                                    <i class="fas fa-envelope mr-1"></i>Send Email
+                                                    <i class="fas fa-envelope mr-1"></i>Email
+                                                </button> --}}
+                                                <button type="button" class="btn btn-sm btn-warning email-btn"
+                                                    data-id="{{ $el->id }}">
+                                                    <i class="fas fa-envelope mr-1"></i>Email
                                                 </button>
                                             </div>
                                         </td>
-
-                                        <!-- Modal Konfirmasi Pengiriman Email -->
-                                        <div id="emailModal{{ $el->id }}" class="modal fade" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Konfirmasi Pengiriman Email</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p>Anda yakin ingin mengirim email untuk tagihan ini?</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Batal</button>
-                                                        <form
-                                                            action="{{ route('admin.bills.sendPaymentNotification', ['bill_id' => $el->id]) }}"
-                                                            method="POST" style="display: inline;">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-primary">Ya, Kirim
-                                                                Email</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -337,9 +311,6 @@
                     </div>
                     <!-- /.card-body -->
                 </div>
-
-
-
 
                 @if ($data->lastPage() > 1)
                     <div class="d-flex justify-content-end my-5">
@@ -572,7 +543,7 @@
         </script>
     @endif
 
-    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    {{-- <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     @if (session('success'))
         <script>
             Swal.fire({
@@ -582,5 +553,75 @@
                 timer: 3000
             });
         </script>
-    @endif
+    @endif --}}
+
+    <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/projects.js') }}" defer></script>
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            $('.email-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to send the payment success notification email?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, send it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mengirim request untuk mengirim email menggunakan Ajax
+                        $.ajax({
+                            url: '{{ route('admin.bills.sendPaymentNotification', ['bill_id' => ':id']) }}'
+                                .replace(':id', id),
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Sent!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                        .reload(); // Refresh halaman setelah mengirim email
+                                });
+                            },
+                            error: function(response) {
+                                Swal.fire(
+                                    'Failed!',
+                                    response.responseJSON.error ? response
+                                    .responseJSON.error :
+                                    'There was an error sending the email.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+
 @endsection

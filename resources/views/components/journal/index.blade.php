@@ -174,8 +174,9 @@
                                 <h4 class="file-upload-image"></h4>
                                 <div class="image-title-wrap"
                                     style="display: flex; justify-content: space-between; align-items: center;">
-                                    <button type="button" onclick="removeUpload()" class="remove-image" style="margin-right: 10px"><i
-                                            class="fa-solid fa-trash fa-2xl" style="margin-bottom: 1em;"></i> <br> Remove
+                                    <button type="button" onclick="removeUpload()" class="remove-image"
+                                        style="margin-right: 10px"><i class="fa-solid fa-trash fa-2xl"
+                                            style="margin-bottom: 1em;"></i> <br> Remove
                                         <span class="image-title">Excel</span></button>
                                     <button type="submit" role="button" class="upload-image"><i
                                             class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
@@ -193,11 +194,10 @@
         </div>
     </div>
 
-
-    <link rel="stylesheet" href="{{ asset('template') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Include jQuery and SweetAlert library -->
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
-    <script src="{{ asset('js/jquery-3.7.1.min.js') }}" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-        crossorigin="anonymous"></script>
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/projects.js') }}" defer></script>
 
     <script>
         $("body").on("click", "#download-template", function(event) {
@@ -263,14 +263,22 @@
             }
         </script>
     @elseif (session('success'))
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
-            });
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
         </script>
     @endif
 

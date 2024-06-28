@@ -5,19 +5,6 @@
         <div class="m-1">
             <form action="{{ route('account.index') }}" method="GET" class="mb-3">
                 <div class="row">
-                    {{-- <div class="col-md-4">
-                        <label>Sort By </label>
-                        <select name="sort" class="form-control" id="sort-select">
-                            <option value="created_at"
-                                {{ $form->sort === 'created_at' && $form->order === 'asc' ? 'selected' : '' }}
-                                data-order="asc">Date (Oldest First)</option>
-                            <option value="created_at"
-                                {{ $form->sort === 'created_at' && $form->order === 'desc' ? 'selected' : '' }}
-                                data-order="desc">Date (Newest First)</option>
-                        </select>
-                        <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
-                    </div> --}}
-
                     <div class="col-md-4">
                         <label for="sort">Sort By</label>
                         <select name="sort" class="form-control" id="sort-select">
@@ -120,12 +107,24 @@
                                                 data-beginning-balance="{{ $account->beginning_balance }}">
                                                 <i class="fas fa-calculator"></i> Total
                                             </a> --}}
-                                            <form action="{{ route('account.calculateTotal', $account->id) }}"
+
+                                            {{-- <form action="{{ route('account.calculateTotal', $account->id) }}"
                                                 method="POST">
                                                 @csrf
                                                 <button type="submit" class="btn btn-success btn-sm mr-2"
                                                     name="calculate_total">
                                                     <i class="fas fa-calculator"></i> Total
+                                                </button>
+                                                <input type="hidden" name="name" value="{{ $account->name }}">
+                                                <input type="hidden" name="beginning_balance"
+                                                    value="{{ $account->beginning_balance }}">
+                                            </form> --}}
+                                            <form action="{{ route('account.calculateTotal', $account->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm mr-2"
+                                                    name="calculate_total">
+                                                    <i class="fas fa-calculator"></i> Hitung
                                                 </button>
                                                 <input type="hidden" name="name" value="{{ $account->name }}">
                                                 <input type="hidden" name="beginning_balance"
@@ -143,34 +142,6 @@
                                             {{-- </div> --}}
                                     </td>
                                 </tr>
-                                <!-- Modal Konfirmasi Penghapusan -->
-                                {{-- <div id="deleteModal{{ $account->id }}" class="modal fade" tabindex="-1" role="dialog">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Konfirmasi Penghapusan</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Anda yakin ingin menghapus data ini?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Batal</button>
-                                                <form action="{{ route('account.destroy', $account->id) }}"
-                                                    method="POST" style="display: inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> --}}
-                                <!-- /Modal Konfirmasi Penghapusan -->
                             @endforeach
                         </tbody>
                     </table>
@@ -186,19 +157,6 @@
             </div>
         @endif
     </div>
-
-    {{-- SweetAlert --}}
-    {{-- @if (session('success'))
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
-            });
-        </script>
-    @endif --}}
 
     <!-- Include jQuery and SweetAlert library -->
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>

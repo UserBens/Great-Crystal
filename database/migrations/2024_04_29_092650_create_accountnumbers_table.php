@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('amount');
             $table->bigInteger('beginning_balance');
-            $table->bigInteger('ending_balance');
+            $table->bigInteger('ending_balance')->default(0);
             $table->bigInteger('transactions_total')->default(0);
             $table->string('description');
             $table->timestamps();

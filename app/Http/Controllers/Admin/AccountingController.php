@@ -239,25 +239,45 @@ class AccountingController extends Controller
         }
     }
 
+    // public function calculateTotal(Request $request, $id)
+    // {
+    //     try {
+    //         $name = $request->name;
+    //         $beginning_balance = $request->beginning_balance;
+
+    //         // Misalnya, lakukan perhitungan sederhana, tambahkan jumlah transaksi
+    //         $account = Accountnumber::findOrFail($id);
+    //         $ending_balance = $beginning_balance + $account->transactions_total;
+
+    //         // Update data saldo akhir di database (jika diperlukan)
+    //         $account->update(['ending_balance' => $ending_balance]);
+
+    //         // Redirect kembali ke halaman index dengan pesan sukses
+    //         return redirect()->route('account.index')->with('success', 'Ending balance calculated successfully.');
+    //     } catch (\Exception $ex) {
+    //         return redirect()->route('account.index')->with('error', 'Failed to calculate ending balance.');
+    //     }
+    // }
+
     public function calculateTotal(Request $request, $id)
     {
         try {
-            $name = $request->name;
-            $beginning_balance = $request->beginning_balance;
-
-            // Misalnya, lakukan perhitungan sederhana, tambahkan jumlah transaksi
             $account = Accountnumber::findOrFail($id);
-            $ending_balance = $beginning_balance + $account->transactions_total;
+            $ending_balance = $account->calculateEndingBalance();
 
-            // Update data saldo akhir di database (jika diperlukan)
+            // Tentukan apakah saldo akhir merupakan debit atau kredit
+            $balanceType = $ending_balance >= 0 ? 'debit' : 'kredit';
+
+            // Perbarui data di database
             $account->update(['ending_balance' => $ending_balance]);
 
-            // Redirect kembali ke halaman index dengan pesan sukses
-            return redirect()->route('account.index')->with('success', 'Ending balance calculated successfully.');
+            // Redirect dengan pesan sukses
+            return redirect()->route('account.index')->with('success', "Ending balance calculation successful. The balance is $balanceType.");
         } catch (\Exception $ex) {
             return redirect()->route('account.index')->with('error', 'Failed to calculate ending balance.');
         }
     }
+
 
 
 

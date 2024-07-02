@@ -23,8 +23,7 @@
                                             <div class="input-group">
 
                                                 <input name="no_invoice" type="text" class="form-control" id="no_invoice"
-                                                    placeholder="" autocomplete="off"
-                                                    value="{{ old('no_invoice') }}">
+                                                    placeholder="" autocomplete="off" value="{{ old('no_invoice') }}">
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('no_invoice') }}</p>
@@ -75,8 +74,7 @@
                                             <div class="input-group">
 
                                                 <input name="nota" type="text" class="form-control" id="nota"
-                                                    placeholder="" autocomplete="off"
-                                                    value="{{ old('nota') }}">
+                                                    placeholder="" autocomplete="off" value="{{ old('nota') }}">
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('nota') }}</p>
@@ -96,9 +94,9 @@
 
                                     </div>
 
-                                    <div class="form-group row">
+                                    {{-- <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="ppn">PPH 23<span style="color: red">*</span> :</label>
+                                            <label for="ppn">PPH<span style="color: red">*</span> :</label>
                                             <select name="ppn_status" class="form-control" id="ppn_status">
                                                 <option value="null">null</option>
                                                 <option value="2%">2%</option>
@@ -106,7 +104,33 @@
                                             </select>
                                             @if ($errors->any())
                                                 <p style="color: red">
-                                                    {{ $errors->first('payment_status') }}</p>
+                                                    {{ $errors->first('ppn_status') }}</p>
+                                            @endif
+                                        </div>
+                                    </div> --}}
+
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="pph">PPH<span style="color: red">*</span> :</label>
+                                            <select name="pph" class="form-control" id="pph">
+                                                <option value="">-- Select PPH --</option>
+                                                @for ($i = 21; $i <= 29; $i++)
+                                                    <option value="{{ $i }}">PPH {{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6" id="pph_percentage_container" style="display: none;">
+                                            <label for="pph_percentage">PPN Status<span style="color: red">*</span> :</label>
+                                            <select name="pph_percentage" class="form-control" id="pph_percentage">
+                                                <option value="2%">2%</option>
+                                                <option value="15%">15%</option>
+                                                {{-- pph 22 --}}
+                                                <option value="2,5%">2,5%</option>
+                                                <option value="7,5%">7,5%</option>
+                                                
+                                            </select>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('pph_percentage') }}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -151,31 +175,29 @@
             document.getElementById("transferForm").submit();
         }
 
-        // function submitForm() {
-        //     // Hapus pemisah ribuan dari input amount_spent
-        //     let amountInput = document.getElementById("amount");
-        //     removeThousandSeparator(amountInput);
 
-        //     // Get the selected PPH status
-        //     let pphStatus = document.getElementById("ppn_status").value;
+        document.addEventListener('DOMContentLoaded', function() {
+            let pphSelect = document.getElementById('pph');
+            let ppnStatusContainer = document.getElementById('pph_percentage_container');
+            let ppnStatusSelect = document.getElementById('pph_percentage');
 
-        //     // Calculate the amount after PPH deduction
-        //     let amount = parseFloat(amountInput.value);
-        //     if (pphStatus === 'pph23') {
-        //         amount = amount * 0.98; // Deduct 2%
-        //     } else if (pphStatus === 'pph24') {
-        //         amount = amount * 0.85; // Deduct 15%
-        //     }
+            pphSelect.addEventListener('change', function() {
+                if (pphSelect.value !== '') {
+                    ppnStatusContainer.style.display = 'block';
+                } else {
+                    ppnStatusContainer.style.display = 'none';
+                }
 
-        //     // Update the input value with the new amount
-        //     amountInput.value = amount.toFixed(2);
+                let options = ['2%', '15%', '2,5%', '7,5%'];
+                ppnStatusSelect.innerHTML = '';
+                options.forEach(function(option) {
+                    let opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    ppnStatusSelect.appendChild(opt);
+                });
+            });
 
-        //     // Submit the form
-        //     document.getElementById("transferForm").submit();
-        // }
-
-        // Inisialisasi Select2 pada elemen select
-        $(document).ready(function() {
             $('.select2').select2();
         });
     </script>

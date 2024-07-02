@@ -76,6 +76,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Account Number</th>
+                                <th>Student Name</th>
                                 <th>Amount</th>
                                 <th>Date</th>
                                 <th>Actions</th>
@@ -92,6 +93,13 @@
                                             {{ $item->transferAccount->name }}
                                         @endif
                                     </td>
+                                    <td>
+                                        @if ($item->student)
+                                            {{ $item->student->name }}
+                                        @endif
+                                        
+                                    </td>
+                                   
                                     {{-- <td>{{ $item->depositAccount->account_no }} -
                                         {{ $item->depositAccount->name }}</td> --}}
 

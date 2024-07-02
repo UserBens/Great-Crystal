@@ -92,17 +92,20 @@
                         <table class="table table-striped projects">
                             <thead>
                                 <tr class="">
+                                    <th>#</th>
                                     <th>No Transaction</th>
                                     <th>Transfer Account</th>
                                     <th>Deposit Account</th>
                                     <th>Amount</th>
                                     <th>Date</th>
                                     <th>Created At</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($allData as $item)
                                     <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $item->no_transaction }}</td>
                                         <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}
                                         </td>

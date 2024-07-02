@@ -30,17 +30,18 @@ class InvoiceSupplierController extends Controller
             // Inisialisasi objek form dengan nilai default
             $form = (object) [
                 'search' => $request->search ?? null,
-                'type' => $request->type ?? null,
                 'sort' => $request->sort ?? null,
-                'order' => $request->order ?? null,
                 'status' => $request->status ?? null,
                 'date' => $request->date ?? null,
+                'type' => $request->type ?? null,
+                'order' => $request->order ?? null,
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
             $query = InvoiceSupplier::query();
+            $accountNumbers = Accountnumber::all();
 
-            $invoices = InvoiceSupplier::all();
+            // $invoices = InvoiceSupplier::all();
 
 
             if ($request->filled('search')) {
@@ -52,14 +53,6 @@ class InvoiceSupplierController extends Controller
                     ->orWhere('date', 'LIKE', $searchTerm);
             }
 
-            // // Mengatur urutan berdasarkan parameter yang dipilih
-            // if ($request->filled('sort') && $request->filled('order')) {
-            //     if ($request->sort === 'date') {
-            //         $query->orderBy('date', $request->order);
-            //     } else {
-            //         $query->orderBy($request->sort, $request->order);
-            //     }
-            // }
 
             // Filter data berdasarkan tanggal
             if ($request->filled('date')) {
@@ -76,15 +69,42 @@ class InvoiceSupplierController extends Controller
                 }
             }
 
-            // Memuat data dengan pagination
-            $data = $query->paginate(10);
+            // Filter data berdasarkan status pembayaran
+            if ($request->filled('status')) {
+                if ($request->status === 'Paid') {
+                    $query->where('payment_status', 'Paid');
+                } elseif ($request->status === 'Not Yet') {
+                    $query->where('payment_status', 'Not Yet');
+                }
+            }
+
+            // // Memuat data dengan pagination
+            // $data = $query->paginate(10);
+
+            // Memuat data dengan pagination dan menambahkan parameter filter ke URL paginasi
+            $data = $query->paginate(10)->appends([
+                'search' => $request->search,
+                'sort' => $request->sort,
+                'status' => $request->status,
+                'date' => $request->date,
+            ]);
+
 
             // Menampilkan view dengan data dan form
-            return view('components.supplier.invoice.index', compact('data', 'form', 'invoices'));
+            return view('components.supplier.invoice.index', compact('data', 'form', 'accountNumbers'));
         } catch (Exception $err) {
             // Menampilkan pesan error jika terjadi kesalahan
             return dd($err);
         }
+    }
+
+    public function uploadProofOfPaymentView($id)
+    {
+        $invoice = InvoiceSupplier::findOrFail($id);
+        $accountNumbers = Accountnumber::all();
+
+
+        return view('components.supplier.invoice.upload-proof', compact('invoice', 'accountNumbers'));
     }
 
     public function uploadProofOfPayment(Request $request, $id)
@@ -95,9 +115,12 @@ class InvoiceSupplierController extends Controller
 
             // Validasi data request
             $request->validate([
-                'image_path' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image_path' => 'required|image|mimes:jpeg,png,jpg,gif',
                 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
+                'payment_method' => 'required|in:Cash,Bank',
+                'transfer_account_id' => 'required',
+                'deposit_account_id' => 'required',
             ]);
 
             // Handle file upload
@@ -110,7 +133,10 @@ class InvoiceSupplierController extends Controller
                 $invoice->update([
                     'image_path' => $imageName,
                     'payment_status' => $request->payment_status,
+                    'payment_method' => $request->payment_method,
                     'description' => $request->description,
+                    'transfer_account_id' => $request->transfer_account_id,
+                    'deposit_account_id' => $request->deposit_account_id,
                 ]);
 
                 // Debugging log
@@ -145,7 +171,7 @@ class InvoiceSupplierController extends Controller
             'date' => 'required|date_format:Y-m-d',
             'nota' => 'required',
             'deadline_invoice' => 'required|date_format:Y-m-d',
-            'ppn_status' => 'required'
+            'pph' => 'required'
         ]);
 
         $amount = $request->amount;
@@ -164,6 +190,7 @@ class InvoiceSupplierController extends Controller
         $invoice->no_invoice = $request->no_invoice;
         $invoice->supplier_name = $request->supplier_name;
         $invoice->amount = $amount;
+        $invoice->pph = $request->pph;
         $invoice->pph_percentage = $pph_percentage;
         $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
         $invoice->nota = $request->nota;
@@ -173,20 +200,6 @@ class InvoiceSupplierController extends Controller
         return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
     }
 
-
-
-    // public function destroyInvoiceSupplier($id)
-    // {
-    //     try {
-    //         $invoice = InvoiceSupplier::findOrFail($id);
-
-    //         $invoice->delete();
-
-    //         return response()->json(['message' => 'Invoice supplier deleted successfully.']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => 'Failed to delete invoice supplier.']);
-    //     }
-    // }
 
     public function destroyInvoiceSupplier($id)
     {
@@ -257,7 +270,7 @@ class InvoiceSupplierController extends Controller
             //     $query->whereDate('created_at', $searchDate);
             // }
 
-            
+
             // Filter data berdasarkan tanggal
             if ($request->filled('created_at')) {
                 $searchDate = date('Y-m-d', strtotime($request->created_at));

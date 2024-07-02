@@ -277,12 +277,7 @@ class AccountingController extends Controller
             return redirect()->route('account.index')->with('error', 'Failed to calculate ending balance.');
         }
     }
-
-
-
-
-
-
+    
 
     // milik transfer transaction
 

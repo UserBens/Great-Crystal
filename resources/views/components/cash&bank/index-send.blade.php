@@ -76,9 +76,9 @@
                             <tr>
                                 <th style="width: 3%">#</th>
                                 <th>Account Number</th>
+                                <th>Supplier</th>
                                 <th>Amount</th>
                                 <th>Date</th>
-                                <th>Supplier</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -93,23 +93,26 @@
                                             {{ $item->transferAccount->name }}
                                         @endif
                                     </td>
+
+                                    <td>
+                                        @if ($item->transactionSendSupplier)
+                                            {{ $item->transactionSendSupplier->supplier_name }}
+                                        @endif
+                                    </td>
                                     {{-- <td>{{ $item->depositAccount->account_no }} -
                                         {{ $item->depositAccount->name }}</td> --}}
 
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
+                                    
                                     <td>
-                                        @if ($item->transactionSendSupplier)
-                                            {{ $item->transactionSendSupplier->supplier_name }}
-                                        @endif
-                                    </td>                                    <td>
                                         <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
                                             data-id="{{ $item->id }}">
                                             <i class="fas fa-trash mr-1"></i>Delete
                                         </button>
                                     </td>
                                     <td class="project-actions text-right">
-                                      
+
                                     </td>
                                 </tr>
                             @endforeach

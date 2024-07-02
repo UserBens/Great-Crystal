@@ -73,12 +73,12 @@
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
-                                <th style="width: 3%">#</th>
+                                <th>#</th>
                                 <th>Account Number</th>
                                 <th>Amount</th>
                                 <th>Date</th>
                                 {{-- <th>Type</th> --}}
-                                <th style="width: 8%;" class="text-center">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>

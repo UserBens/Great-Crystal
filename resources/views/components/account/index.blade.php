@@ -75,13 +75,12 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Account Number</th>
+                                <th>Account</th>
                                 <th>Name</th>
-                                <th>Category Account</th>
+                                <th>Category</th>
                                 <th>Amount</th>
                                 <th>Beginning Balance</th>
                                 <th>Ending Balance</th>
-                                {{-- <th>Date</th> --}}
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -101,7 +100,7 @@
                                       
                                     </td> --}}
                                     <td class="text-center">
-                                        <div class="row">
+                                        <div class="row ">
                                             {{-- <a class="btn btn-success btn-sm mr-2 calculate-total"
                                                 data-id="{{ $account->id }}" data-name="{{ $account->name }}"
                                                 data-beginning-balance="{{ $account->beginning_balance }}">
@@ -122,24 +121,40 @@
                                             <form action="{{ route('account.calculateTotal', $account->id) }}"
                                                 method="POST">
                                                 @csrf
-                                                <button type="submit" class="btn btn-success btn-sm mr-2"
-                                                    name="calculate_total">
-                                                    <i class="fas fa-calculator"></i> Hitung
+                                                <button type="submit" class="btn btn-success btn-sm"
+                                                    name="calculate_total" style="margin-right: 4px">
+                                                    <i class="fas fa-calculator"></i> Calculate
                                                 </button>
                                                 <input type="hidden" name="name" value="{{ $account->name }}">
                                                 <input type="hidden" name="beginning_balance"
                                                     value="{{ $account->beginning_balance }}">
                                             </form>
 
-                                            <a class="btn btn-warning btn-sm mr-2"
+                                            <a class="btn btn-warning btn-sm" style="margin-right: 4px"
                                                 href="/admin/account/{{ $account->id }}/edit">
                                                 <i class="fas fa-pencil"></i> Edit
                                             </a>
-                                            <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger"
                                                 data-id="{{ $account->id }}">
-                                                <i class="fas fa-trash mr-1"></i>Delete
+                                                <i class="fas fa-trash"></i>Delete
                                             </button>
-                                            {{-- </div> --}}
+
+                                            {{-- <button type="button" class="btn btn-sm delete-btn btn-danger"
+                                            data-id="{{ $item->id }}">
+                                            <i class="fas fa-trash mr-1"></i>Delete
+                                        </button>
+
+                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal"
+                                            data-target="#importModal{{ $item->id }}" style="">
+                                            <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
+                                        </button>
+
+                                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
+                                            data-target="#showImageModal{{ $item->id }}">
+                                            <i class="fas fa-eye" style="margin-right: 4px"></i>Preview
+                                        </button> --}}
+
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

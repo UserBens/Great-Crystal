@@ -104,7 +104,9 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/update-paid/{bill_id}/{student_id}', [BillController::class, 'paidOfBook'])->name('action.book.payment');
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
 
+      // Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
       Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
+
    });
 
 
@@ -286,6 +288,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
    Route::prefix('/invoice-supplier')->group(function () {
       Route::get('/', [InvoiceSupplierController::class, 'indexInvoiceSupplier'])->name('invoice-supplier.index');
+      Route::get('/upload-proof-of-payment/{id}', [InvoiceSupplierController::class, 'uploadProofOfPaymentView'])->name('invoice-supplier.upload-proof-view');
       Route::post('/upload-proof-of-payment/{id}', [InvoiceSupplierController::class, 'uploadProofOfPayment'])->name('invoice-supplier.upload-proof');
       Route::get('/create-invoice-supplier', [InvoiceSupplierController::class, 'createInvoiceSupplier'])->name('create-invoice-supplier.create');
       Route::post('/create-invoice-supplier/store', [InvoiceSupplierController::class, 'storeInvoiceSupplier'])->name('invoice-supplier.store');

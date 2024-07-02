@@ -9,11 +9,21 @@ class InvoiceSupplier extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['no_invoice', 'supplier_name', 'amount', 'date', 'nota', 'deadline_invoice', 'payment_status', 'description', 'image_path'];
+    protected $guarded = ['id'];
 
     public function supplier()
     {
         return $this->belongsTo(SupplierData::class, 'supplier_name', 'name');
+    }
+
+    public function transferAccount()
+    {
+        return $this->belongsTo(AccountNumber::class, 'transfer_account_id');
+    }
+
+    public function depositAccount()
+    {
+        return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
     }
 
     // public function statuses()

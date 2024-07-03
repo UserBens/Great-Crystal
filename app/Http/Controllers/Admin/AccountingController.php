@@ -65,9 +65,10 @@ class AccountingController extends Controller
 
     public function indexAccount(Request $request)
     {
+        session()->flash('preloader', true);
         session()->flash('page', (object)[
-            'page' => 'Transaction',
-            'child' => 'database Account Number',
+            'page' => 'AccountNumber',
+            'child' => 'Database Account Number',
         ]);
 
         try {
@@ -239,50 +240,129 @@ class AccountingController extends Controller
         }
     }
 
+
     // public function calculateTotal(Request $request, $id)
     // {
     //     try {
-    //         $name = $request->name;
-    //         $beginning_balance = $request->beginning_balance;
-
-    //         // Misalnya, lakukan perhitungan sederhana, tambahkan jumlah transaksi
     //         $account = Accountnumber::findOrFail($id);
-    //         $ending_balance = $beginning_balance + $account->transactions_total;
+    //         $ending_balance = $account->calculateEndingBalance();
 
-    //         // Update data saldo akhir di database (jika diperlukan)
+    //         // Tentukan apakah saldo akhir merupakan debit atau kredit
+    //         $balanceType = $ending_balance >= 0 ? 'debit' : 'kredit';
+
+    //         // Perbarui data di database
     //         $account->update(['ending_balance' => $ending_balance]);
 
-    //         // Redirect kembali ke halaman index dengan pesan sukses
-    //         return redirect()->route('account.index')->with('success', 'Ending balance calculated successfully.');
+    //         // Redirect dengan pesan sukses
+    //         return redirect()->route('account.index')->with('success', "Ending balance calculation successful. The balance is $balanceType.");
     //     } catch (\Exception $ex) {
     //         return redirect()->route('account.index')->with('error', 'Failed to calculate ending balance.');
     //     }
     // }
 
-    public function calculateTotal(Request $request, $id)
+    // public function calculateAll(Request $request)
+    // {
+    //     try {
+    //         // Ambil semua account numbers
+    //         $accounts = Accountnumber::all();
+
+    //         // Loop untuk menghitung ending balance untuk setiap account
+    //         foreach ($accounts as $account) {
+    //             $ending_balance = $account->calculateEndingBalance();
+    //             $account->update(['ending_balance' => $ending_balance]);
+    //         }
+
+    //         // Redirect dengan pesan sukses
+    //         return redirect()->route('account.index')->with('success', 'Ending balances calculation successful for all accounts.');
+    //     } catch (\Exception $ex) {
+    //         return redirect()->route('account.index')->with('error', 'Failed to calculate ending balances.');
+    //     }
+    // }
+
+    public function calculateAll(Request $request)
     {
         try {
-            $account = Accountnumber::findOrFail($id);
-            $ending_balance = $account->calculateEndingBalance();
+            // Ambil semua account numbers
+            $accounts = Accountnumber::all();
 
-            // Tentukan apakah saldo akhir merupakan debit atau kredit
-            $balanceType = $ending_balance >= 0 ? 'debit' : 'kredit';
+            // Loop untuk menghitung ending balance untuk setiap account
+            foreach ($accounts as $account) {
+                $ending_balance = $account->calculateEndingBalance();
+                $account->update(['ending_balance' => $ending_balance]);
 
-            // Perbarui data di database
-            $account->update(['ending_balance' => $ending_balance]);
+                // Tentukan tipe debit atau kredit berdasarkan ending balance
+                $position = $account->getBalanceType(); // Fungsi getBalanceType dari model Accountnumber
+
+                // Update kolom position dengan nilai debit atau kredit
+                $account->update(['position' => $position]);
+            }
 
             // Redirect dengan pesan sukses
-            return redirect()->route('account.index')->with('success', "Ending balance calculation successful. The balance is $balanceType.");
+            return redirect()->route('account.index')->with('success', 'Ending balances calculation successful for all accounts.');
         } catch (\Exception $ex) {
-            return redirect()->route('account.index')->with('error', 'Failed to calculate ending balance.');
+            return redirect()->route('account.index')->with('error', 'Failed to calculate ending balances.');
         }
     }
-    
+
+
+    // milik balance
+    public function indexBalance(Request $request)
+    {
+        session()->flash('preloader', true);
+        session()->flash('page', (object)[
+            'page' => 'AccountNumber',
+            'child' => 'Database Balance',
+        ]);
+
+        try {
+            $form = (object) [
+                'sort' => $request->sort ?? null,
+                'order' => $request->order ?? 'desc',
+                'search' => $request->search ?? null,
+                'date' => $request->date ?? null,
+            ];
+
+            $query = Accountnumber::query();
+
+            // Filter berdasarkan parameter pencarian
+            if ($request->filled('search')) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('account_no', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
+                        ->orWhere('created_at', 'LIKE', '%' . $request->search . '%');
+                });
+            }
+
+            // Filter berdasarkan tanggal
+            if ($request->filled('date')) {
+                $searchDate = date('Y-m-d', strtotime($request->date));
+                $query->whereDate('created_at', $searchDate);
+            }
+
+            // Mengatur urutan berdasarkan parameter yang dipilih
+            if ($request->filled('sort') && $request->filled('order')) {
+                $query->orderBy($request->sort, $request->order);
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $data = $query->paginate(15);
+
+            $categories = Accountcategory::all();
+
+            return view('components.account.balance-index')->with('data', $data)->with('categories', $categories)->with('form', $form);
+        } catch (Exception $err) {
+            return dd($err);
+        }
+    }
+
 
     // milik transfer transaction
 
     public function indexTransfer(Request $request)
     {
+        session()->flash('preloader', true);
         session()->flash('page', (object)[
             'page' => 'Transaction',
             'child' => 'Database Transaction Transfer',
@@ -418,6 +498,7 @@ class AccountingController extends Controller
     // milik transaction send
     public function indexTransactionSend(Request $request)
     {
+        session()->flash('preloader', true);
         session()->flash('page', (object)[
             'page' => 'Transaction',
             'child' => 'Database Transaction Send',
@@ -567,6 +648,7 @@ class AccountingController extends Controller
     // milik transaction receive
     public function indexTransactionReceive(Request $request)
     {
+        session()->flash('preloader', true);
         session()->flash('page', (object)[
             'page' => 'Transaction',
             'child' => 'Database Transaction Receive',

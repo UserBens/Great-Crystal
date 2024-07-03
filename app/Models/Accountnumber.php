@@ -16,11 +16,6 @@ class Accountnumber extends Model
         return $this->belongsTo(Accountcategory::class, 'account_category_id');
     }
 
-    // public function calculateEndingBalance()
-    // {
-    //     return $this->beginning_balance + $this->transactions_total;
-    // }
-
     public function calculateEndingBalance()
     {
         return $this->beginning_balance + $this->transactions_total;

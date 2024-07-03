@@ -25,6 +25,7 @@ class GradeController extends Controller
    {
       try {
          //code...
+         session()->flash('preloader', true);
          session()->flash('page',  $page = (object)[
             'page' => 'grades',
             'child' => 'database grades',
@@ -47,6 +48,7 @@ class GradeController extends Controller
    {
       try {
          //code...
+         session()->flash('preloader', true);
          session()->flash('page',  $page = (object)[
             'page' => 'grades',
             'child' => 'database grades',
@@ -154,6 +156,7 @@ class GradeController extends Controller
    {
       try {
          //code...
+         session()->flash('preloader', true);
          session()->flash('page',  $page = (object)[
             'page' => 'grades',
             'child' => 'database grades',
@@ -174,7 +177,6 @@ class GradeController extends Controller
 
       DB::beginTransaction();
       try {
-
          session()->flash('page',  $page = (object)[
             'page' => 'grades',
             'child' => 'database grades',
@@ -247,7 +249,7 @@ class GradeController extends Controller
          ->get();
          
          $grade = Grade::where('id', $id)->first();
-         
+         session()->flash('preloader', true);
          session()->flash('page',  $page = (object)[
             'page' => 'grades',
             'child' => 'database grades',

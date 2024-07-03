@@ -284,7 +284,7 @@
                         class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'Supplier' ? 'menu-open' : '') : '' }}">
                         <a href="#"
                             class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'Supplier' ? 'active' : '') : '' }}">
-                            <i class="nav-icon fa-solid fa-boxes-packing"></i>
+                            <i class="nav-icon fa-solid fa-store"></i>
                             <p>
                                 Supplier
                                 <i class="right fas fa-angle-left"></i>
@@ -343,13 +343,35 @@
                                 </a>
                             </li>
 
+                        </ul>
+                    </li>
+
+                    {{-- Account Number Page --}}
+                    <li
+                        class="nav-item {{ session('page') && session('page')->page ? (session('page')->page == 'AccountNumber' ? 'menu-open' : '') : '' }}">
+                        <a href="#"
+                            class="nav-link {{ session('page') && session('page')->page ? (session('page')->page == 'AccountNumber' ? 'active' : '') : '' }}">
+                            <i class="nav-icon fa-solid fa-address-book"></i>
+                            <p>
+                                Account
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">                            
                             <li class="nav-item">
                                 <a href="{{ route('account.index') }}"
-                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'database Account Number' ? 'active' : '') : '' }}">
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Account Number' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Account Number</p>
+                                    <p>Data</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('balance.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Balance' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Balance</p>
+                                </a>
+                            </li>                          
 
                         </ul>
                     </li>

@@ -34,7 +34,7 @@ class BillController extends Controller
       try {
 
          $user = Auth::user();
-
+         session()->flash('preloader', true);
          session()->flash('page', (object)[
             'page' => 'Bills',
             'child' => 'database bills'

@@ -277,6 +277,11 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
       Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
       Route::post('/calculate-total/{id}', [AccountingController::class, 'calculateTotal'])->name('account.calculateTotal');
+      Route::post('/account/calculate-all', [AccountingController::class, 'calculateAll'])->name('account.calculateAll');
+
+      Route::get('/account/balance', [AccountingController::class, 'indexBalance'])->name('balance.index');
+
+
    });
 
    Route::prefix('/supplier')->group(function () {

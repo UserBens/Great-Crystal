@@ -1,7 +1,7 @@
 @extends('layouts.admin.master')
 @section('content')
     <div class="container-fluid">
-        <h2 class="text-center display-4 mb-4">Account Number Search</h2>
+        <h2 class="text-center display-4 mb-4">Balance Account Number Search</h2>
         <div class="m-1">
             <form action="{{ route('account.index') }}" method="GET" class="mb-3">
                 <div class="row">
@@ -59,8 +59,8 @@
             <div class="btn-group mt-2">
                 <a type="button" href="/admin/account/create-account" class="btn btn-success mt-3"
                     style="margin-right: 8px">
-                    <i class="fa-solid fa-plus"></i> Create Account
-                </a>            
+                    <i class="fa-solid fa-plus"></i> Post Balance
+                </a>                        
 
                 {{-- <form action="{{ route('account.calculateAll') }}" method="POST">
                     @csrf
@@ -68,13 +68,6 @@
                         <i class="fas fa-calculator"></i> Calculate All
                     </button>
                 </form> --}}
-
-                <form action="{{ route('account.calculateAll') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-primary mt-3" name="calculate_all">
-                        <i class="fas fa-calculator"></i> Calculate All
-                    </button>
-                </form>
                 
 
             </div>
@@ -96,8 +89,8 @@
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Amount</th>
-                                {{-- <th>Beginning Balance</th>
-                                <th>Ending Balance</th> --}}
+                                <th>Beginning Balance</th>
+                                <th>Ending Balance</th>
                                 <th>Type</th>
                                 <th>Actions</th>
                             </tr>
@@ -111,23 +104,11 @@
                                     <td>{{ $categories->firstWhere('id', $account->account_category_id)->category_name }}
                                     </td>
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
-                                    {{-- <td>Rp.{{ number_format($account->beginning_balance, 0, ',', '.') }}</td>
-                                    <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td> --}}
+                                    <td>Rp.{{ number_format($account->beginning_balance, 0, ',', '.') }}</td>
+                                    <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td>
                                     <td>{{ $account->position }}</td>
 
-                                    <td class="">
-
-                                        {{-- <form action="{{ route('account.calculateTotal', $account->id) }}"
-                                                method="POST">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm"
-                                                    name="calculate_total" style="margin-right: 4px">
-                                                    <i class="fas fa-calculator"></i> Calculate
-                                                </button>
-                                                <input type="hidden" name="name" value="{{ $account->name }}">
-                                                <input type="hidden" name="beginning_balance"
-                                                    value="{{ $account->beginning_balance }}">
-                                            </form> --}}
+                                    <td class="">                                     
 
                                         <a class="btn btn-warning btn-sm" style="margin-right: 4px"
                                             href="/admin/account/{{ $account->id }}/edit">
@@ -238,51 +219,6 @@
             });
         });
     </script>
-
-    {{-- <script>
-        $(document).ready(function() {
-            // Event handler untuk tombol "Total"
-            $('.calculate-total').click(function() {
-                var id = $(this).data('id');
-                var name = $(this).data('name');
-                var beginning_balance = $(this).data('beginning-balance');
-
-                // Ajax request untuk menghitung saldo akhir
-                $.ajax({
-                    url: '{{ route('account.calculateTotal') }}',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        id: id,
-                        name: name,
-                        beginning_balance: beginning_balance
-                    },
-                    success: function(response) {
-                        // Update tampilan saldo akhir di baris terkait
-                        $('#ending-balance-' + id).text('Rp.' + response
-                            .ending_balance_formatted);
-                        // Tampilkan pesan sukses jika perlu
-                        swal({
-                            title: "Success!",
-                            text: "Ending balance calculated successfully.",
-                            icon: "success",
-                            button: "OK",
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(error);
-                        // Tampilkan pesan error jika ada masalah
-                        swal({
-                            title: "Error!",
-                            text: "Failed to calculate ending balance.",
-                            icon: "error",
-                            button: "OK",
-                        });
-                    }
-                });
-            });
-        });
-    </script> --}}
 
     <script>
         document.getElementById('sort-select').addEventListener('change', function() {

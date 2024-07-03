@@ -25,9 +25,4 @@ class InvoiceSupplier extends Model
     {
         return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
     }
-
-    // public function statuses()
-    // {
-    //     return $this->hasMany(InvoiceSupplierStatus::class, 'no_invoice', 'no_invoice');
-    // }
 }

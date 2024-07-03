@@ -20,7 +20,7 @@ class PaymentStudentController extends Controller
    {
       try {
          //code...
-
+         session()->flash('preloader', true);
          session()->flash('page', (object)[
             'page' => 'payments',
             'child' => 'spp-students',

@@ -18,7 +18,7 @@ class PaymentGradeController extends Controller
    {
       try {
          //code...
-
+         session()->flash('preloader', true);
          session()->flash('page',  (object)[
             'page' => 'payments',
             'child' => 'payment-grades',

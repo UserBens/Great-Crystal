@@ -14,7 +14,7 @@ class Report extends Controller
     public function index() {
 
         try {
-
+            session()->flash('preloader', true);
             session()->flash('page', (object)[
                 'page' => 'Report',
                 'child' => 'report bills'

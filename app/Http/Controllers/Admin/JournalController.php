@@ -125,6 +125,7 @@ class JournalController extends Controller
 
     public function indexJournal(Request $request)
     {
+        session()->flash('preloader', true);
         session()->flash('page', (object) [
             'page' => 'Journal',
             'child' => 'database Journal',

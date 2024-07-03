@@ -22,7 +22,7 @@ class PaymentBookController extends Controller
     public function index(Request $request)
     {
         try {
-            
+            session()->flash('preloader', true);
             session()->flash('page',  (object)[
                 'page' => 'payments',
                 'child' => 'payment-books',

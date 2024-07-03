@@ -14,6 +14,7 @@ class FinancialController extends Controller
 
     public function indexIncome()
     {
+        session()->flash('preloader', true);
         session()->flash('page', (object)[
             'page' => 'Financial',
             'child' => 'database income',
@@ -35,6 +36,7 @@ class FinancialController extends Controller
     {
         $totalExpenditure = Expenditure::sum('amount_spent');
 
+        session()->flash('preloader', true);
         session()->flash('page', (object)[
             'page' => 'Financial',
             'child' => 'database expenditure',

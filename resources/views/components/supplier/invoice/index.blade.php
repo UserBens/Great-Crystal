@@ -115,11 +115,6 @@
                                             <i class="fas fa-eye" style="margin-right: 4px"></i>Review
                                         </button>
 
-                                        {{-- <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
-                                            data-target="#showImageModal{{ $item->id }}">
-                                            <i class="fas fa-eye" style="margin-right: 4px"></i>Preview
-                                        </button> --}}
-
                                         <button type="button" class="btn btn-sm delete-btn btn-danger"
                                             data-id="{{ $item->id }}">
                                             <i class="fas fa-trash mr-1"></i>Delete
@@ -232,38 +227,31 @@
                                                                                 {{ $errors->first('payment_status') }}
                                                                             </p>
                                                                         @endif
-                                                                    </div>
+                                                                    </div>                                                                
 
                                                                     <div class="col-md-6 mt-3">
-                                                                        <label for="transfer_account_id">Transfer
-                                                                            From</label>
-
-                                                                        <select name="transfer_account_id"
-                                                                            id="transfer_account_id"
-                                                                            class="form-control select2" disabled>
-                                                                            <option>
-                                                                                {{ $item->transfer_account_id }}
-                                                                            </option>
+                                                                        <label for="transfer_account_id">Transfer From</label>
+                                                                        <select name="transfer_account_id" id="transfer_account_id" class="form-control select2" disabled>
+                                                                            @if ($item->transferAccount)
+                                                                                <option value="{{ $item->transferAccount->id }}">
+                                                                                    {{ $item->transferAccount->account_no }} - {{ $item->transferAccount->name }}
+                                                                                </option>
+                                                                            @endif
                                                                         </select>
                                                                         @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('transfer_account_id') }}
-                                                                            </p>
+                                                                            <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
                                                                         @endif
-                                                                    </div>
+                                                                    </div>                                                               
 
                                                                     <div class="col-md-6 mt-3">
-                                                                        <label for="deposit_account_id">Deposit
-                                                                            To</label>
-                                                                        <select name="deposit_account_id"
-                                                                            id="deposit_account_id"
-                                                                            class="form-control select2"
-                                                                            style="width: 400px" disabled>
-                                                                            <option>
-                                                                                {{ $item->deposit_account_id }}
-                                                                            </option>
+                                                                        <label for="deposit_account_id">Deposit To</label>
+                                                                        <select name="deposit_account_id" id="deposit_account_id" class="form-control select2" style="width: 400px" disabled>
+                                                                            @if ($item->depositAccount)
+                                                                                <option value="{{ $item->depositAccount->id }}">
+                                                                                    {{ $item->depositAccount->account_no }} - {{ $item->depositAccount->name }}
+                                                                                </option>
+                                                                            @endif
                                                                         </select>
-
                                                                     </div>
 
                                                                     <div class="col-md-12 mt-3">

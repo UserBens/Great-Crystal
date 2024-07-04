@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\BalanceAccount;
 use App\Models\Student;
 use App\Models\Transaction_transfer;
 use App\Models\TransactionSendSupplier;
@@ -305,58 +306,6 @@ class AccountingController extends Controller
     }
 
 
-    // milik balance
-    public function indexBalance(Request $request)
-    {
-        session()->flash('preloader', true);
-        session()->flash('page', (object)[
-            'page' => 'AccountNumber',
-            'child' => 'Database Balance',
-        ]);
-
-        try {
-            $form = (object) [
-                'sort' => $request->sort ?? null,
-                'order' => $request->order ?? 'desc',
-                'search' => $request->search ?? null,
-                'date' => $request->date ?? null,
-            ];
-
-            $query = Accountnumber::query();
-
-            // Filter berdasarkan parameter pencarian
-            if ($request->filled('search')) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->search . '%')
-                        ->orWhere('account_no', 'LIKE', '%' . $request->search . '%')
-                        ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
-                        ->orWhere('created_at', 'LIKE', '%' . $request->search . '%');
-                });
-            }
-
-            // Filter berdasarkan tanggal
-            if ($request->filled('date')) {
-                $searchDate = date('Y-m-d', strtotime($request->date));
-                $query->whereDate('created_at', $searchDate);
-            }
-
-            // Mengatur urutan berdasarkan parameter yang dipilih
-            if ($request->filled('sort') && $request->filled('order')) {
-                $query->orderBy($request->sort, $request->order);
-            } else {
-                $query->orderBy('created_at', 'desc');
-            }
-
-            $data = $query->paginate(15);
-
-            $categories = Accountcategory::all();
-
-            return view('components.account.balance-index')->with('data', $data)->with('categories', $categories)->with('form', $form);
-        } catch (Exception $err) {
-            return dd($err);
-        }
-    }
-
 
     // milik transfer transaction
 
@@ -445,13 +394,8 @@ class AccountingController extends Controller
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
 
-            // // Check if the transfer account has sufficient funds
-            // $transferAccount = Accountnumber::find($request->transfer_account_id);
-            // if ($transferAccount->amount < $request->amount) {
-            //     return redirect()->back()->withErrors(['amount' => 'Insufficient funds in transfer account']);
-            // }
-
-            Transaction_transfer::create([
+            // Create the transaction record
+            $transaction = Transaction_transfer::create([
                 'transfer_account_id' => $request->transfer_account_id,
                 'deposit_account_id' => $request->deposit_account_id,
                 'amount' => $request->amount,
@@ -460,22 +404,35 @@ class AccountingController extends Controller
                 'no_transaction' => $request->no_transaction,
             ]);
 
-            // Update the amount in transfer account (allowing it to go negative)
+            // Update the amount in transfer account (kredit)
             $transferAccount = Accountnumber::find($request->transfer_account_id);
-            $transferAccount->amount -= $request->amount;
+            $transferAccount->amount -= $request->amount; // Kredit
             $transferAccount->save();
 
-            // Update the amount in deposit account
+            // Update the amount in deposit account (debit)
             $depositAccount = Accountnumber::find($request->deposit_account_id);
-            $depositAccount->amount += $request->amount;
+            $depositAccount->amount += $request->amount; // Debit
             $depositAccount->save();
+
+            // Update ending balances
+            $this->updateEndingBalance($transferAccount);
+            $this->updateEndingBalance($depositAccount);
 
             return redirect()->route('transaction-transfer.index')->with('success', 'Transaction Transfer Created Successfully!');
         } catch (Exception $err) {
-            // Tangani kesalahan di sini
+            // Handle errors here
             return dd($err);
         }
     }
+
+   
+
+
+
+
+
+
+
 
     public function deleteTransactionTransfer($id)
     {

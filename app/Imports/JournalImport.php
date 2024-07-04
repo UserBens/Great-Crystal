@@ -242,58 +242,215 @@ class JournalImport implements ToCollection, WithHeadingRow
 
 
     // GAK KENEK
-    // public function collection(Collection $rows)
+    // public function collection(Collection $collection)
     // {
     //     try {
     //         DB::beginTransaction();
 
-    //         // Iterate through rows after the header row
-    //         foreach ($rows as $idx => $row) {
+    //         foreach ($collection as $idx => $row) {
+    //             // Ensure $row is an associative array
     //             $rowArray = $row->toArray();
 
     //             Log::info('Processing row: ' . json_encode($rowArray));
 
-    //             // Validate required columns
-    //             if (!isset($rowArray['transaction_type']) || empty($rowArray['transaction_type'])) {
-    //                 throw new Exception("Missing 'transaction_type' column at line " . ($idx + 2));
+    //             // Ensure 'Transaction Type' is available
+    //             if (!isset($rowArray['Transaction Type'])) {
+    //                 throw new Exception("Missing 'Transaction Type' column at line " . ($idx + 1));
     //             }
 
-    //             // Handle date formatting
-    //             if (isset($rowArray['date'])) {
+    //             // Normalize keys to match your Validator rules
+    //             $normalizedRow = [
+    //                 'Transaction Type' => $rowArray['Transaction Type'],
+    //                 'Transfer Account' => $rowArray['Transfer Account'] ?? null,
+    //                 'Deposit Account' => $rowArray['Deposit Account'] ?? null,
+    //                 'No. Transaction' => $rowArray['No. Transaction'] ?? null,
+    //                 'Amount' => $rowArray['Amount'] ?? null,
+    //                 'Date' => $rowArray['Date'] ?? null,
+    //                 'Description' => $rowArray['Description'] ?? null,
+    //                 'Transaction Send Supplier' => $rowArray['Transaction Send Supplier'] ?? null,
+    //                 'Deadline Invoice' => $rowArray['Deadline Invoice'] ?? null,
+    //                 'Student Name' => $rowArray['Student Name'] ?? null,
+    //             ];
+
+    //             // Reformat date columns before validation
+    //             if (isset($normalizedRow['Date'])) {
     //                 try {
-    //                     $rowArray['date'] = $this->formatDate($rowArray['date']);
+    //                     $normalizedRow['Date'] = $this->formatDate($normalizedRow['Date']);
     //                 } catch (Exception $e) {
-    //                     Log::error('Error parsing date at row ' . ($idx + 2) . ': ' . $rowArray['date']);
+    //                     Log::error('Error parsing date at row ' . ($idx + 1) . ': ' . $normalizedRow['Date']);
+    //                     throw $e;
+    //                 }
+    //             }
+    //             if (isset($normalizedRow['Deadline Invoice'])) {
+    //                 try {
+    //                     $normalizedRow['Deadline Invoice'] = $this->formatDate($normalizedRow['Deadline Invoice']);
+    //                 } catch (Exception $e) {
+    //                     Log::error('Error parsing deadline_invoice at row ' . ($idx + 1) . ': ' . $normalizedRow['Deadline Invoice']);
     //                     throw $e;
     //                 }
     //             }
 
-    //             // Call appropriate import function based on transaction type
-    //             switch ($rowArray['transaction_type']) {
+    //             switch ($normalizedRow['Transaction Type']) {
     //                 case 'transfer':
-    //                     $this->importTransfer($rowArray, $idx + 2); // +2 because Excel rows are 1-based and we skipped heading row
+    //                     $this->importTransfer($normalizedRow, $idx);
     //                     break;
     //                 case 'send':
-    //                     $this->importSend($rowArray, $idx + 2);
+    //                     $this->importSend($normalizedRow, $idx);
     //                     break;
     //                 case 'receive':
-    //                     $this->importReceive($rowArray, $idx + 2);
+    //                     $this->importReceive($normalizedRow, $idx);
     //                     break;
     //                 default:
-    //                     throw new Exception("Invalid transaction type '{$rowArray['transaction_type']}' at line " . ($idx + 2));
+    //                     throw new Exception("Invalid transaction type '{$normalizedRow['Transaction Type']}' at line " . ($idx + 1));
     //             }
     //         }
 
     //         DB::commit();
     //         Session::flash('success', 'Data imported successfully');
     //     } catch (Exception $th) {
-    //         Log::error('Error: ' . $th->getMessage());
+    //         Log::info('Error: ' . $th->getMessage());
     //         Session::flash('import_status', [
     //             'code' => 500,
     //             'msg' => 'Internal server error: ' . $th->getMessage(),
     //         ]);
     //         DB::rollBack();
     //     }
+    // }
+
+
+    // private function importTransfer($row, $idx)
+    // {
+    //     $validator = Validator::make($row, [
+    //         'Transaction Type' => 'required',
+    //         'Transfer Account' => 'required',
+    //         'Deposit Account' => 'required',
+    //         'No. Transaction' => 'required',
+    //         'Amount' => 'required|numeric|min:0',
+    //         'Date' => 'required|date_format:d/m/Y',
+    //         'Description' => 'required',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         throw new Exception("Validation errors at line " . ($idx + 1) . ": " . $validator->errors()->first());
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk transfer_account
+    //     $transferAccount = AccountNumber::where('name', $row['Transfer Account'])->first();
+    //     if (!$transferAccount) {
+    //         throw new Exception("Transfer account name not found at line " . ($idx + 1));
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk deposit_account
+    //     $depositAccount = AccountNumber::where('name', $row['Deposit Account'])->first();
+    //     if (!$depositAccount) {
+    //         throw new Exception("Deposit account name not found at line " . ($idx + 1));
+    //     }
+
+    //     // Penyesuaian nama kolom sebelum menyimpan
+    //     Transaction_transfer::create([
+    //         'transfer_account_id' => $transferAccount->id,
+    //         'deposit_account_id' => $depositAccount->id,
+    //         'no_transaction' => $row['No. Transaction'],
+    //         'amount' => $row['Amount'],
+    //         'date' => Carbon::createFromFormat('d/m/Y', $row['Date']),
+    //         'description' => $row['Description'],
+    //     ]);
+    // }
+
+    // private function importSend($row, $idx)
+    // {
+    //     $validator = Validator::make($row, [
+    //         'Transaction Type' => 'required',
+    //         'Transfer Account' => 'required',
+    //         'Deposit Account' => 'required',
+    //         'No. Transaction' => 'required',
+    //         'Amount' => 'required|numeric|min:0',
+    //         'Date' => 'required|date_format:d/m/Y',
+    //         'Description' => 'required',
+    //         'Transaction Send Supplier' => 'nullable',
+    //         'Deadline Invoice' => 'nullable|date_format:d/m/Y',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         throw new Exception("Validation errors at line " . ($idx + 1) . ": " . $validator->errors()->first());
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk transfer_account
+    //     $transferAccount = AccountNumber::where('name', $row['Transfer Account'])->first();
+    //     if (!$transferAccount) {
+    //         throw new Exception("Transfer account name not found at line " . ($idx + 1));
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk deposit_account
+    //     $depositAccount = AccountNumber::where('name', $row['Deposit Account'])->first();
+    //     if (!$depositAccount) {
+    //         throw new Exception("Deposit account name not found at line " . ($idx + 1));
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk supplier
+    //     $transactionSendSupplier = TransactionSendSupplier::where('supplier_name', $row['Transaction Send Supplier'])->first();
+    //     // Consider it nullable, so we only throw an exception if it's set and not found
+    //     if ($row['Transaction Send Supplier'] && !$transactionSendSupplier) {
+    //         throw new Exception("Transaction Send Supplier name not found at line " . ($idx + 1));
+    //     }
+
+    //     Transaction_send::create([
+    //         'transfer_account_id' => $transferAccount->id,
+    //         'deposit_account_id' => $depositAccount->id,
+    //         'transaction_send_supplier_id' => $transactionSendSupplier ? $transactionSendSupplier->id : null,
+    //         'no_transaction' => $row['No. Transaction'],
+    //         'amount' => $row['Amount'],
+    //         'date' => Carbon::createFromFormat('d/m/Y', $row['Date']),
+    //         'deadline_invoice' => isset($row['Deadline Invoice']) ? Carbon::createFromFormat('d/m/Y', $row['Deadline Invoice']) : null,
+    //         'description' => $row['Description'],
+    //     ]);
+    // }
+
+    // private function importReceive($row, $idx)
+    // {
+    //     $validator = Validator::make($row, [
+    //         'Transaction Type' => 'required',
+    //         'Transfer Account' => 'required',
+    //         'Deposit Account' => 'required',
+    //         'No. Transaction' => 'required',
+    //         'Amount' => 'required|numeric|min:0',
+    //         'Date' => 'required|date_format:d/m/Y',
+    //         'Description' => 'required',
+    //         'Student Name' => 'nullable',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         throw new Exception("Validation errors at line " . ($idx + 1) . ": " . $validator->errors()->first());
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk transfer_account
+    //     $transferAccount = AccountNumber::where('name', $row['Transfer Account'])->first();
+    //     if (!$transferAccount) {
+    //         throw new Exception("Transfer account name not found at line " . ($idx + 1));
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk deposit_account
+    //     $depositAccount = AccountNumber::where('name', $row['Deposit Account'])->first();
+    //     if (!$depositAccount) {
+    //         throw new Exception("Deposit account name not found at line " . ($idx + 1));
+    //     }
+
+    //     // Mencari ID berdasarkan nama untuk student
+    //     $student = Student::where('name', $row['Student Name'])->first();
+    //     // Consider it nullable, so we only throw an exception if it's set and not found
+    //     if ($row['Student Name'] && !$student) {
+    //         throw new Exception("Student name not found at line " . ($idx + 1));
+    //     }
+
+    //     Transaction_receive::create([
+    //         'transfer_account_id' => $transferAccount->id,
+    //         'deposit_account_id' => $depositAccount->id,
+    //         'student_id' => $student ? $student->id : null,
+    //         'no_transaction' => $row['No. Transaction'],
+    //         'amount' => $row['Amount'],
+    //         'date' => Carbon::createFromFormat('d/m/Y', $row['Date']),
+    //         'description' => $row['Description'],
+    //     ]);
     // }
 
     // private function formatDate($date)
@@ -308,143 +465,7 @@ class JournalImport implements ToCollection, WithHeadingRow
     //         return Carbon::create($year, $month, $day)->format('d/m/Y');
     //     }
 
-    //     // Assuming the date comes in as d/m/Y format from Excel
-    //     return $date;
-    // }
-
-    // private function importTransfer($row, $idx)
-    // {
-    //     $validator = Validator::make($row, [
-    //         'transaction_type' => 'required',
-    //         'transfer_account' => 'required',
-    //         'deposit_account' => 'required',
-    //         'no_transaction' => 'required',
-    //         'amount' => 'required|numeric|min:0',
-    //         'date' => 'required|date_format:d/m/Y',
-    //         'description' => 'required',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         throw new Exception("Validation errors at line " . $idx . ": " . $validator->errors()->first());
-    //     }
-
-    //     // Find transfer_account and deposit_account IDs
-    //     $transferAccount = AccountNumber::where('name', $row['transfer_account'])->first();
-    //     if (!$transferAccount) {
-    //         throw new Exception("Transfer account name not found at line " . $idx);
-    //     }
-
-    //     $depositAccount = AccountNumber::where('name', $row['deposit_account'])->first();
-    //     if (!$depositAccount) {
-    //         throw new Exception("Deposit account name not found at line " . $idx);
-    //     }
-
-    //     // Create transaction record
-    //     Transaction_transfer::create([
-    //         'transfer_account_id' => $transferAccount->id,
-    //         'deposit_account_id' => $depositAccount->id,
-    //         'no_transaction' => $row['no_transaction'],
-    //         'amount' => $row['amount'],
-    //         'date' => Carbon::createFromFormat('d/m/Y', $row['date']),
-    //         'description' => $row['description'],
-    //     ]);
-    // }
-
-    // private function importSend($row, $idx)
-    // {
-    //     $validator = Validator::make($row, [
-    //         'transaction_type' => 'required',
-    //         'transfer_account_id' => 'required',
-    //         'deposit_account_id' => 'required',
-    //         'no_transaction' => 'required',
-    //         'amount' => 'required|numeric|min:0',
-    //         'date' => 'required|date_format:d/m/Y',
-    //         'description' => 'required',
-    //         'transaction_send_supplier_id' => 'nullable',
-    //         'deadline_invoice' => 'nullable|date_format:d/m/Y',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         throw new Exception("Validation errors at line " . $idx . ": " . $validator->errors()->first());
-    //     }
-
-    //     // Find IDs for transfer_account, deposit_account, and optional transaction_send_supplier
-    //     $transferAccount = AccountNumber::where('name', $row['transfer_account_id'])->first();
-    //     if (!$transferAccount) {
-    //         throw new Exception("Transfer account name not found at line " . $idx);
-    //     }
-
-    //     $depositAccount = AccountNumber::where('name', $row['deposit_account_id'])->first();
-    //     if (!$depositAccount) {
-    //         throw new Exception("Deposit account name not found at line " . $idx);
-    //     }
-
-    //     $transaction_send_supplier_id = null;
-    //     if (isset($row['transaction_send_supplier_id'])) {
-    //         $transaction_send_supplier_id = TransactionSendSupplier::where('supplier_name', $row['transaction_send_supplier_id'])->first();
-    //         if (!$transaction_send_supplier_id) {
-    //             throw new Exception("Transaction Send Supplier name not found at line " . $idx);
-    //         }
-    //     }
-
-    //     // Create transaction record
-    //     Transaction_send::create([
-    //         'transfer_account_id' => $transferAccount->id,
-    //         'deposit_account_id' => $depositAccount->id,
-    //         'transaction_send_supplier_id' => $transaction_send_supplier_id ? $transaction_send_supplier_id->id : null,
-    //         'no_transaction' => $row['no_transaction'],
-    //         'amount' => $row['amount'],
-    //         'date' => Carbon::createFromFormat('d/m/Y', $row['date']),
-    //         'deadline_invoice' => isset($row['deadline_invoice']) ? Carbon::createFromFormat('d/m/Y', $row['deadline_invoice']) : null,
-    //         'description' => $row['description'],
-    //     ]);
-    // }
-
-    // private function importReceive($row, $idx)
-    // {
-    //     $validator = Validator::make($row, [
-    //         'transaction_type' => 'required',
-    //         'transfer_account_id' => 'required',
-    //         'deposit_account_id' => 'required',
-    //         'no_transaction' => 'required',
-    //         'amount' => 'required|numeric|min:0',
-    //         'date' => 'required|date_format:d/m/Y',
-    //         'description' => 'required',
-    //         'student_id' => 'nullable',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         throw new Exception("Validation errors at line " . $idx . ": " . $validator->errors()->first());
-    //     }
-
-    //     // Find IDs for transfer_account, deposit_account, and optional student
-    //     $transferAccount = AccountNumber::where('name', $row['transfer_account_id'])->first();
-    //     if (!$transferAccount) {
-    //         throw new Exception("Transfer account name not found at line " . $idx);
-    //     }
-
-    //     $depositAccount = AccountNumber::where('name', $row['deposit_account_id'])->first();
-    //     if (!$depositAccount) {
-    //         throw new Exception("Deposit account name not found at line " . $idx);
-    //     }
-
-    //     $student_id = null;
-    //     if (isset($row['student_id'])) {
-    //         $student_id = Student::where('name', $row['student_id'])->first();
-    //         if (!$student_id) {
-    //             throw new Exception("Student name not found at line " . $idx);
-    //         }
-    //     }
-
-    //     // Create transaction record
-    //     Transaction_receive::create([
-    //         'transfer_account_id' => $transferAccount->id,
-    //         'deposit_account_id' => $depositAccount->id,
-    //         'student_id' => $student_id ? $student_id->id : null,
-    //         'no_transaction' => $row['no_transaction'],
-    //         'amount' => $row['amount'],
-    //         'date' => Carbon::createFromFormat('d/m/Y', $row['date']),
-    //         'description' => $row['description'],
-    //     ]);
+    //     // Assuming the date comes in as Y-m-d format from Excel
+    //     return Carbon::createFromFormat('Y-m-d', $date)->format('d/m/Y');
     // }
 }

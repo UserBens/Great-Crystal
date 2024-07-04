@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row d-flex justify-content-center">
                 <!-- left column -->
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <!-- general form elements -->
                     <div>
                         <form id="transferForm" method="POST" action="{{ route('supplier.store') }}" onsubmit="submitForm()">
@@ -31,12 +31,14 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="instansi_name">Instansi Supplier Name<span style="color: red">*</span>
+                                            <label for="instansi_name">Instansi Supplier Name<span
+                                                    style="color: red">*</span>
                                                 :</label>
                                             <div class="input-group">
 
-                                                <input name="instansi_name" type="text" class="form-control" id="instansi_name"
-                                                    placeholder="" autocomplete="off" value="{{ old('instansi_name') }}" required>
+                                                <input name="instansi_name" type="text" class="form-control"
+                                                    id="instansi_name" placeholder="" autocomplete="off"
+                                                    value="{{ old('instansi_name') }}" required>
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('instansi_name') }}</p>
@@ -46,7 +48,7 @@
                                         </div>
                                     </div>
 
-                                 
+
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
@@ -54,17 +56,55 @@
                                             <div class="input-group">
 
                                                 <input name="no_rek" type="text" class="form-control" id="no_rek"
-                                                    placeholder="" autocomplete="off"
-                                                    value="{{ old('no_rek') }}" required>
+                                                    placeholder="" autocomplete="off" value="{{ old('no_rek') }}" required>
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('no_rek') }}</p>
                                             @endif
                                         </div>
 
-                                    
+                                        {{-- <div class="col-md-6">
+                                            <label for="amount">Amount<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Rp.</span>
+                                                </div>
+                                                <input name="amount" type="text" class="form-control" id="amount"
+                                                    placeholder="Enter amount" autocomplete="off"
+                                                    value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}">
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('amount') }}</p>
+                                            @endif
+                                        </div> --}}
 
                                     </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="date">Date<span style="color: red">*</span> :</label>
+                                            <input type="date" name="date" class="form-control"
+                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('date') }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="name">Created By<span style="color: red">*</span>
+                                                :</label>
+                                            <div class="input-group">
+
+                                                <input name="name" type="text" class="form-control" id="name"
+                                                    placeholder="" autocomplete="off" value="{{ old('name') }}" required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('name') }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+
 
                                     <div class="form-group row">
                                         <div class="col-md-12">

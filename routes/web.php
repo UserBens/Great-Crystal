@@ -3,7 +3,8 @@
 use App\Http\Controllers\Admin\{
    AccountingController,
    AdminController,
-   BillController,
+    BalanceController,
+    BillController,
    BookController,
    DashboardController,
    GradeController,
@@ -279,7 +280,13 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/calculate-total/{id}', [AccountingController::class, 'calculateTotal'])->name('account.calculateTotal');
       Route::post('/account/calculate-all', [AccountingController::class, 'calculateAll'])->name('account.calculateAll');
 
-      Route::get('/account/balance', [AccountingController::class, 'indexBalance'])->name('balance.index');
+      Route::get('/account/balance', [BalanceController::class, 'indexBalance'])->name('balance.index');
+      Route::get('/account/balance-create', [BalanceController::class, 'createBalance'])->name('balance.create');
+      Route::post('/account/balance-create', [BalanceController::class, 'storeBalance'])->name('balance.store');
+      
+      Route::post('/balances/post', [BalanceController::class, 'postMonthlyBalances'])->name('balance.post');
+      Route::post('/balances/unpost', [BalanceController::class, 'unpostMonthlyBalances'])->name('balance.unpost');
+      
 
 
    });

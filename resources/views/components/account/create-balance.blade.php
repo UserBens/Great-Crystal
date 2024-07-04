@@ -1,6 +1,6 @@
 @extends('layouts.admin.master')
 @section('content')
-    <section class="content">
+    {{-- <section class="content">
         <div class="container-fluid">
             <div class="row d-flex justify-content-center">
                 <div class="col-md-12">
@@ -9,18 +9,20 @@
                             @csrf
                             <div class="card card-dark">
                                 <div class="card-header">
-                                    <h3 class="card-title">Create Account Number</h3>
+                                    <h3 class="card-title">Create Balance</h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="name">Name<span style="color: red">*</span> :</label>
-                                            <input name="name" type="text" class="form-control" id="name"
-                                                placeholder="Enter Name" value="{{ old('name') }}" autocomplete="off"
-                                                required>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('name') }}</p>
-                                            @endif
+                                            <label>Receive From : <span style="color: red">*</span></label>
+                                            <select name="transfer_account_id" id="transfer_account_id"
+                                                class="form-control select2">
+                                                @foreach ($accountNumbers as $accountNumber)
+                                                    <option value="{{ $accountNumber->id }}">
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="account_no">Account Number<span style="color: red">*</span>
@@ -33,27 +35,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <div class="col-md-6 mt-3">
-                                            <label>Category : <span style="color: red"></span></label>
-                                            <div class="input-group">
-                                                <select name="account_category_id" class="form-control select2"
-                                                    id="account_category_id">
-                                                    @foreach ($categories as $category)
-                                                        <option value="{{ $category->id }}">{{ $category->category_name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            @error('category_name')
-                                                <p style="color: red;">{{ $message }}</p>
-                                            @enderror
-                                            <button class="btn text-primary" data-toggle="modal"
-                                                data-target="#addCategoryModal">
-                                                + Add Category
-                                            </button>
-                                        </div>
-
+                                    <div class="form-group row">                                    
                                         <div class="col-md-6 mt-3">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
@@ -159,7 +141,68 @@
                 </div>
             </div>
         </div>
+    </section> --}}
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-12">
+                    <div>
+                        <form id="accountForm" method="POST" action="{{ route('balance.store') }}" onsubmit="submitForm()">
+                            @csrf
+                            <div class="card card-dark">
+                                <div class="card-header">
+                                    <h3 class="card-title">Create Balance</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label>Receive From : <span style="color: red">*</span></label>
+                                            <select name="accountnumber_id" id="accountnumber_id"
+                                                class="form-control select2">
+                                                @foreach ($accountNumbers as $accountNumber)
+                                                    <option value="{{ $accountNumber->id }}">
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="beginning_balance">Beginning Balance<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Rp.</span>
+                                                </div>
+                                                <input name="beginning_balance" type="text" class="form-control" id="amount"
+                                                    placeholder="Enter amount" autocomplete="off"
+                                                    value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}"
+                                                    required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('beginning_balance') }}</p>
+                                            @endif
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6 offset-6">
+                                                <button type="submit" class="btn btn-primary"
+                                                    style="float: right">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
+
     <script>
         function removeThousandSeparator(input) {
             // Remove thousand separator (.)

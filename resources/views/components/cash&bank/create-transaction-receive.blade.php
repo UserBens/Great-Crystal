@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row d-flex justify-content-center">
                 <!-- left column -->
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <!-- general form elements -->
                     <div>
                         <form id="transferForm" method="POST" action="{{ route('transaction-receive.store') }}"

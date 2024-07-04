@@ -42,6 +42,9 @@
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Account Number found based on your search criteria!</h3>
+                    <a type="button" href="{{ route('balance.create') }}" class="btn btn-success mt-3">
+                        <i class="fa-solid fa-plus"></i> Create Account
+                    </a>
                 </div>
             </div>
         @elseif (sizeof($data) == 0)
@@ -49,7 +52,7 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Account Number has been created yet. Click the button below to create Account Number!</h3>
                     <div class="btn-group">
-                        <a type="button" href="/admin/account/create-account" class="btn btn-success mt-3">
+                        <a type="button" href="{{ route('balance.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Create Account
                         </a>
                     </div>
@@ -57,19 +60,10 @@
             </div>
         @else
             <div class="btn-group mt-2">
-                <a type="button" href="/admin/account/create-account" class="btn btn-success mt-3"
+                <a type="button" href="{{ route('balance.create') }}" class="btn btn-success mt-3"
                     style="margin-right: 8px">
                     <i class="fa-solid fa-plus"></i> Post Balance
-                </a>                        
-
-                {{-- <form action="{{ route('account.calculateAll') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-primary mt-3" name="calculate_all">
-                        <i class="fas fa-calculator"></i> Calculate All
-                    </button>
-                </form> --}}
-                
-
+                </a>
             </div>
             <div class="card card-dark mt-4">
                 <div class="card-header">
@@ -80,7 +74,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="card-body p-0">
+                {{-- <div class="card-body p-0">
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
@@ -119,6 +113,15 @@
                                             <i class="fas fa-trash"></i>Delete
                                         </button>
 
+                                        <form action="{{ route('balance.post') }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success btn-sm">Post</button>
+                                        </form>
+                                        <form action="{{ route('balance.unpost') }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger btn-sm">Unpost</button>
+                                        </form>
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -130,6 +133,71 @@
                         </div>
                         <div>
                             {{ $data->links('pagination::bootstrap-4') }}
+                        </div>
+                    </div>
+                </div> --}}            
+                    <div class="card-body p-0">
+                        <table class="table table-striped projects">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Account</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Beginning Balance</th>
+                                    <th>Ending Balance</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($data as $account)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $account->accountnumber->account_no }}</td>
+                                        <td>{{ $account->accountnumber->name }}</td>
+                                        <td>{{ $categories->where('id', $account->accountnumber->account_category_id)->first()->category_name }}
+                                        </td>
+                                        <td>Rp.{{ number_format($account->beginning_balance, 0, ',', '.') }}</td>
+                                        <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td>
+                                        <td>
+                                            <a class="btn btn-warning btn-sm" style="margin-right: 4px"
+                                                href="/admin/account/{{ $account->accountnumber->id }}/edit">
+                                                <i class="fas fa-pencil"></i> Edit
+                                            </a>
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger"
+                                                data-id="{{ $account->accountnumber->id }}">
+                                                <i class="fas fa-trash"></i>Delete
+                                            </button>
+
+                                            @if (!$account->posted)
+                                                <form action="{{ route('balance.post', ['balance_id' => $account->id]) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-success btn-sm">Post Monthly</button>
+                                                </form>
+                                            @else
+                                                <form
+                                                    action="{{ route('balance.unpost', ['balance_id' => $account->id]) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-secondary btn-sm">Unpost Monthly</button>
+                                                </form>
+                                            @endif
+
+
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-between mt-4 px-3">
+                            <div class="mb-3">
+                                Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }}
+                                results
+                            </div>
+                            <div>
+                                {{ $data->links('pagination::bootstrap-4') }}
+                            </div>
                         </div>
                     </div>
                 </div>

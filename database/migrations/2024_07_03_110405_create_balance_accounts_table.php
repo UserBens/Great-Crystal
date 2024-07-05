@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('balance_accounts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('accountnumber_id'); // Tambahkan kolom relasi
+            $table->unsignedBigInteger('accountnumber_id');
             $table->foreign('accountnumber_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->bigInteger('beginning_balance');
-            $table->bigInteger('ending_balance')->default(0);
-            $table->boolean('posted')->default(false); // Kolom untuk menandai posting
-            $table->timestamps();
+            $table->bigInteger('debit');           
+            $table->bigInteger('credit');           
+            $table->date('month');
+            $table->timestamps();           
         });
     }
 

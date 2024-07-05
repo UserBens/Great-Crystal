@@ -69,12 +69,7 @@
                     </button>
                 </form> --}}
 
-                <form action="{{ route('account.calculateAll') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-primary mt-3" name="calculate_all">
-                        <i class="fas fa-calculator"></i> Calculate All
-                    </button>
-                </form>
+              
                 
 
             </div>

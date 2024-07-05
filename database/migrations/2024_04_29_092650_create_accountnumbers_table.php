@@ -19,11 +19,8 @@ return new class extends Migration
             $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('amount');           
             $table->string('description');
-            $table->enum('position', ['debit', 'credit'])->nullable(); // Ubah default ke nullable
             $table->timestamps();
-            // Add unique constraints
-            // $table->unique('name');
-            $table->unique('account_no');
+            $table->unique('account_no');        
         });
     }
 

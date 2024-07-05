@@ -283,6 +283,9 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/account/balance', [BalanceController::class, 'indexBalance'])->name('balance.index');
       Route::get('/account/balance-create', [BalanceController::class, 'createBalance'])->name('balance.create');
       Route::post('/account/balance-create', [BalanceController::class, 'storeBalance'])->name('balance.store');
+      Route::delete('/account/balance/{id}', [BalanceController::class, 'deleteBalance'])->name('balance.destroy');
+
+      
       
       Route::post('/balances/post', [BalanceController::class, 'postMonthlyBalances'])->name('balance.post');
       Route::post('/balances/unpost', [BalanceController::class, 'unpostMonthlyBalances'])->name('balance.unpost');

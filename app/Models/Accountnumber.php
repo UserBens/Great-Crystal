@@ -25,4 +25,9 @@ class Accountnumber extends Model
     {
         return $this->ending_balance >= 0 ? 'debit' : 'kredit';
     }
+
+    public function beginningBalances()
+    {
+        return $this->hasMany(BalanceAccount::class, 'accountnumber_id');
+    }
 }

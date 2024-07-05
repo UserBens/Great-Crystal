@@ -241,45 +241,6 @@ class AccountingController extends Controller
         }
     }
 
-
-    // public function calculateTotal(Request $request, $id)
-    // {
-    //     try {
-    //         $account = Accountnumber::findOrFail($id);
-    //         $ending_balance = $account->calculateEndingBalance();
-
-    //         // Tentukan apakah saldo akhir merupakan debit atau kredit
-    //         $balanceType = $ending_balance >= 0 ? 'debit' : 'kredit';
-
-    //         // Perbarui data di database
-    //         $account->update(['ending_balance' => $ending_balance]);
-
-    //         // Redirect dengan pesan sukses
-    //         return redirect()->route('account.index')->with('success', "Ending balance calculation successful. The balance is $balanceType.");
-    //     } catch (\Exception $ex) {
-    //         return redirect()->route('account.index')->with('error', 'Failed to calculate ending balance.');
-    //     }
-    // }
-
-    // public function calculateAll(Request $request)
-    // {
-    //     try {
-    //         // Ambil semua account numbers
-    //         $accounts = Accountnumber::all();
-
-    //         // Loop untuk menghitung ending balance untuk setiap account
-    //         foreach ($accounts as $account) {
-    //             $ending_balance = $account->calculateEndingBalance();
-    //             $account->update(['ending_balance' => $ending_balance]);
-    //         }
-
-    //         // Redirect dengan pesan sukses
-    //         return redirect()->route('account.index')->with('success', 'Ending balances calculation successful for all accounts.');
-    //     } catch (\Exception $ex) {
-    //         return redirect()->route('account.index')->with('error', 'Failed to calculate ending balances.');
-    //     }
-    // }
-
     public function calculateAll(Request $request)
     {
         try {
@@ -414,9 +375,9 @@ class AccountingController extends Controller
             $depositAccount->amount += $request->amount; // Debit
             $depositAccount->save();
 
-            // Update ending balances
-            $this->updateEndingBalance($transferAccount);
-            $this->updateEndingBalance($depositAccount);
+            // // Update ending balances
+            // $this->updateEndingBalance($transferAccount);
+            // $this->updateEndingBalance($depositAccount);
 
             return redirect()->route('transaction-transfer.index')->with('success', 'Transaction Transfer Created Successfully!');
         } catch (Exception $err) {

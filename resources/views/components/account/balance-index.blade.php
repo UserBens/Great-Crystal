@@ -1,14 +1,14 @@
 @extends('layouts.admin.master')
 @section('content')
     <div class="container-fluid">
-        <h2 class="text-center display-4 mb-4">Balance Account Number Search</h2>
+        <h2 class="text-center display-4 mb-4">Balance Account Search</h2>
         <div class="m-1">
             <form action="{{ route('balance.index') }}" method="GET" class="mb-3">
                 <div class="row">
                     <div class="col-md-4">
                         <label for="sort">Sort By</label>
                         <select name="sort" class="form-control" id="sort-select">
-                            <option value="">-- All Data --</option>
+                            <option value="">-- Default --</option>
                             <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)
                             </option>
                             <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)
@@ -58,17 +58,17 @@
             </div>
         @else
             <div class="btn-group mt-2">
-                <a type="button" href="{{ route('balance.create') }}" class="btn btn-success mt-3"
+                <a type="button" href="{{ route('balance.create') }}" class="btn btn-success btn-sm mt-3"
                     style="margin-right: 8px">
                     <i class="fa-solid fa-plus"></i> Post Balance
                 </a>
 
-                {{-- <form action="{{ route('account.calculateAll') }}" method="POST">
+                <form action="{{ route('account.calculateAll') }}" method="POST">
                     @csrf
-                    <button type="submit" class="btn btn-primary mt-3" name="calculate_all">
+                    <button type="submit" class="btn btn-primary btn-sm mt-3" name="calculate_all">
                         <i class="fas fa-calculator"></i> Calculate All
                     </button>
-                </form> --}}
+                </form>
 
             </div>
             <div class="card card-dark mt-4">
@@ -90,6 +90,7 @@
                                 {{-- <th>Category</th> --}}
                                 <th>Debit</th>
                                 <th>Credit</th>
+                                <th>Post For Month</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -99,9 +100,9 @@
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $balance->accountnumber->account_no }}</td>
                                     <td>{{ $balance->accountnumber->name }}</td>
-                                    {{-- <td>{{ $balance->accountnumber->accountcategory->name }}</td> --}}
                                     <td>Rp.{{ number_format($balance->debit, 0, ',', '.') }}</td>
                                     <td>Rp.{{ number_format($balance->credit, 0, ',', '.') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($balance->month)->format(' F Y') }}</td>
 
                                     <td>
                                         <button type="button" class="btn btn-sm delete-btn btn-danger"
@@ -124,8 +125,7 @@
                     </div>
                 </div>
             </div>
-    </div>
-    @endif
+        @endif
     </div>
 
     <!-- Include jQuery and SweetAlert library -->

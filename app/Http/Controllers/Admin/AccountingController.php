@@ -134,8 +134,8 @@ class AccountingController extends Controller
                 'account_no' => 'required',
                 'account_category_id' => 'required',
                 'amount' => 'required|numeric',
-                'beginning_balance' => 'required|numeric',
                 'description' => 'required',
+                // 'beginning_balance' => 'required|numeric',
             ]);
 
             Accountnumber::create([
@@ -143,10 +143,10 @@ class AccountingController extends Controller
                 'account_no' => $request->account_no,
                 'account_category_id' => $request->account_category_id,
                 'amount' => $request->amount,
-                'beginning_balance' => $request->beginning_balance,
-                'ending_balance' => $request->ending_balance,
                 'description' => $request->description,
-                'transactions_total' => 0, // Set transactions_total default ke 0
+                // 'beginning_balance' => $request->beginning_balance,
+                // 'ending_balance' => $request->ending_balance,
+                // 'transactions_total' => 0, // Set transactions_total default ke 0
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses

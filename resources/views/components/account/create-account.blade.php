@@ -48,7 +48,7 @@
                                             @error('category_name')
                                                 <p style="color: red;">{{ $message }}</p>
                                             @enderror
-                                            <button class="btn text-primary" data-toggle="modal"
+                                            <button class="btn text-primary p-0 mt-2" data-toggle="modal"
                                                 data-target="#addCategoryModal">
                                                 + Add Category
                                             </button>
@@ -72,7 +72,7 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <div class="col-md-6 mt-2">
+                                        {{-- <div class="col-md-6 mt-2">
                                             <label for="beginning_balance">Beginning Balance<span
                                                     style="color: red">*</span>
                                                 :</label>
@@ -106,7 +106,7 @@
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('ending_balance') }}</p>
                                             @endif
-                                        </div>
+                                        </div> --}}
                                     </div>
 
                                     <div class="form-group row">

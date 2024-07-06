@@ -114,20 +114,24 @@
                                             <label for="pph">PPH<span style="color: red">*</span> :</label>
                                             <select name="pph" class="form-control" id="pph">
                                                 <option value="">-- Select PPH --</option>
-                                                @for ($i = 21; $i <= 29; $i++)
-                                                    <option value="{{ $i }}">PPH {{ $i }}</option>
-                                                @endfor
+                                                @php
+                                                    $pph_values = [21, 22, 23, 24, 25, 26, 29];
+                                                @endphp
+                                                @foreach ($pph_values as $pph)
+                                                    <option value="{{ $pph }}">PPH {{ $pph }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         <div class="col-md-6" id="pph_percentage_container" style="display: none;">
-                                            <label for="pph_percentage">PPN Status<span style="color: red">*</span> :</label>
+                                            <label for="pph_percentage">PPN Status<span style="color: red">*</span>
+                                                :</label>
                                             <select name="pph_percentage" class="form-control" id="pph_percentage">
                                                 <option value="2%">2%</option>
                                                 <option value="15%">15%</option>
                                                 {{-- pph 22 --}}
                                                 <option value="2,5%">2,5%</option>
                                                 <option value="7,5%">7,5%</option>
-                                                
+
                                             </select>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('pph_percentage') }}</p>
@@ -138,8 +142,8 @@
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
-                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="10"
-                                                placeholder="Enter description">{{ old('description') }}</textarea>
+                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
+                                                rows="10" placeholder="Enter description">{{ old('description') }}</textarea>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('description') }}</p>
                                             @endif

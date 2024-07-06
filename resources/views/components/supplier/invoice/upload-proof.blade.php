@@ -58,7 +58,7 @@
                                                 <label for="payment_method">Payment Method:</label>
                                                 <select name="payment_method" class="form-control" id="payment_method">
                                                     <option value="Cash"
-                                                        {{ $invoice->payment_method == 'Cash' ? 'selected' : '' }}>Kas
+                                                        {{ $invoice->payment_method == 'Cash' ? 'selected' : '' }}>Cash
                                                     </option>
                                                     <option value="Bank"
                                                         {{ $invoice->payment_method == 'Bank' ? 'selected' : '' }}>Bank

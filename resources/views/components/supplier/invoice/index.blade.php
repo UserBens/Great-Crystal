@@ -58,7 +58,7 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Invoice Supplier!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('create-invoice-supplier.create') }}" class="btn btn-success mt-3">
+                        <a type="button" href="{{ route('create-invoice-supplier.create') }}" class="btn btn-success btn-sm mt-3">
                             <i class="fa-solid fa-plus"></i> Create Invoice
                         </a>
                     </div>
@@ -66,7 +66,7 @@
             </div>
         @else
             <div class="btn-group">
-                <a type="button" href="{{ route('create-invoice-supplier.create') }}" class="btn btn-success mt-3">
+                <a type="button" href="{{ route('create-invoice-supplier.create') }}" class="btn btn-success btn-sm mt-3">
                     <i class="fa-solid fa-plus"></i> Create Invoice
                 </a>
             </div>
@@ -128,7 +128,7 @@
                                                 style="max-width: 60%; margin: 1.75rem auto;">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h4 class="modal-title" id="importModalLabel">Upload Proof of
+                                                        <h4 class="modal-title" id="importModalLabel">Proof of
                                                             Payment</h4>
                                                         <button type="button" class="close" data-dismiss="modal"
                                                             aria-label="Close">

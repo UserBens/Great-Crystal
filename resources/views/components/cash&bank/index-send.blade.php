@@ -48,7 +48,7 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Transaction Send!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('transaction-send.create') }}" class="btn btn-success mt-3">
+                        <a type="button" href="{{ route('transaction-send.create') }}" class="btn btn-success btn-sm mt-3">
                             <i class="fa-solid fa-plus"></i> Create Transaction
                         </a>
                     </div>
@@ -56,7 +56,7 @@
             </div>
         @else
             <div class="btn-group">
-                <a type="button" href="{{ route('transaction-send.create') }}" class="btn btn-success mt-3">
+                <a type="button" href="{{ route('transaction-send.create') }}" class="btn btn-success btn-sm mt-3">
                     <i class="fa-solid fa-plus"></i> Create Transaction
                 </a>
             </div>

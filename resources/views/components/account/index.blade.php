@@ -49,7 +49,7 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Account Number has been created yet. Click the button below to create Account Number!</h3>
                     <div class="btn-group">
-                        <a type="button" href="/admin/account/create-account" class="btn btn-success mt-3">
+                        <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3">
                             <i class="fa-solid fa-plus"></i> Create Account
                         </a>
                     </div>
@@ -57,7 +57,7 @@
             </div>
         @else
             <div class="btn-group mt-2">
-                <a type="button" href="/admin/account/create-account" class="btn btn-success mt-3"
+                <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3"
                     style="margin-right: 8px">
                     <i class="fa-solid fa-plus"></i> Create Account
                 </a>            
@@ -93,7 +93,7 @@
                                 <th>Amount</th>
                                 {{-- <th>Beginning Balance</th>
                                 <th>Ending Balance</th> --}}
-                                <th>Type</th>
+                                {{-- <th>Type</th> --}}
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -108,7 +108,7 @@
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
                                     {{-- <td>Rp.{{ number_format($account->beginning_balance, 0, ',', '.') }}</td>
                                     <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td> --}}
-                                    <td>{{ $account->position }}</td>
+                                    {{-- <td>{{ $account->position }}</td> --}}
 
                                     <td class="">
 

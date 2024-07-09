@@ -18,89 +18,6 @@ use Illuminate\Support\Facades\File;
 
 class InvoiceSupplierController extends Controller
 {
-    // Punya Invoice Supplier
-    // public function indexInvoiceSupplier(Request $request)
-    // {
-    //     session()->flash('page', (object)[
-    //         'page' => 'Supplier',
-    //         'child' => 'database Invoice Supplier',
-    //     ]);
-
-    //     try {
-    //         // Inisialisasi objek form dengan nilai default
-    //         $form = (object) [
-    //             'search' => $request->search ?? null,
-    //             'sort' => $request->sort ?? null,
-    //             'status' => $request->status ?? null,
-    //             'date' => $request->date ?? null,
-    //             'type' => $request->type ?? null,
-    //             'order' => $request->order ?? null,
-    //         ];
-
-    //         // Query data berdasarkan parameter pencarian yang diberikan
-    //         // $query = InvoiceSupplier::query();
-    //         $query = InvoiceSupplier::with(['transferAccount', 'depositAccount']);
-    //         // $accountNumbers = Accountnumber::all();
-    //         // $invoiceAccount = InvoiceSupplier::with(['transferAccount', 'depositAccount']);
-
-
-    //         // $invoices = InvoiceSupplier::all();
-
-
-    //         if ($request->filled('search')) {
-    //             $searchTerm = '%' . $request->search . '%';
-    //             $query->where('supplier_name', 'LIKE', $searchTerm)
-    //                 ->orWhere('no_invoice', 'LIKE', $searchTerm)
-    //                 ->orWhere('nota', 'LIKE', $searchTerm)
-    //                 ->orWhere('amount', 'LIKE', $searchTerm)
-    //                 ->orWhere('date', 'LIKE', $searchTerm);
-    //         }
-
-
-    //         // Filter data berdasarkan tanggal
-    //         if ($request->filled('date')) {
-    //             $searchDate = date('Y-m-d', strtotime($request->date));
-    //             $query->whereDate('date', $searchDate);
-    //         }
-
-    //         // Mengatur urutan berdasarkan parameter yang dipilih
-    //         if ($request->filled('sort')) {
-    //             if ($request->sort === 'oldest') {
-    //                 $query->orderBy('date', 'asc');
-    //             } elseif ($request->sort === 'newest') {
-    //                 $query->orderBy('date', 'desc');
-    //             }
-    //         }
-
-    //         // Filter data berdasarkan status pembayaran
-    //         if ($request->filled('status')) {
-    //             if ($request->status === 'Paid') {
-    //                 $query->where('payment_status', 'Paid');
-    //             } elseif ($request->status === 'Not Yet') {
-    //                 $query->where('payment_status', 'Not Yet');
-    //             }
-    //         }
-
-    //         // // Memuat data dengan pagination
-    //         // $data = $query->paginate(10);
-
-    //         // Memuat data dengan pagination dan menambahkan parameter filter ke URL paginasi
-    //         $data = $query->paginate(10)->appends([
-    //             'search' => $request->search,
-    //             'sort' => $request->sort,
-    //             'status' => $request->status,
-    //             'date' => $request->date,
-    //         ]);
-
-
-    //         // Menampilkan view dengan data dan form
-    //         return view('components.supplier.invoice.index', compact('data', 'form'));
-    //     } catch (Exception $err) {
-    //         // Menampilkan pesan error jika terjadi kesalahan
-    //         return dd($err);
-    //     }
-    // }
-
     public function indexInvoiceSupplier(Request $request)
     {
         session()->flash('preloader', true);
@@ -121,7 +38,7 @@ class InvoiceSupplierController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = InvoiceSupplier::with(['transferAccount', 'depositAccount']);
+            $query = InvoiceSupplier::with(['transferAccount']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -177,9 +94,10 @@ class InvoiceSupplierController extends Controller
     {
         $invoice = InvoiceSupplier::findOrFail($id);
         $accountNumbers = Accountnumber::all();
+        $accountCategory = Accountcategory::all();
 
 
-        return view('components.supplier.invoice.upload-proof', compact('invoice', 'accountNumbers'));
+        return view('components.supplier.invoice.upload-proof', compact('invoice', 'accountNumbers', 'accountCategory'));
     }
 
     public function uploadProofOfPayment(Request $request, $id)
@@ -195,7 +113,7 @@ class InvoiceSupplierController extends Controller
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
                 'transfer_account_id' => 'required',
-                'deposit_account_id' => 'required',
+                // 'deposit_account_id' => 'required',
             ]);
 
             // Handle file upload
@@ -211,7 +129,7 @@ class InvoiceSupplierController extends Controller
                     'payment_method' => $request->payment_method,
                     'description' => $request->description,
                     'transfer_account_id' => $request->transfer_account_id,
-                    'deposit_account_id' => $request->deposit_account_id,
+                    // 'deposit_account_id' => $request->deposit_account_id,
                 ]);
 
                 // Debugging log
@@ -226,6 +144,66 @@ class InvoiceSupplierController extends Controller
             return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
         }
     }
+
+    // public function storeAccount(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'account_no' => 'required|string|max:255|unique:accountnumbers',
+    //         'account_category_id' => 'required|integer',
+    //         'amount' => 'required|numeric',
+    //         'description' => 'required',
+    //     ]);
+
+    //     Accountnumber::create([
+    //         'name' => $request->name,
+    //         'account_no' => $request->account_no,
+    //         'account_category_id' => $request->account_category_id,
+    //         'amount' => $request->amount, // Laravel akan menangani konversi ke float
+    //         'description' => $request->description,
+    //     ]);
+
+    //     return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Account number created successfully.');
+    // }
+
+
+    public function storeAccount(Request $request)
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'name' => 'required',
+                'account_no' => 'required',
+                'account_category_id' => 'required',
+                'description' => 'required',
+                // 'amount' => ['required', 'numeric'], // Validasi numerik
+            ]);
+
+            // Buat data akun baru
+            Accountnumber::create([
+                'name' => $request->name,
+                'account_no' => $request->account_no,
+                'account_category_id' => $request->account_category_id,
+                'description' => $request->description,
+                // 'amount' => str_replace('.', '', $request->amount), // Hapus pemisah ribuan sebelum menyimpan
+            ]);
+
+            // Redirect ke halaman indeks akun dengan pesan sukses
+            return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Accountnumber created successfully!');
+        } catch (\Illuminate\Database\QueryException $ex) {
+            if ($ex->errorInfo[1] == 1062) {
+                // Handle kesalahan pelanggaran integritas constraint
+                $errorMessage = "The account name already exists.";
+                return redirect()->back()->withErrors(['name' => $errorMessage]);
+            } else {
+                // Handle kesalahan database lainnya
+                return redirect()->back()->withErrors(['message' => 'Database error occurred. Please try again later.']);
+            }
+        }
+    }
+
+
+
 
 
     public function createInvoiceSupplier()
@@ -274,6 +252,7 @@ class InvoiceSupplierController extends Controller
 
         return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
     }
+
 
 
     public function destroyInvoiceSupplier($id)

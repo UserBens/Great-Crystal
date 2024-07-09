@@ -3,8 +3,8 @@
 use App\Http\Controllers\Admin\{
    AccountingController,
    AdminController,
-    BalanceController,
-    BillController,
+   BalanceController,
+   BillController,
    BookController,
    DashboardController,
    GradeController,
@@ -107,7 +107,6 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
 
       // Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
       Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
-
    });
 
 
@@ -285,13 +284,10 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/account/balance-create', [BalanceController::class, 'storeBalance'])->name('balance.store');
       Route::delete('/account/balance/{id}', [BalanceController::class, 'deleteBalance'])->name('balance.destroy');
 
-      
-      
+
+
       Route::post('/balances/post', [BalanceController::class, 'postMonthlyBalances'])->name('balance.post');
       Route::post('/balances/unpost', [BalanceController::class, 'unpostMonthlyBalances'])->name('balance.unpost');
-      
-
-
    });
 
    Route::prefix('/supplier')->group(function () {
@@ -309,6 +305,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/create-invoice-supplier/store', [InvoiceSupplierController::class, 'storeInvoiceSupplier'])->name('invoice-supplier.store');
       Route::delete('/invoice-supplier/{id}', [InvoiceSupplierController::class, 'destroyInvoiceSupplier'])
          ->name('invoice-supplier.destroy');
+      Route::post('/create-account/store', [InvoiceSupplierController::class, 'storeAccount'])->name('invoice-supplier.account.store');
    });
 });
 

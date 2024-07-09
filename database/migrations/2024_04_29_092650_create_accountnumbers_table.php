@@ -14,13 +14,12 @@ return new class extends Migration
         Schema::create('accountnumbers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('account_no');
+            $table->string('account_no')->unique();        
             $table->unsignedBigInteger('account_category_id');
             $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->bigInteger('amount');           
+            $table->bigInteger('amount')->nullable();           
             $table->string('description');
             $table->timestamps();
-            $table->unique('account_no');        
         });
     }
 

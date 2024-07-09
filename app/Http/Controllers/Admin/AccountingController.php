@@ -5,17 +5,17 @@ namespace App\Http\Controllers\Admin;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Cash;
+use App\Models\Student;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use App\Models\Accountnumber;
+use App\Models\BalanceAccount;
 use App\Models\Accountcategory;
 use App\Models\Transaction_send;
 use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\BalanceAccount;
-use App\Models\Student;
 use App\Models\Transaction_transfer;
 use App\Models\TransactionSendSupplier;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -133,7 +133,7 @@ class AccountingController extends Controller
                 'name' => 'required',
                 'account_no' => 'required',
                 'account_category_id' => 'required',
-                'amount' => 'required|numeric',
+                // 'amount' => 'required|numeric',
                 'description' => 'required',
                 // 'beginning_balance' => 'required|numeric',
             ]);
@@ -208,8 +208,8 @@ class AccountingController extends Controller
             'account_no' => 'required',
             'account_category_id' => 'required',
             'amount' => 'required|numeric',
-            'beginning_balance' => 'required|numeric',
             'description' => 'required',
+            // 'beginning_balance' => 'required|numeric',
         ]);
 
         $accountNumbers = Accountnumber::findOrFail($id);
@@ -219,8 +219,8 @@ class AccountingController extends Controller
             'account_no' => $request->account_no,
             'account_category_id' => $request->account_category_id,
             'amount' => $request->amount,
-            'beginning_balance' => $request->beginning_balance,
             'description' => $request->description,
+            // 'beginning_balance' => $request->beginning_balance,
 
         ]);
 
@@ -354,6 +354,7 @@ class AccountingController extends Controller
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+            $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
 
             // Create the transaction record
             $transaction = Transaction_transfer::create([
@@ -375,9 +376,25 @@ class AccountingController extends Controller
             $depositAccount->amount += $request->amount; // Debit
             $depositAccount->save();
 
-            // // Update ending balances
-            // $this->updateEndingBalance($transferAccount);
-            // $this->updateEndingBalance($depositAccount);
+
+
+            // Update balance_accounts for transfer account (credit)
+            $transferBalanceAccount = BalanceAccount::firstOrNew([
+                'accountnumber_id' => $transferAccount->id,
+                'month' => $month
+            ]);
+            $transferBalanceAccount->credit += $request->amount;
+            $transferBalanceAccount->debit = $transferBalanceAccount->debit ?? 0;
+            $transferBalanceAccount->save();
+
+            // Update balance_accounts for deposit account (debit)
+            $depositBalanceAccount = BalanceAccount::firstOrNew([
+                'accountnumber_id' => $depositAccount->id,
+                'month' => $month
+            ]);
+            $depositBalanceAccount->debit += $request->amount;
+            $depositBalanceAccount->credit = $depositBalanceAccount->credit ?? 0;
+            $depositBalanceAccount->save();
 
             return redirect()->route('transaction-transfer.index')->with('success', 'Transaction Transfer Created Successfully!');
         } catch (Exception $err) {
@@ -386,13 +403,18 @@ class AccountingController extends Controller
         }
     }
 
-   
+    // public function deleteTransactionTransfer($id)
+    // {
+    //     try {
+    //         $transactionTransfer = Transaction_transfer::findOrFail($id);
 
+    //         $transactionTransfer->delete();
 
-
-
-
-
+    //         return response()->json(['message' => 'Transaction Transfer deleted successfully.']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to delete Transaction Transfer.']);
+    //     }
+    // }
 
 
     public function deleteTransactionTransfer($id)
@@ -400,13 +422,71 @@ class AccountingController extends Controller
         try {
             $transactionTransfer = Transaction_transfer::findOrFail($id);
 
+            // Debug: Log transactionTransfer details
+            Log::info('Deleting Transaction Transfer:', $transactionTransfer->toArray());
+
+            // Debug: Log original date
+            Log::info('Original Date:', ['date' => $transactionTransfer->date]);
+
+            // Make sure date is in the correct format
+            $month = Carbon::createFromFormat('Y-m-d H:i:s', $transactionTransfer->date)->startOfMonth()->format('Y-m-d');
+
+            // Debug: Log the computed month
+            Log::info('Computed Month:', ['month' => $month]);
+
+            // Update the amount in transfer account (kredit)
+            $transferAccount = Accountnumber::find($transactionTransfer->transfer_account_id);
+            if ($transferAccount) {
+                $transferAccount->amount += $transactionTransfer->amount; // Reverse Kredit
+                $transferAccount->save();
+            } else {
+                Log::error("Transfer account not found: " . $transactionTransfer->transfer_account_id);
+                return response()->json(['error' => 'Transfer account not found.']);
+            }
+
+            // Update the amount in deposit account (debit)
+            $depositAccount = Accountnumber::find($transactionTransfer->deposit_account_id);
+            if ($depositAccount) {
+                $depositAccount->amount -= $transactionTransfer->amount; // Reverse Debit
+                $depositAccount->save();
+            } else {
+                Log::error("Deposit account not found: " . $transactionTransfer->deposit_account_id);
+                return response()->json(['error' => 'Deposit account not found.']);
+            }
+
+            // Update balance_accounts for transfer account (credit)
+            $transferBalanceAccount = BalanceAccount::where('accountnumber_id', $transferAccount->id)
+                ->where('month', $month)
+                ->first();
+            if ($transferBalanceAccount) {
+                $transferBalanceAccount->credit -= $transactionTransfer->amount;
+                $transferBalanceAccount->save();
+            } else {
+                Log::error("Balance account for transfer account not found: accountnumber_id={$transferAccount->id}, month={$month}");
+            }
+
+            // Update balance_accounts for deposit account (debit)
+            $depositBalanceAccount = BalanceAccount::where('accountnumber_id', $depositAccount->id)
+                ->where('month', $month)
+                ->first();
+            if ($depositBalanceAccount) {
+                $depositBalanceAccount->debit -= $transactionTransfer->amount;
+                $depositBalanceAccount->save();
+            } else {
+                Log::error("Balance account for deposit account not found: accountnumber_id={$depositAccount->id}, month={$month}");
+            }
+
+            // Delete the transaction record
             $transactionTransfer->delete();
 
             return response()->json(['message' => 'Transaction Transfer deleted successfully.']);
         } catch (\Exception $e) {
+            Log::error("Failed to delete Transaction Transfer: " . $e->getMessage());
             return response()->json(['error' => 'Failed to delete Transaction Transfer.']);
         }
     }
+
+
 
 
 
@@ -502,6 +582,7 @@ class AccountingController extends Controller
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+            $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
 
             Transaction_send::create([
                 'transfer_account_id' => $request->transfer_account_id,
@@ -522,6 +603,27 @@ class AccountingController extends Controller
             $depositAccount = Accountnumber::find($request->deposit_account_id);
             $depositAccount->amount += $request->amount;
             $depositAccount->save();
+
+
+
+
+            // Update balance_accounts for transfer account (credit)
+            $transferBalanceAccount = BalanceAccount::firstOrNew([
+                'accountnumber_id' => $transferAccount->id,
+                'month' => $month
+            ]);
+            $transferBalanceAccount->credit += $request->amount;
+            $transferBalanceAccount->debit = $transferBalanceAccount->debit ?? 0;
+            $transferBalanceAccount->save();
+
+            // Update balance_accounts for deposit account (debit)
+            $depositBalanceAccount = BalanceAccount::firstOrNew([
+                'accountnumber_id' => $depositAccount->id,
+                'month' => $month
+            ]);
+            $depositBalanceAccount->debit += $request->amount;
+            $depositBalanceAccount->credit = $depositBalanceAccount->credit ?? 0;
+            $depositBalanceAccount->save();
 
             return redirect()->route('transaction-send.index')->with('success', 'Transaction Send Created Successfully!');
         } catch (Exception $err) {
@@ -546,18 +648,89 @@ class AccountingController extends Controller
         return redirect()->route('transaction-send.create');
     }
 
+    // public function deleteTransactionSend($id)
+    // {
+    //     try {
+    //         $transactionSend = Transaction_send::findOrFail($id);
+
+    //         $transactionSend->delete();
+
+    //         return response()->json(['message' => 'Transaction Send deleted successfully.']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to delete Transaction Send.']);
+    //     }
+    // }
+
     public function deleteTransactionSend($id)
     {
         try {
             $transactionSend = Transaction_send::findOrFail($id);
 
+            // Debug: Log transactionTransfer details
+            Log::info('Deleting Transaction Send:', $transactionSend->toArray());
+
+            // Debug: Log original date
+            Log::info('Original Date:', ['date' => $transactionSend->date]);
+
+            // Make sure date is in the correct format
+            $month = Carbon::createFromFormat('Y-m-d H:i:s', $transactionSend->date)->startOfMonth()->format('Y-m-d');
+
+            // Debug: Log the computed month
+            Log::info('Computed Month:', ['month' => $month]);
+
+            // Update the amount in transfer account (kredit)
+            $transferAccount = Accountnumber::find($transactionSend->transfer_account_id);
+            if ($transferAccount) {
+                $transferAccount->amount += $transactionSend->amount; // Reverse Kredit
+                $transferAccount->save();
+            } else {
+                Log::error("Transfer account not found: " . $transactionSend->transfer_account_id);
+                return response()->json(['error' => 'Transfer account not found.']);
+            }
+
+            // Update the amount in deposit account (debit)
+            $depositAccount = Accountnumber::find($transactionSend->deposit_account_id);
+            if ($depositAccount) {
+                $depositAccount->amount -= $transactionSend->amount; // Reverse Debit
+                $depositAccount->save();
+            } else {
+                Log::error("Deposit account not found: " . $transactionSend->deposit_account_id);
+                return response()->json(['error' => 'Deposit account not found.']);
+            }
+
+            // Update balance_accounts for transfer account (credit)
+            $transferBalanceAccount = BalanceAccount::where('accountnumber_id', $transferAccount->id)
+                ->where('month', $month)
+                ->first();
+            if ($transferBalanceAccount) {
+                $transferBalanceAccount->credit -= $transactionSend->amount;
+                $transferBalanceAccount->save();
+            } else {
+                Log::error("Balance account for transfer account not found: accountnumber_id={$transferAccount->id}, month={$month}");
+            }
+
+            // Update balance_accounts for deposit account (debit)
+            $depositBalanceAccount = BalanceAccount::where('accountnumber_id', $depositAccount->id)
+                ->where('month', $month)
+                ->first();
+            if ($depositBalanceAccount) {
+                $depositBalanceAccount->debit -= $transactionSend->amount;
+                $depositBalanceAccount->save();
+            } else {
+                Log::error("Balance account for deposit account not found: accountnumber_id={$depositAccount->id}, month={$month}");
+            }
+
+            // Delete the transaction record
             $transactionSend->delete();
 
             return response()->json(['message' => 'Transaction Send deleted successfully.']);
         } catch (\Exception $e) {
+            Log::error("Failed to delete Transaction Send: " . $e->getMessage());
             return response()->json(['error' => 'Failed to delete Transaction Send.']);
         }
     }
+
+
 
 
 
@@ -651,6 +824,8 @@ class AccountingController extends Controller
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+            $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
+
 
             Transaction_receive::create([
                 'transfer_account_id' => $request->transfer_account_id,
@@ -672,6 +847,28 @@ class AccountingController extends Controller
             $depositAccount->amount += $request->amount;
             $depositAccount->save();
 
+
+
+
+            // Update balance_accounts for transfer account (credit)
+            $transferBalanceAccount = BalanceAccount::firstOrNew([
+                'accountnumber_id' => $transferAccount->id,
+                'month' => $month
+            ]);
+            $transferBalanceAccount->credit += $request->amount;
+            $transferBalanceAccount->debit = $transferBalanceAccount->debit ?? 0;
+            $transferBalanceAccount->save();
+
+            // Update balance_accounts for deposit account (debit)
+            $depositBalanceAccount = BalanceAccount::firstOrNew([
+                'accountnumber_id' => $depositAccount->id,
+                'month' => $month
+            ]);
+            $depositBalanceAccount->debit += $request->amount;
+            $depositBalanceAccount->credit = $depositBalanceAccount->credit ?? 0;
+            $depositBalanceAccount->save();
+
+
             return redirect()->route('transaction-receive.index')->with('success', 'Transaction Receive Created Successfully!');
         } catch (Exception $err) {
             // Tangani kesalahan di sini
@@ -679,27 +876,83 @@ class AccountingController extends Controller
         }
     }
 
+    // public function deleteTransactionReceive($id)
+    // {
+    //     try {
+    //         $transactionReceive = Transaction_receive::findOrFail($id);
+
+    //         $transactionReceive->delete();
+
+    //         return response()->json(['message' => 'Transaction Receive deleted successfully.']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to delete Transaction Receive.']);
+    //     }
+    // }
     public function deleteTransactionReceive($id)
     {
-        // try {
-        //     // Cari data transaksi transfer berdasarkan ID
-        //     $transactionReceive = Transaction_receive::findOrFail($id);
-
-        //     // Hapus data transaksi transfer
-        //     $transactionReceive->delete();
-
-        //     return redirect()->back()->with('success', 'Transaction Receive Deleted Successfully!');
-        // } catch (Exception $err) {
-        //     return dd($err);
-        // }
-
         try {
             $transactionReceive = Transaction_receive::findOrFail($id);
 
+            // Debug: Log transactionTransfer details
+            Log::info('Deleting Transaction Receive:', $transactionReceive->toArray());
+
+            // Debug: Log original date
+            Log::info('Original Date:', ['date' => $transactionReceive->date]);
+
+            // Make sure date is in the correct format
+            $month = Carbon::createFromFormat('Y-m-d H:i:s', $transactionReceive->date)->startOfMonth()->format('Y-m-d');
+
+            // Debug: Log the computed month
+            Log::info('Computed Month:', ['month' => $month]);
+
+            // Update the amount in transfer account (kredit)
+            $transferAccount = Accountnumber::find($transactionReceive->transfer_account_id);
+            if ($transferAccount) {
+                $transferAccount->amount += $transactionReceive->amount; // Reverse Kredit
+                $transferAccount->save();
+            } else {
+                Log::error("Transfer account not found: " . $transactionReceive->transfer_account_id);
+                return response()->json(['error' => 'Transfer account not found.']);
+            }
+
+            // Update the amount in deposit account (debit)
+            $depositAccount = Accountnumber::find($transactionReceive->deposit_account_id);
+            if ($depositAccount) {
+                $depositAccount->amount -= $transactionReceive->amount; // Reverse Debit
+                $depositAccount->save();
+            } else {
+                Log::error("Deposit account not found: " . $transactionReceive->deposit_account_id);
+                return response()->json(['error' => 'Deposit account not found.']);
+            }
+
+            // Update balance_accounts for transfer account (credit)
+            $transferBalanceAccount = BalanceAccount::where('accountnumber_id', $transferAccount->id)
+                ->where('month', $month)
+                ->first();
+            if ($transferBalanceAccount) {
+                $transferBalanceAccount->credit -= $transactionReceive->amount;
+                $transferBalanceAccount->save();
+            } else {
+                Log::error("Balance account for transfer account not found: accountnumber_id={$transferAccount->id}, month={$month}");
+            }
+
+            // Update balance_accounts for deposit account (debit)
+            $depositBalanceAccount = BalanceAccount::where('accountnumber_id', $depositAccount->id)
+                ->where('month', $month)
+                ->first();
+            if ($depositBalanceAccount) {
+                $depositBalanceAccount->debit -= $transactionReceive->amount;
+                $depositBalanceAccount->save();
+            } else {
+                Log::error("Balance account for deposit account not found: accountnumber_id={$depositAccount->id}, month={$month}");
+            }
+
+            // Delete the transaction record
             $transactionReceive->delete();
 
             return response()->json(['message' => 'Transaction Receive deleted successfully.']);
         } catch (\Exception $e) {
+            Log::error("Failed to delete Transaction Receive: " . $e->getMessage());
             return response()->json(['error' => 'Failed to delete Transaction Receive.']);
         }
     }

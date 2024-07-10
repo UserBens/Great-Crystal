@@ -62,27 +62,9 @@ class BookMail extends Mailable
     public function attachments(): array
     {
 
-        // $pdfInvoice = new CreatePdfBill
-
         return [
-            Attachment::fromData(fn () => $this->pdf->output(), 'Tagihan buku '.date('F Y', strtotime($this->mailData['bill']->created_at)). ' ' . $this->mailData['student']->name)
-            ->withMime('application/pdf'),
+            Attachment::fromData(fn () => $this->pdf->output(), 'Tagihan buku ' . date('F Y', strtotime($this->mailData['bill']->created_at)) . ' ' . $this->mailData['student']->name)
+                ->withMime('application/pdf'),
         ];
-
-        // $file = [
-        //     Attachment::fromData(fn () => $this->pdf->output(), 'Book ' .  $this->mailData['bill'][0]->type . ' ' . date('F Y', strtotime($this->mailData['bill'][0]->created_at)) . ' ' . $this->mailData['student']->name)
-        //         ->withMime('application/pdf'),
-        // ];
-
-
-        // if ($this->pdfReport) {
-        //     array_push(
-        //         $file,
-        //         Attachment::fromData(fn () => $this->pdfReport->output(), 'Report  ' . $this->mailData['bill'][0]->type . ' ' . date('F Y', strtotime($this->mailData['bill'][0]->deadline_in)) . ' ' . $this->mailData['student']->name)
-        //             ->withMime('application/pdf'),
-        //     );
-        // }
-
-        // return $file;
     }
 }

@@ -16,6 +16,7 @@ use App\Mail\SppMail;
 use App\Mail\UniformMail;
 use App\Models\Bill;
 use App\Models\Book;
+use App\Models\Payment_grade;
 use App\Models\statusInvoiceMail;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
@@ -122,97 +123,171 @@ class NotificationBillCreated extends Controller
    }
 
 
-   // done
+   // done code awal
+   // public function paket()
+   // {
+   //    try {
+
+   //       $data = Student::with([
+   //          'bill' => function ($query) {
+   //             $query
+   //                ->where('type', "Paket")
+   //                ->where('deadline_invoice', '=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays(9)->format('y-m-d'))
+   //                ->where('paidOf', false)
+   //                ->where('subject', '!=', 'Paket')
+   //                ->where('subject', '!=', '1')
+   //                ->orWhere('type', "Paket")
+   //                ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->where('installment', null)
+   //                ->where('subject', 'Paket')
+   //                ->where('paidOf', false)
+   //                ->get();
+   //          },
+   //          'relationship'
+   //       ])
+   //          // muncul 2 notifikasi email dengan total tagihan yang berbeda 
+
+   //          ->whereHas('bill', function ($query) {
+   //             $query
+   //                ->where('type', "Paket")
+   //                ->where('deadline_invoice', '=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays(9)->format('y-m-d'))
+   //                ->where('paidOf', false)
+   //                ->where('subject', '!=', 'Paket')
+   //                ->where('subject', '!=', '1')
+   //                ->orWhere('type', "Paket")
+   //                ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->where('installment', null)
+   //                ->where('subject', 'Paket')
+   //                ->where('paidOf', false);
+   //          })
+
+   //          ->get();
+
+   //       //   return $data;
+
+   //       foreach ($data as $student) {
+
+   //          foreach ($student->bill as $createBill) {
+
+   //             $mailData = [
+   //                'student' => $student,
+   //                'bill' => [$createBill],
+   //                'past_due' => false,
+   //                'charge' => false,
+   //                'change' => false,
+   //                'is_paid' => false,
+   //             ];
+
+
+   //             $subject = $createBill->installment ? "Pemberitahuan Tagihan Package " . $student->name .  " " . date('F Y') . "." : "Pemberitahuan Tagihan Package " . $student->name . ".";
+
+   //             try {
+
+   //                $array_email = [];
+
+   //                foreach ($student->relationship as $idx => $parent) {
+   //                   if ($idx == 0) {
+   //                      $mailData['name'] = $parent->name;
+   //                   }
+   //                   array_push($array_email, $parent->email);
+   //                   //  return view('emails.paket-mail')->with('mailData', $mailData);
+   //                   $pdf = app('dompdf.wrapper');
+   //                   $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $createBill])->setPaper('a4', 'portrait');
+   //                   Mail::to($parent->email)->send(new PaketMail($mailData, $subject, $pdf));
+   //                }
+
+   //                dispatch(new SendEmailJob($array_email, 'paket', $mailData, $subject, $mailData['bill'][0]->id));
+   //             } catch (Exception $err) {
+
+   //                statusInvoiceMail::create([
+   //                   'status' => false,
+   //                   'bill_id' => $createBill->id,
+   //                ]);
+   //             }
+   //          }
+   //       }
+
+   //       info('Cron notification Paket success at ' . now());
+   //    } catch (Exception $err) {
+
+   //       info('Cron notification Paket error at ' . now());
+   //    }
+   // }
+
+
+   // test from gpt
    public function paket()
    {
+      DB::beginTransaction();
 
       try {
+         date_default_timezone_set('Asia/Jakarta');
+
+         $billCreated = [];
 
          $data = Student::with([
-            'bill' => function ($query) {
-               $query
-                  ->where('type', "Paket")
-                  ->where('deadline_invoice', '=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays(9)->format('y-m-d'))
-                  ->where('paidOf', false)
-                  ->where('subject', '!=', 'Paket')
-                  ->where('subject', '!=', '1')
-                  ->orWhere('type', "Paket")
-                  ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
-                  ->where('installment', null)
-                  ->where('subject', 'Paket')
-                  ->where('paidOf', false)
-                  ->get();
-            },
-            'relationship'
-         ])
-            // muncul 2 notifikasi email dengan total tagihan yang berbeda 
-
-            // ->whereHas('bill', function ($query) {
-            //    $query
-            //       ->where('type', "Paket")
-            //       ->where('deadline_invoice', '=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays(9)->format('y-m-d'))
-            //       ->where('paidOf', false)
-            //       ->where('subject', '!=', 'Paket')
-            //       ->where('subject', '!=', '1')
-            //       ->orWhere('type', "Paket")
-            //       ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
-            //       ->where('installment', null)
-            //       ->where('subject', 'Paket')
-            //       ->where('paidOf', false);
-            // })
-
-            ->get();
-
-         //   return $data;
+            'relationship', 'grade.paymentGrades' => function ($query) {
+               $query->where('type', 'Paket');
+            }
+         ])->where('is_active', true)->orderBy('id', 'asc')->get();
 
          foreach ($data as $student) {
-
-            foreach ($student->bill as $createBill) {
-
-               $mailData = [
-                  'student' => $student,
-                  'bill' => [$createBill],
-                  'past_due' => false,
-                  'charge' => false,
-                  'change' => false,
-                  'is_paid' => false,
-               ];
-
-
-               $subject = $createBill->installment ? "Pemberitahuan Tagihan Package " . $student->name .  " " . date('F Y') . "." : "Pemberitahuan Tagihan Package " . $student->name . ".";
-
-               try {
-
-                  $array_email = [];
-
-                  foreach ($student->relationship as $idx => $parent) {
-                     if ($idx == 0) {
-                        $mailData['name'] = $parent->name;
-                     }
-                     array_push($array_email, $parent->email);
-                     //  return view('emails.paket-mail')->with('mailData', $mailData);
-                     $pdf = app('dompdf.wrapper');
-                     $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $createBill])->setPaper('a4', 'portrait');
-                     Mail::to($parent->email)->send(new PaketMail($mailData, $subject, $pdf));
-                  }
-
-                  dispatch(new SendEmailJob($array_email, 'paket', $mailData, $subject, $mailData['bill'][0]->id));
-               } catch (Exception $err) {
-
-                  statusInvoiceMail::create([
-                     'status' => false,
-                     'bill_id' => $createBill->id,
+            foreach ($student->grade->paymentGrades as $paymentGrade) {
+               if ($paymentGrade->type == 'Paket') {
+                  $createBill = Bill::create([
+                     'student_id' => $student->id,
+                     'type' => 'Paket',
+                     'subject' => 'Paket - ' . date('M Y'),
+                     'amount' => $paymentGrade->amount,
+                     'paidOf' => false,
+                     'discount' => null,
+                     'deadline_invoice' => Carbon::now()->setTimezone('Asia/Jakarta')->addDays(9)->format('Y-m-d'),
+                     'installment' => null,
                   ]);
+
+                  $mailDatas = [
+                     'student' => $student,
+                     'bill' => [$createBill],
+                     'past_due' => false,
+                     'charge' => false,
+                     'change' => false,
+                     'is_paid' => false,
+                  ];
+
+                  array_push($billCreated, $mailDatas);
                }
             }
          }
 
-         info('Cron notification Paket success at ' . now());
-      } catch (Exception $err) {
+         foreach ($billCreated as $idx => $mailData) {
+            try {
+               $array_email = [];
+               foreach ($mailData['student']->relationship as $el) {
+                  $mailData['name'] = $mailData['student']->relationship[0]->name;
+                  array_push($array_email, $el->email);
+                  $pdf = app('dompdf.wrapper');
+                  $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $mailData['bill'][0]])->setPaper('a4', 'portrait');
+                  Mail::to($el->email)->send(new PaketMail($mailData, "Tagihan Paket " . $mailData['student']->name . " bulan " . date('F Y') . " sudah dibuat.", $pdf));
+               }
+               dispatch(new SendEmailJob($array_email, 'Paket', $mailData, "Pemberitahuan Tagihan Paket " . " " . date('F Y') . ".", $mailData['bill'][0]->id));
+            } catch (Exception $e) {
+               statusInvoiceMail::create([
+                  'bill_id' => $mailData['bill'][0]->id,
+                  'status' => false,
+               ]);
+            }
+         }
 
-         info('Cron notification Paket error at ' . now());
+         DB::commit();
+
+         info("Cron Job create paket success at " . date('d-m-Y'));
+      } catch (Exception $err) {
+         DB::rollBack();
+         info("Cron Job create paket error: " . $err, []);
       }
    }
+
+
 
 
    // done
@@ -261,6 +336,10 @@ class NotificationBillCreated extends Controller
             //       ->where('paidOf', false);
             // })
             ->get();
+
+         info('Data fetched: ' . $data->count() . ' students found');
+
+
 
          //   return $data;
 
@@ -318,11 +397,194 @@ class NotificationBillCreated extends Controller
       }
    }
 
+   // public function feeRegister()
+   // {
+   //    try {
+   //       $data = Student::with([
+   //          'bill' => function ($query) {
+   //             $query
+   //                ->where('type', "Capital Fee")
+   //                ->where('deadline_invoice', '=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays(9)->format('y-m-d'))
+   //                ->where('paidOf', false)
+   //                ->where('subject', '!=', 'Capital Fee')
+   //                ->where('subject', '!=', '1')
+   //                ->orWhere('type', "Capital Fee")
+   //                ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->where('installment', null)
+   //                ->where('subject', 'Capital Fee')
+   //                ->where('paidOf', false)
+   //                ->orWhere('type', "Capital Fee")
+   //                ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->where('subject', '1')
+   //                ->where('paidOf', false)
+   //                ->get();
+   //          },
+   //          'relationship'
+   //       ])
+   //          ->whereHas('bill', function ($query) {
+   //             $query
+   //                ->where('type', "Capital Fee")
+   //                ->where('deadline_invoice', '=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays(9)->format('y-m-d'))
+   //                ->where('subject', '!=', 'Capital Fee')
+   //                ->where('subject', '!=', '1')
+   //                ->where('paidOf', false)
+   //                ->orWhere('type', "Capital Fee")
+   //                ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->where('installment', null)
+   //                ->where('subject', 'Capital Fee')
+   //                ->where('paidOf', false)
+   //                ->orWhere('type', "Capital Fee")
+   //                ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->where('subject', '1')
+   //                ->where('paidOf', false);
+   //          })
+   //          ->get();
+
+   //       info('Data fetched: ' . $data->count() . ' students found');
+
+
+   //       foreach ($data as $student) {
+   //          foreach ($student->bill as $createBill) {
+   //             $mailData = [
+   //                'student' => $student,
+   //                'bill' => [$createBill],
+   //                'past_due' => false,
+   //                'charge' => false,
+   //                'change' => false,
+   //                'is_paid' => false,
+   //             ];
+
+   //             $subject = $createBill->installment ? "Pemberitahuan Tagihan Capital Fee " . $student->name .  " " . date('F Y') . "." : "Tagihan Capital Fee " . $student->name . ".";
+
+   //             try {
+   //                $array_email = [];
+
+   //                foreach ($student->relationship as $idx => $parent) {
+   //                   if ($idx == 0) {
+   //                      $mailData['name'] = $parent->name;
+   //                   }
+   //                   array_push($array_email, $parent->email);
+   //                   $pdf = app('dompdf.wrapper');
+   //                   $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $createBill])->setPaper('a4', 'portrait');
+
+   //                   // Debug output
+   //                   info('Sending email to: ' . $parent->email);
+   //                   info('Mail Data: ' . json_encode($mailData));
+   //                   info('Subject: ' . $subject);
+
+   //                   Mail::to($parent->email)->send(new FeeRegisMail($mailData, $subject, $pdf));
+   //                }
+
+   //                dispatch(new SendEmailJob($array_email, 'capital fee', $mailData, $subject, $createBill->id));
+   //             } catch (Exception $err) {
+   //                statusInvoiceMail::create([
+   //                   'status' => false,
+   //                   'bill_id' => $createBill->id,
+   //                ]);
+   //             }
+   //          }
+   //       }
+
+   //       info('Cron notification Fee Register success at ' . now());
+   //    } catch (Exception $err) {
+   //       info('Cron notification Fee Register error at ' . now());
+   //       return dd($err);
+   //    }
+   // }
+
+
+
+   // public function book()
+   // {
+   //    try {
+   //       //sementara gabisa kirim email push array dulu
+
+   //       $data = Student::with([
+   //          'bill' => function ($query) {
+   //             $query
+   //                ->with('bill_collection')
+   //                ->where('type', "Book")
+   //                ->where('paidOf', false)
+   //                ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->orWhere('date_change_bill', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //                ->where('type', "Book")
+   //                ->where('paidOf', false)
+   //                ->get();
+   //          },
+   //          'relationship'
+   //       ])
+   //          // ->whereHas('bill', function ($query) {
+   //          //    $query
+   //          //       ->where('type', "Book")
+   //          //       ->where('paidOf', false)
+   //          //       ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //          //       ->orWhere('date_change_bill', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+   //          //       ->where('type', "Book")
+   //          //       ->where('paidOf', false);
+   //          // })
+   //          ->get();
+
+   //       foreach ($data as $student) {
+
+   //          foreach ($student->bill as $createBill) {
+
+   //             $mailData = [
+   //                'student' => $student,
+   //                'bill' => $createBill,
+   //                'past_due' => false,
+   //                'charge' => false,
+   //                'change' => false,
+   //                'is_paid' => false,
+   //             ];
+
+
+
+   //             $is_change = $createBill->date_change_bill ? true : false;
+   //             $mailData['change'] = $is_change;
+
+   //             try {
+
+   //                $array_email = [];
+
+   //                foreach ($student->relationship as $idx => $parent) {
+
+   //                   if ($idx == 0) {
+
+   //                      $mailData['name'] = $parent->name;
+   //                   }
+
+   //                   array_push($array_email, $parent->email);
+   //                   //   return view('emails.book-mail')->with('mailData', $mailData);
+   //                   $pdf = app('dompdf.wrapper');
+   //                   $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $createBill])->setPaper('a4', 'portrait');
+   //                   Mail::to($parent->email)->send(new BookMail($mailData, "Tagihan Buku " . $student->name . " sudah dibuat.", $pdf));
+   //                }
+
+
+   //                dispatch(new SendEmailJob($array_email, 'book', $mailData, "Tagihan Buku " . $student->name . " sudah dibuat.", $createBill->id));
+   //             } catch (Exception $err) {
+   //                statusInvoiceMail::create([
+   //                   'status' => false,
+   //                   'bill_id' => $createBill->id,
+   //                   'is_change' => $is_change,
+   //                ]);
+   //             }
+   //          }
+   //       }
+
+   //       info('Cron notification Books success at ' . now());
+   //    } catch (Exception $err) {
+
+   //       info('Cron notification Books error at ' . now());
+   //       return dd($err);
+   //    }
+   // }
 
    public function book()
    {
       try {
          //sementara gabisa kirim email push array dulu
+
 
          $data = Student::with([
             'bill' => function ($query) {
@@ -338,15 +600,15 @@ class NotificationBillCreated extends Controller
             },
             'relationship'
          ])
-            // ->whereHas('bill', function ($query) {
-            //    $query
-            //       ->where('type', "Book")
-            //       ->where('paidOf', false)
-            //       ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
-            //       ->orWhere('date_change_bill', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
-            //       ->where('type', "Book")
-            //       ->where('paidOf', false);
-            // })
+            ->whereHas('bill', function ($query) {
+               $query
+                  ->where('type', "Book")
+                  ->where('paidOf', false)
+                  ->where('created_at', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+                  ->orWhere('date_change_bill', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'))
+                  ->where('type', "Book")
+                  ->where('paidOf', false);
+            })
             ->get();
 
          foreach ($data as $student) {
@@ -362,8 +624,6 @@ class NotificationBillCreated extends Controller
                   'is_paid' => false,
                ];
 
-
-
                $is_change = $createBill->date_change_bill ? true : false;
                $mailData['change'] = $is_change;
 
@@ -371,9 +631,9 @@ class NotificationBillCreated extends Controller
 
                   $array_email = [];
 
-                  foreach ($student->relationship as $idx => $parent) {
+                  foreach ($student->relationship as $key => $parent) {
 
-                     if ($idx == 0) {
+                     if ($key == 0) {
 
                         $mailData['name'] = $parent->name;
                      }
@@ -384,7 +644,6 @@ class NotificationBillCreated extends Controller
                      $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $createBill])->setPaper('a4', 'portrait');
                      Mail::to($parent->email)->send(new BookMail($mailData, "Tagihan Buku " . $student->name . " sudah dibuat.", $pdf));
                   }
-
 
                   dispatch(new SendEmailJob($array_email, 'book', $mailData, "Tagihan Buku " . $student->name . " sudah dibuat.", $createBill->id));
                } catch (Exception $err) {
@@ -397,6 +656,7 @@ class NotificationBillCreated extends Controller
             }
          }
 
+
          info('Cron notification Books success at ' . now());
       } catch (Exception $err) {
 
@@ -405,74 +665,7 @@ class NotificationBillCreated extends Controller
       }
    }
 
-   // public function book()
-   // {
-   //    try {
-   //       $data = Student::with(['bill' => function ($query) {
-   //          $query->where('type', 'Book')
-   //             ->where('paidOf', false)
-   //             ->where(function ($query) {
-   //                $query->where('created_at', '>=', Carbon::now()->subDay())
-   //                   ->orWhere('date_change_bill', '>=', Carbon::now()->subDay());
-   //             })
-   //             ->get();
-   //       }, 'relationship'])
-   //          ->whereHas('bill', function ($query) {
-   //             $query->where('type', 'Book')
-   //                ->where('paidOf', false)
-   //                ->where(function ($query) {
-   //                   $query->where('created_at', '>=', Carbon::now()->subDay())
-   //                      ->orWhere('date_change_bill', '>=', Carbon::now()->subDay());
-   //                });
-   //          })
-   //          ->get();
 
-   //       foreach ($data as $student) {
-   //          foreach ($student->bill as $createBill) {
-   //             $mailData = [
-   //                'student' => $student,
-   //                'bill' => $createBill,
-   //                'past_due' => false,
-   //                'charge' => false,
-   //                'change' => false,
-   //                'is_paid' => false,
-   //             ];
-
-   //             $is_change = $createBill->date_change_bill ? true : false;
-   //             $mailData['change'] = $is_change;
-
-   //             $array_email = [];
-   //             foreach ($student->relationship as $parent) {
-   //                $array_email[] = $parent->email;
-   //             }
-
-   //             $pdf = app('dompdf.wrapper');
-   //             $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $createBill])->setPaper('a4', 'portrait');
-   //             $mailSubject = "Tagihan Buku " . $student->name . ($is_change ? " berhasil diubah" : "") . ".";
-
-   //             try {
-   //                Mail::to($array_email)->send(new BookMail($mailData, $mailSubject, $pdf));
-
-   //                // Tandai tagihan sebagai sudah dikirim
-   //                $createBill->update(['is_emailed' => true]);
-   //             } catch (Exception $err) {
-   //                // Tangani kesalahan pengiriman email
-   //                statusInvoiceMail::create([
-   //                   'status' => false,
-   //                   'bill_id' => $createBill->id,
-   //                   'is_change' => $is_change,
-   //                ]);
-   //             }
-   //          }
-   //       }
-
-   //       info('Cron notification Books success at ' . now());
-   //    } catch (Exception $err) {
-   //       // Tangani kesalahan umum
-   //       info('Cron notification Books error at ' . now());
-   //       return dd($err);
-   //    }
-   // }
 
 
    // done

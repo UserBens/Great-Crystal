@@ -369,7 +369,7 @@
                                 <a href="{{ route('balance.index') }}"
                                     class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Balance' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Balance</p>
+                                    <p>Beginning Balance</p>
                                 </a>
                             </li>                          
 

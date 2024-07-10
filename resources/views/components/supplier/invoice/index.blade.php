@@ -11,9 +11,8 @@
                         <option value="">-- All Status --</option>
                         <option value="Paid" {{ $form->status === 'Paid' ? 'selected' : '' }}>Paid</option>
                         <option value="Not Yet" {{ $form->status === 'Not Yet' ? 'selected' : '' }}>Not Yet</option>
-                        <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
-
                     </select>
+                    <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
                 </div>
 
                 <div class="col-md-3">
@@ -58,7 +57,8 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Invoice Supplier!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('create-invoice-supplier.create') }}" class="btn btn-success btn-sm mt-3">
+                        <a type="button" href="{{ route('create-invoice-supplier.create') }}"
+                            class="btn btn-success btn-sm mt-3">
                             <i class="fa-solid fa-plus"></i> Create Invoice
                         </a>
                     </div>
@@ -144,7 +144,7 @@
                                                                 style=" display: flex; justify-content: center; align-items: center;">
                                                                 <div class="form-group row">
                                                                     <div class="col-md-6">
-                                                                        <label for="no_invoice"># No. Invoice:</label>
+                                                                        <label for="no_invoice"># No. Invoice :</label>
                                                                         <div class="input-group">
                                                                             <input name="no_invoice" type="text"
                                                                                 class="form-control" id="no_invoice"
@@ -154,7 +154,7 @@
 
                                                                     <div class="col-md-6">
                                                                         <label for="name">Supplier
-                                                                            Name<span></span>:</label>
+                                                                            Name<span></span> :</label>
                                                                         <div class="input-group">
                                                                             <input name="supplier_name" type="text"
                                                                                 class="form-control" id="supplier_name"
@@ -168,7 +168,7 @@
                                                                     </div>
 
                                                                     <div class="col-md-6 mt-3">
-                                                                        <label for="nota">Nota<span></span>:</label>
+                                                                        <label for="nota">Nota<span></span> :</label>
                                                                         <div class="input-group">
                                                                             <input name="nota" type="text"
                                                                                 class="form-control" id="nota"
@@ -181,8 +181,7 @@
                                                                     </div>
 
                                                                     <div class="col-md-6 mt-3">
-                                                                        <label for="description">Description<span
-                                                                                style="color: red">*</span>:</label>
+                                                                        <label for="description">Description :</label>
                                                                         <textarea autocomplete="off" name="description" class="form-control" id="description"
                                                                             placeholder="Enter description" readonly>{{ $item->description }}</textarea>
                                                                         @if ($errors->any())
@@ -192,15 +191,15 @@
                                                                     </div>
 
                                                                     <div class="col-md-6 mt-3">
-                                                                        <label for="payment_method">Payment Method<span
-                                                                                style="color: red">*</span>:</label>
+                                                                        <label for="payment_method">Payment Method
+                                                                            :</label>
                                                                         <select name="payment_method" class="form-control"
                                                                             id="payment_method" disabled>
-                                                                            <option value="Not Yet"
-                                                                                {{ $item->payment_method == 'Not Yet' ? 'selected' : '' }}>
+                                                                            <option value="Cash"
+                                                                                {{ $item->payment_method == 'Cash' ? 'selected' : '' }}>
                                                                                 Kas</option>
-                                                                            <option value="Paid"
-                                                                                {{ $item->payment_method == 'Paid' ? 'selected' : '' }}>
+                                                                            <option value="Bank"
+                                                                                {{ $item->payment_method == 'Bank' ? 'selected' : '' }}>
                                                                                 Bank</option>
                                                                         </select>
                                                                         @if ($errors->any())
@@ -211,8 +210,8 @@
                                                                     </div>
 
                                                                     <div class="col-md-6 mt-3">
-                                                                        <label for="payment_status">Payment Status<span
-                                                                                style="color: red">*</span>:</label>
+                                                                        <label for="payment_status">Payment Status
+                                                                            :</label>
                                                                         <select name="payment_status" class="form-control"
                                                                             id="payment_status" disabled>
                                                                             <option value="Not Yet"
@@ -227,36 +226,47 @@
                                                                                 {{ $errors->first('payment_status') }}
                                                                             </p>
                                                                         @endif
-                                                                    </div>                                                                
+                                                                    </div>
 
                                                                     <div class="col-md-6 mt-3">
-                                                                        <label for="transfer_account_id">Transfer From</label>
-                                                                        <select name="transfer_account_id" id="transfer_account_id" class="form-control select2" disabled>
+                                                                        <label for="transfer_account_id">Pay
+                                                                            From :</label>
+                                                                        <select name="transfer_account_id"
+                                                                            id="transfer_account_id"
+                                                                            class="form-control select2" disabled>
                                                                             @if ($item->transferAccount)
-                                                                                <option value="{{ $item->transferAccount->id }}">
-                                                                                    {{ $item->transferAccount->account_no }} - {{ $item->transferAccount->name }}
+                                                                                <option
+                                                                                    value="{{ $item->transferAccount->id }}">
+                                                                                    {{ $item->transferAccount->account_no }}
+                                                                                    - {{ $item->transferAccount->name }}
                                                                                 </option>
                                                                             @endif
                                                                         </select>
                                                                         @if ($errors->any())
-                                                                            <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
+                                                                            <p style="color: red">
+                                                                                {{ $errors->first('transfer_account_id') }}
+                                                                            </p>
                                                                         @endif
-                                                                    </div>                                                               
+                                                                    </div>
 
-                                                                    <div class="col-md-6 mt-3">
+                                                                    {{-- <div class="col-md-6 mt-3">
                                                                         <label for="deposit_account_id">Deposit To</label>
-                                                                        <select name="deposit_account_id" id="deposit_account_id" class="form-control select2" style="width: 400px" disabled>
+                                                                        <select name="deposit_account_id"
+                                                                            id="deposit_account_id"
+                                                                            class="form-control select2"
+                                                                            style="width: 400px" disabled>
                                                                             @if ($item->depositAccount)
-                                                                                <option value="{{ $item->depositAccount->id }}">
-                                                                                    {{ $item->depositAccount->account_no }} - {{ $item->depositAccount->name }}
+                                                                                <option
+                                                                                    value="{{ $item->depositAccount->id }}">
+                                                                                    {{ $item->depositAccount->account_no }}
+                                                                                    - {{ $item->depositAccount->name }}
                                                                                 </option>
                                                                             @endif
                                                                         </select>
-                                                                    </div>
+                                                                    </div> --}}
 
                                                                     <div class="col-md-12 mt-3">
-                                                                        <label for="upload_image">Upload Image<span
-                                                                                style="color: red">*</span>:</label>
+                                                                        <label for="upload_image">Upload Image :</label>
 
                                                                         @if ($item->image_path)
                                                                             <div class="image-container text-center">
@@ -390,11 +400,29 @@
                     }
                 });
             });
-
-
-
         });
     </script>
+
+    <script>
+        document.getElementById('sort-select').addEventListener('change', function() {
+            let order = this.options[this.selectedIndex].getAttribute('data-order');
+            document.getElementById('sort-order').value = order;
+            this.form.submit();
+        });
+    </script>
+
+    <script>
+        document.getElementById('status-select').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        document.getElementById('sort-select').addEventListener('change', function() {
+            let order = this.options[this.selectedIndex].getAttribute('data-order');
+            document.getElementById('sort-order').value = order;
+            this.form.submit();
+        });
+    </script>
+
 
     <script>
         $('#yourModal').on('shown.bs.modal', function() {

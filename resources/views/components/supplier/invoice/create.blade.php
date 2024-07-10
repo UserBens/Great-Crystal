@@ -131,6 +131,8 @@
                                                 {{-- pph 22 --}}
                                                 <option value="2,5%">2,5%</option>
                                                 <option value="7,5%">7,5%</option>
+                                                {{-- pph 26 --}}
+                                                <option value="7,5%">20%</option>
 
                                             </select>
                                             @if ($errors->any())
@@ -192,7 +194,7 @@
                     ppnStatusContainer.style.display = 'none';
                 }
 
-                let options = ['2%', '15%', '2,5%', '7,5%'];
+                let options = ['2%', '15%', '2,5%', '7,5%', '20%'];
                 ppnStatusSelect.innerHTML = '';
                 options.forEach(function(option) {
                     let opt = document.createElement('option');

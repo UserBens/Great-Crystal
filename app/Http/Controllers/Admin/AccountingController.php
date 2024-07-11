@@ -334,10 +334,13 @@ class AccountingController extends Controller
 
     public function createTransactionTransfer()
     {
+        $accountCategory = Accountcategory::all();
+
         $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
 
         return view('components.cash&bank.create-transaction-transfer', [
             'accountNumbers' => $accountNumbers,
+            'accountCategory' => $accountCategory,
         ]);
     }
 
@@ -400,6 +403,44 @@ class AccountingController extends Controller
         } catch (Exception $err) {
             // Handle errors here
             return dd($err);
+        }
+    }
+
+    public function storeAccountTransactionTransfer(Request $request)
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'name' => 'required',
+                'account_no' => 'required',
+                'account_category_id' => 'required',
+                // 'amount' => 'required|numeric',
+                'description' => 'required',
+                // 'beginning_balance' => 'required|numeric',
+            ]);
+
+            Accountnumber::create([
+                'name' => $request->name,
+                'account_no' => $request->account_no,
+                'account_category_id' => $request->account_category_id,
+                'amount' => $request->amount,
+                'description' => $request->description,
+                // 'beginning_balance' => $request->beginning_balance,
+                // 'ending_balance' => $request->ending_balance,
+                // 'transactions_total' => 0, // Set transactions_total default ke 0
+            ]);
+
+            // Redirect ke halaman indeks pengeluaran dengan pesan sukses
+            return redirect()->route('transaction-transfer.create')->with('success', 'Accountnumber created successfully!');
+        } catch (\Illuminate\Database\QueryException $ex) {
+            if ($ex->errorInfo[1] == 1062) {
+                // Handle the integrity constraint violation error
+                $errorMessage = "The account name already exists.";
+                return redirect()->back()->withErrors(['name' => $errorMessage]);
+            } else {
+                // Handle other database errors
+                return redirect()->back()->withErrors(['message' => 'Database error occurred. Please try again later.']);
+            }
         }
     }
 
@@ -559,12 +600,13 @@ class AccountingController extends Controller
     public function createTransactionSend()
     {
         $suppliers = TransactionSendSupplier::all();
-
+        $accountCategory = Accountcategory::all();
         $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
 
         return view('components.cash&bank.create-transaction-send', [
             'accountNumbers' => $accountNumbers,
             'suppliers' => $suppliers,
+            'accountCategory' => $accountCategory,
         ]);
     }
 
@@ -648,18 +690,43 @@ class AccountingController extends Controller
         return redirect()->route('transaction-send.create');
     }
 
-    // public function deleteTransactionSend($id)
-    // {
-    //     try {
-    //         $transactionSend = Transaction_send::findOrFail($id);
+    public function storeAccountTransactionSend(Request $request)
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'name' => 'required',
+                'account_no' => 'required',
+                'account_category_id' => 'required',
+                // 'amount' => 'required|numeric',
+                'description' => 'required',
+                // 'beginning_balance' => 'required|numeric',
+            ]);
 
-    //         $transactionSend->delete();
+            Accountnumber::create([
+                'name' => $request->name,
+                'account_no' => $request->account_no,
+                'account_category_id' => $request->account_category_id,
+                'amount' => $request->amount,
+                'description' => $request->description,
+                // 'beginning_balance' => $request->beginning_balance,
+                // 'ending_balance' => $request->ending_balance,
+                // 'transactions_total' => 0, // Set transactions_total default ke 0
+            ]);
 
-    //         return response()->json(['message' => 'Transaction Send deleted successfully.']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => 'Failed to delete Transaction Send.']);
-    //     }
-    // }
+            // Redirect ke halaman indeks pengeluaran dengan pesan sukses
+            return redirect()->route('transaction-send.create')->with('success', 'Accountnumber created successfully!');
+        } catch (\Illuminate\Database\QueryException $ex) {
+            if ($ex->errorInfo[1] == 1062) {
+                // Handle the integrity constraint violation error
+                $errorMessage = "The account name already exists.";
+                return redirect()->back()->withErrors(['name' => $errorMessage]);
+            } else {
+                // Handle other database errors
+                return redirect()->back()->withErrors(['message' => 'Database error occurred. Please try again later.']);
+            }
+        }
+    }
 
     public function deleteTransactionSend($id)
     {
@@ -802,11 +869,13 @@ class AccountingController extends Controller
     public function createTransactionReceive()
     {
         $students = Student::all();
+        $accountCategory = Accountcategory::all();
         $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
 
         return view('components.cash&bank.create-transaction-receive', [
             'accountNumbers' => $accountNumbers,
             'students' => $students,
+            'accountCategory' => $accountCategory,
         ]);
     }
 
@@ -876,18 +945,44 @@ class AccountingController extends Controller
         }
     }
 
-    // public function deleteTransactionReceive($id)
-    // {
-    //     try {
-    //         $transactionReceive = Transaction_receive::findOrFail($id);
+    public function storeAccountTransactionReceive(Request $request)
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'name' => 'required',
+                'account_no' => 'required',
+                'account_category_id' => 'required',
+                // 'amount' => 'required|numeric',
+                'description' => 'required',
+                // 'beginning_balance' => 'required|numeric',
+            ]);
 
-    //         $transactionReceive->delete();
+            Accountnumber::create([
+                'name' => $request->name,
+                'account_no' => $request->account_no,
+                'account_category_id' => $request->account_category_id,
+                'amount' => $request->amount,
+                'description' => $request->description,
+                // 'beginning_balance' => $request->beginning_balance,
+                // 'ending_balance' => $request->ending_balance,
+                // 'transactions_total' => 0, // Set transactions_total default ke 0
+            ]);
 
-    //         return response()->json(['message' => 'Transaction Receive deleted successfully.']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => 'Failed to delete Transaction Receive.']);
-    //     }
-    // }
+            // Redirect ke halaman indeks pengeluaran dengan pesan sukses
+            return redirect()->route('transaction-receive.create')->with('success', 'Accountnumber created successfully!');
+        } catch (\Illuminate\Database\QueryException $ex) {
+            if ($ex->errorInfo[1] == 1062) {
+                // Handle the integrity constraint violation error
+                $errorMessage = "The account name already exists.";
+                return redirect()->back()->withErrors(['name' => $errorMessage]);
+            } else {
+                // Handle other database errors
+                return redirect()->back()->withErrors(['message' => 'Database error occurred. Please try again later.']);
+            }
+        }
+    }
+
     public function deleteTransactionReceive($id)
     {
         try {

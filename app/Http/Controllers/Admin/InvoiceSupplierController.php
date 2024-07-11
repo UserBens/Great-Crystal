@@ -145,28 +145,6 @@ class InvoiceSupplierController extends Controller
         }
     }
 
-    // public function storeAccount(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'account_no' => 'required|string|max:255|unique:accountnumbers',
-    //         'account_category_id' => 'required|integer',
-    //         'amount' => 'required|numeric',
-    //         'description' => 'required',
-    //     ]);
-
-    //     Accountnumber::create([
-    //         'name' => $request->name,
-    //         'account_no' => $request->account_no,
-    //         'account_category_id' => $request->account_category_id,
-    //         'amount' => $request->amount, // Laravel akan menangani konversi ke float
-    //         'description' => $request->description,
-    //     ]);
-
-    //     return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Account number created successfully.');
-    // }
-
-
     public function storeAccount(Request $request)
     {
         try {
@@ -308,23 +286,7 @@ class InvoiceSupplierController extends Controller
                     ->orWhere('instansi_name', 'LIKE', $searchTerm)
                     ->orWhere('no_rek', 'LIKE', $searchTerm)
                     ->orWhere('created_at', 'LIKE', $searchTerm);
-            }
-
-            // // Mengatur urutan berdasarkan parameter yang dipilih
-            // if ($request->filled('sort') && $request->filled('order')) {
-            //     if ($request->sort === 'created_at') {
-            //         $query->orderBy('created_at', $request->order);
-            //     } else {
-            //         $query->orderBy($request->sort, $request->order);
-            //     }
-            // }
-
-            // // Filter data berdasarkan tanggal
-            // if ($request->filled('created_at')) {
-            //     $searchDate = date('Y-m-d', strtotime($request->date));
-            //     $query->whereDate('created_at', $searchDate);
-            // }
-
+            }           
 
             // Filter data berdasarkan tanggal
             if ($request->filled('created_at')) {
@@ -361,14 +323,30 @@ class InvoiceSupplierController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'instansi_name' => 'required',
-            'no_rek' => 'required|numeric',
+            'no_telp' => 'required',
+            'email' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'province' => 'required',
+            'accountnumber' => 'required',
+            'accountnumber_holders_name' => 'required',
+            'bank_name' => 'required',
+            
         ]);
 
         SupplierData::create([
             'name' => $request->name,
-            'instansi_name' => $request->instansi_name,
-            'no_rek' => $request->no_rek,
+            'no_telp' => $request->no_telp,
+            'email' => $request->email,
+            'fax' => $request->fax,
+            'address' => $request->address,
+            'city' => $request->city,
+            'province' => $request->province,
+            'post_code' => $request->post_code,
+            'accountnumber' => $request->accountnumber,
+            'accountnumber_holders_name' => $request->accountnumber_holders_name,
+            'bank_name' => $request->bank_name,
+            'description' => $request->description,
         ]);
 
         return redirect()->route('supplier.index')->with('success', 'Supplier Data Created successfully!');

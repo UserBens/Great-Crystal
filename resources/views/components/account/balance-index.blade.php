@@ -15,7 +15,6 @@
                             </option>
                         </select>
                         <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
-
                     </div>
 
                     <div class="col-md-4">
@@ -38,17 +37,17 @@
             </form>
         </div>
 
-        @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))
+        @if (sizeof($data) == 0 && ($form->sort || $form->order || $form->search))
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
-                    <h3>No Account Number found based on your search criteria!</h3>
+                    <h3>No Balance Account found based on your search criteria!</h3>
 
                 </div>
             </div>
         @elseif (sizeof($data) == 0)
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
-                    <h3>No Account Number has been created yet. Click the button below to create Account Number!</h3>
+                    <h3>No Balance Account has been created yet. Click the button below to create Balance Account!</h3>
                     <div class="btn-group">
                         <a type="button" href="{{ route('balance.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Post Balance
@@ -63,12 +62,12 @@
                     <i class="fa-solid fa-plus"></i> Post Balance
                 </a>
 
-                <form action="{{ route('account.calculateAll') }}" method="POST">
+                {{-- <form action="{{ route('account.calculateAll') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-primary btn-sm mt-3" name="calculate_all">
                         <i class="fas fa-calculator"></i> Calculate All
                     </button>
-                </form>
+                </form> --}}
 
             </div>
             <div class="card card-dark mt-4">
@@ -102,8 +101,7 @@
                                     <td>{{ $balance->accountnumber->name }}</td>
                                     <td>Rp.{{ number_format($balance->debit, 0, ',', '.') }}</td>
                                     <td>Rp.{{ number_format($balance->credit, 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($balance->month)->format(' F Y') }}</td>
-
+                                    <td>{{ \Carbon\Carbon::parse($balance->month)->format('j F Y') }}</td>
                                     <td>
                                         <button type="button" class="btn btn-sm delete-btn btn-danger"
                                             data-id="{{ $balance->id }}">
@@ -132,7 +130,6 @@
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
-
 
     <script>
         $(document).ready(function() {
@@ -195,8 +192,6 @@
                     }
                 });
             });
-
-
         });
     </script>
 

@@ -181,25 +181,23 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                {{-- <form action="{{ route('invoice-supplier.account.store') }}"
-                                                    id="addAccountForm" method="POST"> --}}
                                                 <form
                                                     action="{{ route('invoice-supplier.account.store', ['invoice_id' => $invoice->id]) }}"
                                                     id="addAccountForm" method="POST">
 
                                                     @csrf
                                                     <div class="form-group">
-                                                        <label for="account_no">Account Number</label>
+                                                        <label for="account_no">Account Number<span style="color: red">*</span> :</label>
                                                         <input type="text" class="form-control" id="account_no"
-                                                            name="account_no" required>
+                                                            name="account_no" placeholder="Enter Account Number" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="name">Account Name</label>
+                                                        <label for="name">Account Name<span style="color: red">*</span> :</label>
                                                         <input type="text" class="form-control" id="name"
-                                                            name="name" required>
+                                                            name="name" placeholder="Enter Account Name" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>Category:</label>
+                                                        <label>Category<span style="color: red">*</span> :</label>
                                                         <div class="input-group">
                                                             <select name="account_category_id"
                                                                 class="form-control select2" id="account_category_id"
@@ -214,25 +212,10 @@
                                                             <p style="color: red;">{{ $message }}</p>
                                                         @enderror
                                                     </div>
-                                                    {{-- <div class="form-group">
-                                                        <label for="amount">Amount<span
-                                                                style="color: red">*</span>:</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">Rp.</span>
-                                                            </div>
-                                                            <input name="amount" type="text" class="form-control"
-                                                                id="amount" placeholder="Enter amount"
-                                                                autocomplete="off" value="{{ old('amount') }}" required>
-                                                        </div>
-                                                        @error('amount')
-                                                            <p style="color: red">{{ $message }}</p>
-                                                        @enderror
-                                                    </div> --}}
 
                                                     <div class="form-group">
-                                                        <label for="description">Description</label>
-                                                        <textarea class="form-control" id="description" name="description"></textarea>
+                                                        <label for="description">Description :</label>
+                                                        <textarea class="form-control" id="description" name="description" placeholder="Enter Description"></textarea>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
@@ -277,7 +260,7 @@
                 });
             @endif
 
-           
+
         });
     </script>
 

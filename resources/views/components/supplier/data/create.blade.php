@@ -17,100 +17,154 @@
                                 <!-- form start -->
                                 <div class="card-body">
                                     <div class="form-group row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-3">
                                             <label for="name">Supplier Name<span style="color: red">*</span>
                                                 :</label>
                                             <div class="input-group">
-
                                                 <input name="name" type="text" class="form-control" id="name"
-                                                    placeholder="" autocomplete="off" value="{{ old('name') }}" required>
+                                                    placeholder="Enter Supplier Name" autocomplete="off" value="{{ old('name') }}" required>
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('name') }}</p>
                                             @endif
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <label for="instansi_name">Instansi Supplier Name<span
-                                                    style="color: red">*</span>
+                                        <div class="col-md-3">
+                                            <label for="no_telp">Telephone<span style="color: red">*</span>
                                                 :</label>
                                             <div class="input-group">
-
-                                                <input name="instansi_name" type="text" class="form-control"
-                                                    id="instansi_name" placeholder="" autocomplete="off"
-                                                    value="{{ old('instansi_name') }}" required>
+                                                <input name="no_telp" type="text" class="form-control" id="no_telp"
+                                                    placeholder="0812xxxx" autocomplete="off" value="{{ old('no_telp') }}" required>
                                             </div>
                                             @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('instansi_name') }}</p>
-                                            @endif
-
-
-                                        </div>
-                                    </div>
-
-
-
-                                    <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="no_rek">No. Rek<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
-
-                                                <input name="no_rek" type="text" class="form-control" id="no_rek"
-                                                    placeholder="" autocomplete="off" value="{{ old('no_rek') }}" required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('no_rek') }}</p>
+                                                <p style="color: red">{{ $errors->first('no_telp') }}</p>
                                             @endif
                                         </div>
 
-                                        {{-- <div class="col-md-6">
-                                            <label for="amount">Amount<span style="color: red">*</span> :</label>
+                                        <div class="col-md-3">
+                                            <label for="email">Email<span style="color: red">*</span> :</label>
                                             <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input name="amount" type="text" class="form-control" id="amount"
-                                                    placeholder="Enter amount" autocomplete="off"
-                                                    value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}">
+
+                                                <input name="email" type="text" class="form-control" id="email"
+                                                    placeholder="example@gmail.com" autocomplete="off" value="{{ old('email') }}" required>
                                             </div>
                                             @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('amount') }}</p>
+                                                <p style="color: red">{{ $errors->first('email') }}</p>
                                             @endif
-                                        </div> --}}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="fax">Fax<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
 
+                                                <input name="fax" type="text" class="form-control" id="fax"
+                                                    placeholder="Enter Fax" autocomplete="off" value="{{ old('fax') }}">
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('fax') }}</p>
+                                            @endif
+                                        </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="date">Date<span style="color: red">*</span> :</label>
-                                            <input type="date" name="date" class="form-control"
-                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                                            <label for="address">Address<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
 
+                                                <input name="address" type="text" class="form-control" id="address"
+                                                    placeholder="Jl. Darmo Permai" autocomplete="off" value="{{ old('address') }}" required>
+                                            </div>
                                             @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('date') }}</p>
+                                                <p style="color: red">{{ $errors->first('address') }}</p>
                                             @endif
                                         </div>
-
-                                        <div class="col-md-6">
-                                            <label for="name">Created By<span style="color: red">*</span>
+                                        <div class="col-md-3">
+                                            <label for="city">City<span style="color: red">*</span>
                                                 :</label>
                                             <div class="input-group">
 
-                                                <input name="name" type="text" class="form-control" id="name"
-                                                    placeholder="" autocomplete="off" value="{{ old('name') }}" required>
+                                                <input name="city" type="text" class="form-control" id="city"
+                                                    placeholder="Enter City" autocomplete="off" value="{{ old('city') }}" required>
                                             </div>
                                             @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('name') }}</p>
+                                                <p style="color: red">{{ $errors->first('city') }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label for="province">Province<span style="color: red">*</span>
+                                                :</label>
+                                            <div class="input-group">
+
+                                                <input name="province" type="text" class="form-control" id="province"
+                                                    placeholder="Enter Province" autocomplete="off" value="{{ old('province') }}"
+                                                    required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('province') }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="col-md-3 mt-2">
+                                            <label for="post_code">Post Code<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+
+                                                <input name="post_code" type="text" class="form-control"
+                                                    id="post_code" placeholder="611xxx" autocomplete="off"
+                                                    value="{{ old('post_code') }}" >
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('post_code') }}</p>
                                             @endif
                                         </div>
                                     </div>
 
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <label for="accountnumber">Account Number<span style="color: red">*</span>
+                                                :</label>
+                                            <div class="input-group">
+
+                                                <input name="accountnumber" type="text" class="form-control" id="accountnumber"
+                                                    placeholder="1177999xxxx" autocomplete="off" value="{{ old('accountnumber') }}"
+                                                    required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('accountnumber') }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="accountnumber_holders_name">Account Holder's Name<span style="color: red">*</span>
+                                                :</label>
+                                            <div class="input-group">
+
+                                                <input name="accountnumber_holders_name" type="text" class="form-control" id="accountnumber_holders_name"
+                                                    placeholder="A/N" autocomplete="off" value="{{ old('accountnumber_holders_name') }}"
+                                                    required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('accountnumber_holders_name') }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="bank_name">Bank Name<span style="color: red">*</span>
+                                                :</label>
+                                            <div class="input-group">
+
+                                                <input name="bank_name" type="text" class="form-control" id="bank_name"
+                                                    placeholder="Enter Bank Name" autocomplete="off" value="{{ old('bank_name') }}"
+                                                    required>
+                                            </div>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('bank_name') }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
-                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="10"
-                                                placeholder="Enter description">{{ old('description') }}</textarea>
+                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
+                                                rows="10" placeholder="Enter description">{{ old('description') }}</textarea>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('description') }}</p>
                                             @endif

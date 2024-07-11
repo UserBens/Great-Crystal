@@ -73,7 +73,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group row">
+                                    {{-- <div class="form-group row">
                                         <div class="col-md-6 mt-3">
                                             <label for="beginning_balance">Beginning Balance<span style="color: red">*</span> :</label>
                                             <div class="input-group">
@@ -105,7 +105,7 @@
                                         </div>
 
                                         
-                                    </div>
+                                    </div> --}}
 
                                     <div class="form-group row">
                                         <div class="col-md-12">

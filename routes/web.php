@@ -225,21 +225,25 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
       Route::get('/transaction-transfer/create', [AccountingController::class, 'createTransactionTransfer'])->name('transaction-transfer.create');
       Route::post('/transaction-transfer', [AccountingController::class, 'storeTransactionTransfer'])->name('transaction-transfer.store');
-      // Route::get('/{id}/edit', [AccountingController::class, 'editTransactionTransfer'])->name('transaction-transfer.edit');
-      // Route::put('/{id}', [AccountingController::class, 'updateTransactionTransfer'])->name('transaction-transfer.update');
       Route::delete('/transaction-transfer/{id}', [AccountingController::class, 'deleteTransactionTransfer'])->name('transaction-transfer.destroy');
+      Route::post('/create-account/store', [AccountingController::class, 'storeAccountTransactionTransfer'])->name('transaction-transfer.account.store');
+
 
       Route::get('/transaction-send', [AccountingController::class, 'indexTransactionSend'])->name('transaction-send.index');
       Route::get('/transaction-send/create', [AccountingController::class, 'createTransactionSend'])->name('transaction-send.create');
       Route::post('/transaction-send', [AccountingController::class, 'storeTransactionSend'])->name('transaction-send.store');
       Route::delete('/transaction-send/{id}', [AccountingController::class, 'deleteTransactionSend'])->name('transaction-send.destroy');
       Route::post('/create-transaction-send/store', [AccountingController::class, 'storeSupplierTransactionSend'])->name('transaction-send-supplier.store');
+      Route::post('/create-account/store', [AccountingController::class, 'storeAccountTransactionSend'])->name('transaction-send.account.store');
+
 
 
       Route::get('/transaction-receive', [AccountingController::class, 'indexTransactionReceive'])->name('transaction-receive.index');
       Route::get('/transaction-receive/create', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
       Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
       Route::delete('/transaction-receive/{id}', [AccountingController::class, 'deleteTransactionReceive'])->name('transaction-receive.destroy');
+      Route::post('/create-account/store', [AccountingController::class, 'storeAccountTransactionReceive'])->name('transaction-receive.account.store');
+
    });
 
    // Route::prefix('/bank')->group(function () {

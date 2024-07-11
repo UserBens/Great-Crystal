@@ -16,7 +16,7 @@
                                         <th>No Transaction</th>
                                         <th>Account Number</th>
                                         <th>Debit</th>
-                                        <th>Kredit</th>
+                                        <th>Credit</th>
                                         <th>Date</th>
                                         <th>Description</th>
                                         <th>Created At</th>

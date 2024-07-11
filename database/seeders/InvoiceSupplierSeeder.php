@@ -19,8 +19,17 @@ class InvoiceSupplierSeeder extends Seeder
         for ($i = 1; $i <= 20; $i++) {
             $suppliers[] = [
                 'name' => "Supplier $i",
-                'instansi_name' => "Instansi $i",
-                'no_rek' => '1234567890' . $i,
+                'no_telp' => '08123456789' . $i, // Example phone number
+                'email' => "supplier$i@example.com",
+                'fax' => '02123456789' . $i, // Example fax number
+                'address' => "Address of Supplier $i",
+                'city' => "City $i",
+                'province' => "Province $i",
+                'post_code' => '12345' . $i, // Example post code
+                'accountnumber' => '1234567890' . $i, // Example account number
+                'accountnumber_holders_name' => "Holder Name $i",
+                'bank_name' => "Bank $i",
+                'description' => "Description of Supplier $i",
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -45,7 +54,7 @@ class InvoiceSupplierSeeder extends Seeder
                 'description' => 'Description for invoice ' . $i,
                 'payment_method' => 'Cash', // Added to match the new column 'payment_method'
                 'transfer_account_id' => $accountIds->random(), // Randomly select one transfer account ID
-                'deposit_account_id' => $accountIds->random(), // Randomly select one deposit account ID
+                // 'deposit_account_id' => $accountIds->random(), // Randomly select one deposit account ID
                 'image_path' => 'images/invoice_' . $i . '.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),

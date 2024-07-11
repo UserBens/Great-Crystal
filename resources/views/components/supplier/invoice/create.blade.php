@@ -23,7 +23,7 @@
                                             <div class="input-group">
 
                                                 <input name="no_invoice" type="text" class="form-control" id="no_invoice"
-                                                    placeholder="" autocomplete="off" value="{{ old('no_invoice') }}">
+                                                    placeholder="Enter No Invoice" autocomplete="off" value="{{ old('no_invoice') }}">
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('no_invoice') }}</p>
@@ -74,7 +74,7 @@
                                             <div class="input-group">
 
                                                 <input name="nota" type="text" class="form-control" id="nota"
-                                                    placeholder="" autocomplete="off" value="{{ old('nota') }}">
+                                                    placeholder="Enter Nota" autocomplete="off" value="{{ old('nota') }}">
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('nota') }}</p>

@@ -14,8 +14,17 @@ return new class extends Migration
         Schema::create('supplier_data', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255)->index();
-            $table->string('instansi_name');
-            $table->string('no_rek')->unique();
+            $table->string('no_telp');
+            $table->string('email');
+            $table->string('fax');
+            $table->string('address');
+            $table->string('city');
+            $table->string('province');
+            $table->string('post_code');
+            $table->string('accountnumber');
+            $table->string('accountnumber_holders_name');
+            $table->string('bank_name');
+            $table->string('description');
             $table->timestamps();
         });
     }

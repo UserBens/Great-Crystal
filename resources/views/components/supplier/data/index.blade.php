@@ -74,10 +74,11 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Intansi Supplier</th>
-                                <th>No. Rek</th>
+                                <th>Telephone</th>
+                                <th>Email</th>
+                                <th>Address</th>
                                 <th>Created At</th>
-                                <th class="text-center">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,19 +86,15 @@
                             @foreach ($data as $item)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-
-
                                     <td>{{ $item->name }} </td>
-                                    <td>{{ $item->instansi_name }} </td>
-                                    <td>{{ $item->no_rek }} </td>
-                                    {{-- <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td> --}}
+                                    <td>{{ $item->no_telp }} </td>
+                                    <td>{{ $item->email }} </td>
+                                    <td>{{ $item->address }} </td>
                                     <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
-                                    {{-- <td>{{ $item->nota }} </td> --}}
-                                    {{-- <td>{{ \Carbon\Carbon::parse($item->deadline_invoice)->format('j F Y') }}</td> --}}
 
-                                    <td class="text-center">
+                                    <td>
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger"
                                                 data-id="{{ $item->id }}">
                                                 <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
@@ -108,103 +105,7 @@
                                             </button> --}}
                                         </div>
                                     </td>
-
-                                    <td class="project-actions">
-                                        <div class="modal fade" id="importModal" tabindex="-1" role="dialog"
-                                            aria-labelledby="importModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document"
-                                                style="max-width: 60%; margin: 1.75rem auto;">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="importModalLabel">Upload Image</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <form action="{{ route('journal.import') }}" method="post"
-                                                        enctype="multipart/form-data">
-                                                        @csrf
-                                                        <div class="modal-body" style="width: 100%; height: auto;">
-                                                            <div class="file-upload"
-                                                                style=" display: flex; justify-content: center; align-items: center;">
-                                                                <div class="form-group row">
-
-                                                                    <div class="col-md-6">
-                                                                        <label for="description">Description :</label>
-                                                                        <textarea autocomplete="off" name="description" class="form-control" id="description"
-                                                                            placeholder="Enter description">{{ old('description') }}</textarea>
-                                                                        @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('description') }}</p>
-                                                                        @endif
-                                                                    </div>
-
-
-                                                                    <div class="col-md-3">
-                                                                        <label for="sort">Payment Status</label>
-                                                                        <select name="sort" class="form-control"
-                                                                            id="sort-select">
-                                                                            <option value="oldest">
-                                                                                Paid</option>
-                                                                            <option value="newest">
-                                                                                Not Yet </option>
-                                                                        </select>
-                                                                    </div>
-
-
-                                                                    <div class="col-md-12 mt-3">
-                                                                        <label for="Upload File">Upload Image</label>
-                                                                        <div class="image-upload-wrap">
-                                                                            <input type="file"
-                                                                                name="import_transaction"
-                                                                                class="file-upload-input"
-                                                                                onchange="readURL(this);"
-                                                                                accept="image/*">
-                                                                            <div class="drag-text">
-                                                                                <h3>Drag and drop a file or select add Image
-                                                                                </h3>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="file-upload-content" style="display:none;">
-                                                                    <img class="file-upload-image" src="#"
-                                                                        alt="your image"
-                                                                        style="max-width: 100%; max-height: 100%;" />
-                                                                    <div class="image-title-wrap"
-                                                                        style="display: flex; justify-content: space-between; align-items: center;">
-                                                                        <button type="button" onclick="removeUpload()"
-                                                                            class="remove-image"
-                                                                            style="margin-right: 10px">
-                                                                            <i class="fa-solid fa-trash fa-2xl"
-                                                                                style="margin-bottom: 1em;"></i> <br>
-                                                                            Remove
-                                                                            <span class="image-title">Image</span>
-                                                                        </button>
-                                                                        <button type="submit" role="button"
-                                                                            class="upload-image">
-                                                                            <i class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
-                                                                                style="margin-bottom: 1em;"></i> <br> Post
-                                                                            <span class="image-title">Image</span>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-
-                                    </td>
+                                    
                                 </tr>
                             @endforeach
                         </tbody>

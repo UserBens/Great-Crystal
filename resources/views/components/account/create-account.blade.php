@@ -69,45 +69,7 @@
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
                                         </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        {{-- <div class="col-md-6 mt-2">
-                                            <label for="beginning_balance">Beginning Balance<span
-                                                    style="color: red">*</span>
-                                                :</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input name="beginning_balance" type="text" class="form-control"
-                                                    id="beginning_balance" placeholder="Enter Beginning Balance"
-                                                    autocomplete="off"
-                                                    value="{{ old('beginning_balance') ? number_format(old('beginning_balance'), 0, ',', '.') : '' }}"
-                                                    required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('beginning_balance') }}</p>
-                                            @endif
-                                        </div>
-                                        <div class="col-md-6 mt-2">
-                                            <label for="ending_balance">Ending Balance<span style="color: red">*</span>
-                                                :</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input name="ending_balance" type="text" class="form-control"
-                                                    id="ending_balance" placeholder="Enter Ending Balance"
-                                                    autocomplete="off"
-                                                    value="{{ old('ending_balance') ? number_format(old('ending_balance'), 0, ',', '.') : '' }}"
-                                                    required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('ending_balance') }}</p>
-                                            @endif
-                                        </div> --}}
-                                    </div>
+                                    </div>                                   
 
                                     <div class="form-group row">
                                         <div class="col-md-12">

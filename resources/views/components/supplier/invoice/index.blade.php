@@ -100,7 +100,7 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $item->no_invoice }} </td>
-                                    <td>{{ $item->supplier_name }} </td>
+                                    <td>{{ $item->supplier->name }} </td>
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->deadline_invoice)->format('j F Y') }}</td>

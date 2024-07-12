@@ -23,21 +23,24 @@
                                             <div class="input-group">
 
                                                 <input name="no_invoice" type="text" class="form-control" id="no_invoice"
-                                                    placeholder="Enter No Invoice" autocomplete="off" value="{{ old('no_invoice') }}">
+                                                    placeholder="Enter No Invoice" autocomplete="off"
+                                                    value="{{ old('no_invoice') }}">
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('no_invoice') }}</p>
                                             @endif
                                         </div>
                                         <div class="col-md-6">
-                                            <label>Supplier Name <span style="color: red">*</span></label>
-                                            <select name="supplier_name" id="supplier_name" class="form-control select2">
+                                            <label for="supplier_id">Supplier Name<span style="color: red">*</span>
+                                                :</label>
+                                            <select name="supplier_id" id="supplier_id" class="form-control select2">
                                                 @foreach ($supplierDatas as $supplierData)
-                                                    <option value="{{ $supplierData->name }}">
-                                                        {{ $supplierData->name }}</option>
+                                                    <option value="{{ $supplierData->id }}">{{ $supplierData->name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
+
                                     </div>
 
                                     <div class="form-group row">
@@ -93,21 +96,6 @@
                                         </div>
 
                                     </div>
-
-                                    {{-- <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="ppn">PPH<span style="color: red">*</span> :</label>
-                                            <select name="ppn_status" class="form-control" id="ppn_status">
-                                                <option value="null">null</option>
-                                                <option value="2%">2%</option>
-                                                <option value="15%">15%</option>
-                                            </select>
-                                            @if ($errors->any())
-                                                <p style="color: red">
-                                                    {{ $errors->first('ppn_status') }}</p>
-                                            @endif
-                                        </div>
-                                    </div> --}}
 
                                     <div class="form-group row">
                                         <div class="col-md-6">

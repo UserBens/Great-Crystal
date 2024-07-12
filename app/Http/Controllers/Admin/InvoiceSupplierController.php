@@ -38,7 +38,7 @@ class InvoiceSupplierController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = InvoiceSupplier::with(['transferAccount']);
+            $query = InvoiceSupplier::with(['transferAccount', 'supplier']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -193,43 +193,95 @@ class InvoiceSupplierController extends Controller
         ]);
     }
 
+    // public function storeInvoiceSupplier(Request $request)
+    // {
+    //     try {
+    //         $request->validate([
+    //             'no_invoice' => 'required|unique:invoice_suppliers,no_invoice',
+    //             'supplier_id' => 'required|exists:supplier_data,id',
+    //             'amount' => 'required|numeric',
+    //             'date' => 'required|date_format:Y-m-d',
+    //             'nota' => 'required',
+    //             'deadline_invoice' => 'required|date_format:Y-m-d',
+    //             // 'pph' => 'required'
+    //         ]);
+
+    //         $amount = $request->amount;
+    //         $pph_percentage = 0;
+
+    //         if ($request->ppn_status === '2%') {
+    //             $pph_percentage = 2;
+    //             $amount *= 0.98;
+    //         } else if ($request->ppn_status === '15%') {
+    //             $pph_percentage = 15;
+    //             $amount *= 0.85;
+    //         }
+
+    //         $invoice = new InvoiceSupplier();
+    //         $invoice->no_invoice = $request->no_invoice;
+    //         $invoice->supplier_id = $request->supplier_id; // Gunakan supplier_id langsung dari request
+    //         $invoice->amount = $amount;
+    //         $invoice->pph = $request->pph;
+    //         $invoice->pph_percentage = $pph_percentage;
+    //         $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
+    //         $invoice->nota = $request->nota;
+    //         $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
+    //         $invoice->payment_status = 'Not Yet';
+    //         $invoice->payment_method = 'Cash';
+    //         $invoice->save();
+
+    //         return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
+    //     } catch (\Exception $e) {
+    //         Log::error('Error creating invoice supplier: ' . $e->getMessage());
+    //         return back()->withErrors(['error' => 'Something went wrong. Please try again.']);
+    //     }
+    // }
+
+
     public function storeInvoiceSupplier(Request $request)
     {
-        $request->validate([
-            'no_invoice' => 'required',
-            'supplier_name' => 'required',
-            'amount' => 'required|numeric',
-            'date' => 'required|date_format:Y-m-d',
-            'nota' => 'required',
-            'deadline_invoice' => 'required|date_format:Y-m-d',
-            'pph' => 'required'
-        ]);
+        try {
+            $request->validate([
+                'no_invoice' => 'required|unique:invoice_suppliers,no_invoice',
+                'supplier_id' => 'required|exists:supplier_data,id',
+                'amount' => 'required|numeric',
+                'date' => 'required|date_format:Y-m-d',
+                'nota' => 'required',
+                'deadline_invoice' => 'required|date_format:Y-m-d',
+                // Kolom pph dan pph_percentage tidak wajib diisi
+            ]);
 
-        $amount = $request->amount;
-        $pph_percentage = 0;
+            $amount = $request->amount;
+            $pph_percentage = null;
 
-        // Calculate the amount after PPH deduction
-        if ($request->ppn_status === '2%') {
-            $pph_percentage = 2;
-            $amount *= 0.98; // Deduct 2%
-        } else if ($request->ppn_status === '15%') {
-            $pph_percentage = 15;
-            $amount *= 0.85; // Deduct 15%
+            if ($request->pph === '2%') {
+                $pph_percentage = 2;
+                $amount *= 0.98; // Mengurangi 2%
+            } else if ($request->pph === '15%') {
+                $pph_percentage = 15;
+                $amount *= 0.85; // Mengurangi 15%
+            }
+
+            $invoice = new InvoiceSupplier();
+            $invoice->no_invoice = $request->no_invoice;
+            $invoice->supplier_id = $request->supplier_id; // Gunakan supplier_id langsung dari request
+            $invoice->amount = $amount;
+            $invoice->pph = $request->pph ?? null; // Tetapkan null jika tidak diisi
+            $invoice->pph_percentage = $pph_percentage ?? null; // Tetapkan null jika tidak diisi
+            $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
+            $invoice->nota = $request->nota;
+            $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
+            $invoice->payment_status = 'Not Yet';
+            $invoice->payment_method = 'Cash';
+            $invoice->save();
+
+            return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error creating invoice supplier: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Something went wrong. Please try again.']);
         }
-
-        $invoice = new InvoiceSupplier();
-        $invoice->no_invoice = $request->no_invoice;
-        $invoice->supplier_name = $request->supplier_name;
-        $invoice->amount = $amount;
-        $invoice->pph = $request->pph;
-        $invoice->pph_percentage = $pph_percentage;
-        $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
-        $invoice->nota = $request->nota;
-        $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
-        $invoice->save();
-
-        return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
     }
+
 
 
 
@@ -286,7 +338,7 @@ class InvoiceSupplierController extends Controller
                     ->orWhere('instansi_name', 'LIKE', $searchTerm)
                     ->orWhere('no_rek', 'LIKE', $searchTerm)
                     ->orWhere('created_at', 'LIKE', $searchTerm);
-            }           
+            }
 
             // Filter data berdasarkan tanggal
             if ($request->filled('created_at')) {
@@ -331,7 +383,7 @@ class InvoiceSupplierController extends Controller
             'accountnumber' => 'required',
             'accountnumber_holders_name' => 'required',
             'bank_name' => 'required',
-            
+
         ]);
 
         SupplierData::create([

@@ -222,11 +222,10 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
    Route::prefix('/transaction')->group(function () {
       Route::get('/transaction-transfer', [AccountingController::class, 'indexTransfer'])->name('transaction-transfer.index');
-
       Route::get('/transaction-transfer/create', [AccountingController::class, 'createTransactionTransfer'])->name('transaction-transfer.create');
       Route::post('/transaction-transfer', [AccountingController::class, 'storeTransactionTransfer'])->name('transaction-transfer.store');
+      Route::post('/create-account-transfer/store', [AccountingController::class, 'storeAccountTransactionTransfer'])->name('transaction-transfer.account.store');
       Route::delete('/transaction-transfer/{id}', [AccountingController::class, 'deleteTransactionTransfer'])->name('transaction-transfer.destroy');
-      Route::post('/create-account/store', [AccountingController::class, 'storeAccountTransactionTransfer'])->name('transaction-transfer.account.store');
 
 
       Route::get('/transaction-send', [AccountingController::class, 'indexTransactionSend'])->name('transaction-send.index');
@@ -234,7 +233,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/transaction-send', [AccountingController::class, 'storeTransactionSend'])->name('transaction-send.store');
       Route::delete('/transaction-send/{id}', [AccountingController::class, 'deleteTransactionSend'])->name('transaction-send.destroy');
       Route::post('/create-transaction-send/store', [AccountingController::class, 'storeSupplierTransactionSend'])->name('transaction-send-supplier.store');
-      Route::post('/create-account/store', [AccountingController::class, 'storeAccountTransactionSend'])->name('transaction-send.account.store');
+      Route::post('/create-account-send/store', [AccountingController::class, 'storeAccountTransactionSend'])->name('transaction-send.account.store');
 
 
 
@@ -242,8 +241,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/transaction-receive/create', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
       Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
       Route::delete('/transaction-receive/{id}', [AccountingController::class, 'deleteTransactionReceive'])->name('transaction-receive.destroy');
-      Route::post('/create-account/store', [AccountingController::class, 'storeAccountTransactionReceive'])->name('transaction-receive.account.store');
-
+      Route::post('/create-account-receive/store', [AccountingController::class, 'storeAccountTransactionReceive'])->name('transaction-receive.account.store');
    });
 
    // Route::prefix('/bank')->group(function () {
@@ -290,8 +288,8 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
 
 
-      Route::post('/balances/post', [BalanceController::class, 'postMonthlyBalances'])->name('balance.post');
-      Route::post('/balances/unpost', [BalanceController::class, 'unpostMonthlyBalances'])->name('balance.unpost');
+      Route::post('/balance/post/{id}', [BalanceController::class, 'postBalance'])->name('balance.post');
+      Route::post('balance/unpost/{id}', [BalanceController::class, 'unpostBalance'])->name('balance.unpost');
    });
 
    Route::prefix('/supplier')->group(function () {

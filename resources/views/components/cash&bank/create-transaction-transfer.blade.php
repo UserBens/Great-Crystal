@@ -129,8 +129,8 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{ route('transaction-transfer.account.store') }}"
-                                            id="addAccountForm" method="POST">
+                                        <form action="{{ route('transaction-transfer.account.store') }}" id="addAccountForm" method="POST">
+
 
                                             @csrf
                                             <div class="form-group">

@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-md-3">
                             <label>Sort By </label>
-                            <select name="sort" class="form-control select2" id="sort-select">
+                            <select name="sort" class="form-control" id="sort-select">
                                 {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
                                 <option value="date"
                                     {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}

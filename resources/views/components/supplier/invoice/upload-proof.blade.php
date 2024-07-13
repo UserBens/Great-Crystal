@@ -30,7 +30,7 @@
                                                 <label for="supplier_name">Supplier Name <span style="color: red">*</span>
                                                     :</label>
                                                 <input name="supplier_name" type="text" class="form-control"
-                                                    id="supplier_name" value="{{ $invoice->supplier_name }}" readonly>
+                                                    id="supplier_name" value="{{ $invoice->supplier->name }}" readonly>
                                                 {{-- @if ($errors->has('supplier_name'))
                                                     <span class="text-danger">{{ $errors->first('supplier_name') }}</span>
                                                 @endif --}}
@@ -101,7 +101,6 @@
                                             <div class="form-group">
                                                 <label for="transfer_account_id">Pay From <span
                                                         style="color: red">*</span>:</label>
-                                                <div class="input-group">
                                                     <select name="transfer_account_id" id="transfer_account_id"
                                                         class="form-control select2">
                                                         @foreach ($accountNumbers as $accountNumber)
@@ -116,7 +115,6 @@
                                                             + Add Account
                                                         </button>
                                                     </div>
-                                                </div>
                                                 @if ($errors->any())
                                                     <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
                                                 @endif

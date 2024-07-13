@@ -273,6 +273,7 @@ class InvoiceSupplierController extends Controller
             $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
             $invoice->payment_status = 'Not Yet';
             $invoice->payment_method = 'Cash';
+            $invoice->description = $request->description;
             $invoice->save();
 
             return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');

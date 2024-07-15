@@ -29,15 +29,15 @@ class Grade extends Model
       return $this->hasMany(Student::class);
     }
 
-    // public function payment_grade()
-    // {
-    //   return $this->hasMany(Payment_grade::class);
-    // }
-
-    public function paymentGrades()
+    public function payment_grade()
     {
-      return $this->hasMany(Payment_grade::class); // pastikan nama relasi sesuai dengan yang digunakan
+      return $this->hasMany(Payment_grade::class);
     }
+
+    // public function paymentGrades()
+    // {
+    //   return $this->hasMany(Payment_grade::class); // pastikan nama relasi sesuai dengan yang digunakan
+    // }
     public function spp()
     {
       return $this->hasOne(Payment_grade::class);

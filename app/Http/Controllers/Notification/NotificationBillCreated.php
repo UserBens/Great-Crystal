@@ -303,7 +303,6 @@ class NotificationBillCreated extends Controller
             }
          }
 
-
          DB::commit();
 
          info("Cron Job create paket success at " . date('d-m-Y'));

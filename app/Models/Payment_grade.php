@@ -19,12 +19,6 @@ class Payment_grade extends Model
       'updated_at'
    ];
 
-
-   // public function grade()
-   // {
-   //    return $this->belongsTo(Grade::class);
-   // }
-
    public function grade()
    {
       return $this->belongsTo(Grade::class);

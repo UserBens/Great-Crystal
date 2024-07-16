@@ -38,6 +38,7 @@ class Grade extends Model
     // {
     //   return $this->hasMany(Payment_grade::class); // pastikan nama relasi sesuai dengan yang digunakan
     // }
+
     public function spp()
     {
       return $this->hasOne(Payment_grade::class);

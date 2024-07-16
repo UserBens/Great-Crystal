@@ -158,7 +158,7 @@
                                                                         <div class="input-group">
                                                                             <input name="supplier_name" type="text"
                                                                                 class="form-control" id="supplier_name"
-                                                                                value="{{ $item->supplier_name }}"
+                                                                                value="{{ $item->supplier->name }}"
                                                                                 readonly>
                                                                         </div>
                                                                         @if ($errors->any())
@@ -233,7 +233,7 @@
                                                                             From :</label>
                                                                         <select name="transfer_account_id"
                                                                             id="transfer_account_id"
-                                                                            class="form-control select2" disabled>
+                                                                            class="form-control " disabled>
                                                                             @if ($item->transferAccount)
                                                                                 <option
                                                                                     value="{{ $item->transferAccount->id }}">
@@ -266,11 +266,29 @@
                                                                     </div> --}}
 
                                                                     <div class="col-md-12 mt-3">
-                                                                        <label for="upload_image">Upload Image :</label>
+                                                                        <label for="upload_image">Upload Image Proof :</label>
 
-                                                                        @if ($item->image_path)
+                                                                        @if ($item->image_proof)
                                                                             <div class="image-container text-center">
-                                                                                <img src="{{ asset('uploads/' . $item->image_path) }}"
+                                                                                <img src="{{ asset('uploads/' . $item->image_proof) }}"
+                                                                                    alt="Proof of Payment"
+                                                                                    class="img-thumbnail"
+                                                                                    style="max-width: 100%;"
+                                                                                    loading="lazy">
+                                                                            </div>
+                                                                        @else
+                                                                            <div class="text-center">
+                                                                                <p>No image uploaded.</p>
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+
+                                                                    <div class="col-md-12 mt-3">
+                                                                        <label for="upload_image">Upload Image Invoice :</label>
+
+                                                                        @if ($item->image_invoice)
+                                                                            <div class="image-container text-center">
+                                                                                <img src="{{ asset('uploads/' . $item->image_invoice) }}"
                                                                                     alt="Proof of Payment"
                                                                                     class="img-thumbnail"
                                                                                     style="max-width: 100%;"

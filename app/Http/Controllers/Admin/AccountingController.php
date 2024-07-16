@@ -131,10 +131,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
                 'description' => 'required',
+                // 'account_no' => 'required',
+                // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
             ]);
 
@@ -412,11 +413,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
                 'description' => 'required',
-                // 'beginning_balance' => 'required|numeric',
+                // 'account_no' => 'required',
+              
             ]);
 
             Accountnumber::create([
@@ -425,9 +426,7 @@ class AccountingController extends Controller
                 'account_category_id' => $request->account_category_id,
                 'amount' => $request->amount,
                 'description' => $request->description,
-                // 'beginning_balance' => $request->beginning_balance,
-                // 'ending_balance' => $request->ending_balance,
-                // 'transactions_total' => 0, // Set transactions_total default ke 0
+              
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
@@ -696,10 +695,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
                 'description' => 'required',
+                // 'account_no' => 'required',
+                // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
             ]);
 
@@ -951,10 +951,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
                 'description' => 'required',
+                // 'account_no' => 'required',
+                // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
             ]);
 

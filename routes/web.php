@@ -308,6 +308,8 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::delete('/invoice-supplier/{id}', [InvoiceSupplierController::class, 'destroyInvoiceSupplier'])
          ->name('invoice-supplier.destroy');
       Route::post('/create-account/store', [InvoiceSupplierController::class, 'storeAccount'])->name('invoice-supplier.account.store');
+      Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplierAtInvoice'])->name('invoice-create-supplier.store');
+
    });
 });
 

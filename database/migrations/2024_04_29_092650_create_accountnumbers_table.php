@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('accountnumbers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('account_no')->unique();        
             $table->unsignedBigInteger('account_category_id');
             $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();

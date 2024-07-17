@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('account_no')->unique();        
             $table->unsignedBigInteger('account_category_id');
             $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->bigInteger('amount')->nullable();           
+            $table->bigInteger('amount')->nullable();   
+            $table->bigInteger('debit')->nullable();           
+            $table->bigInteger('credit')->nullable();           
+            $table->date('month')->nullable();
+            $table->boolean('posted')->default(false); // Menambahkan kolom posted        
             $table->string('description');
             $table->timestamps();
         });

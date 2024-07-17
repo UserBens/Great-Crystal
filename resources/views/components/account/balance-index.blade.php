@@ -49,25 +49,18 @@
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Balance Account has been created yet. Click the button below to create Balance Account!</h3>
                     <div class="btn-group">
-                        <a type="button" href="{{ route('balance.create') }}" class="btn btn-success mt-3">
+                        {{-- <a type="button" href="{{ route('balance.create') }}" class="btn btn-success mt-3">
                             <i class="fa-solid fa-plus"></i> Post Balance
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
             </div>
         @else
             <div class="btn-group mt-2">
-                <a type="button" href="{{ route('balance.create') }}" class="btn btn-success btn-sm mt-3"
+                {{-- <a type="button" href="{{ route('balance.create') }}" class="btn btn-success btn-sm mt-3"
                     style="margin-right: 8px">
                     <i class="fa-solid fa-plus"></i> Post Balance
-                </a>
-
-                {{-- <form action="{{ route('account.calculateAll') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-primary btn-sm mt-3" name="calculate_all">
-                        <i class="fas fa-calculator"></i> Calculate All
-                    </button>
-                </form> --}}
+                </a> --}}
 
             </div>
             <div class="card card-dark mt-4">
@@ -79,38 +72,39 @@
                         </button>
                     </div>
                 </div>
-                <div class="card-body p-0">
+                {{-- <div class="card-body p-0">
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Account</th>
-                                <th>Name</th>
-                                {{-- <th>Category</th> --}}
+                                <th>Category</th>
                                 <th>Debit</th>
                                 <th>Credit</th>
-                                <th>Post For Month</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data as $balance)
+                            @foreach ($data as $account)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $balance->accountnumber->account_no }}</td>
-                                    <td>{{ $balance->accountnumber->name }}</td>
-                                    <td>Rp.{{ number_format($balance->debit, 0, ',', '.') }}</td>
-                                    <td>Rp.{{ number_format($balance->credit, 0, ',', '.') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($balance->month)->format('j F Y') }}</td>
+                                    <td>{{ $account->account_no }} - {{ $account->name }}</td>
+                                    <td>{{ $categories->where('id', $account->account_category_id)->first()->category_name }}
+                                    </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm delete-btn btn-danger"
-                                            data-id="{{ $balance->id }}">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
+                                        <input name="balances[{{ $account->id }}][debit]" type="text"
+                                            class="form-control" placeholder="Enter debit" autocomplete="off"
+                                            value="{{ old('balances.' . $account->id . '.debit') }}">
+                                    </td>
+                                    <td>
+                                        <input name="balances[{{ $account->id }}][credit]" type="text"
+                                            class="form-control" placeholder="Enter credit" autocomplete="off"
+                                            value="{{ old('balances.' . $account->id . '.credit') }}">
                                     </td>
                                 </tr>
                             @endforeach
+                            <button type="submit" class="btn btn-primary">Save Balances</button>
                         </tbody>
+
                     </table>
                     <div class="d-flex justify-content-between mt-4 px-3">
                         <div class="mb-3">
@@ -121,7 +115,69 @@
                             {{ $data->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
-                </div>
+                </div> --}}
+
+                <form action="{{ route('account.balance.save') }}" method="POST">
+                    @csrf
+                    <div class="card-body p-0">
+                        <table class="table table-striped projects">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Account</th>
+                                    <th>Category</th>
+                                    <th>Debit</th>
+                                    <th>Credit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($data as $account)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $account->account_no }} - {{ $account->name }}</td>
+                                        <td>{{ $categories->where('id', $account->account_category_id)->first()->category_name }}
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Rp.</span>
+                                                </div>
+                                                <input name="balances[{{ $account->id }}][debit]" type="text"
+                                                    class="form-control currency" placeholder="Enter debit"
+                                                    autocomplete="off"
+                                                    value="{{ old('balances.' . $account->id . '.debit', $account->debit) }}">
+
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Rp.</span>
+                                                </div>
+                                                <input name="balances[{{ $account->id }}][credit]" type="text"
+                                                    class="form-control currency" placeholder="Enter credit"
+                                                    autocomplete="off"
+                                                    value="{{ old('balances.' . $account->id . '.credit', $account->credit) }}">
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-between mt-4 px-3">
+                            <div class="mb-3">
+                                Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }}
+                                results
+                            </div>
+                            <div>
+                                {{ $data->links('pagination::bootstrap-4') }}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Balances</button>
+                </form>
+
             </div>
         @endif
     </div>
@@ -130,6 +186,19 @@
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AutoNumeric for currency inputs
+            AutoNumeric.multiple('.currency', {
+                currencySymbol: 'Rp.',
+                decimalCharacter: ',',
+                digitGroupSeparator: '.',
+                decimalPlaces: 0,
+            });
+        });
+    </script> --}}
+
 
     <script>
         $(document).ready(function() {
@@ -185,6 +254,90 @@
                                     response.responseJSON.error ? response
                                     .responseJSON.error :
                                     'There was an error deleting the invoice supplier.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
+            $('.post-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to post this balance?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, post it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route('balance.post', ['id' => ':id']) }}'.replace(
+                                ':id', id),
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Posted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                        .reload(); // Refresh halaman setelah posting
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire(
+                                    'Error!',
+                                    xhr.responseJSON.message ||
+                                    'An error occurred while posting the balance.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
+
+            $('.unpost-btn').click(function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to unpost this balance?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, unpost it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route('balance.unpost', ['id' => ':id']) }}'
+                                .replace(':id', id),
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Unposted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    location
+                                        .reload(); // Refresh halaman setelah unposting
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire(
+                                    'Error!',
+                                    xhr.responseJSON.message,
                                     'error'
                                 );
                             }

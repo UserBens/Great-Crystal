@@ -108,7 +108,7 @@ class InvoiceSupplierController extends Controller
 
             // Validasi data request
             $request->validate([
-                'image_proof' => 'required|image|mimes:jpeg,png,jpg,gif',
+                'image_proof' => 'required',
                 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
@@ -168,7 +168,7 @@ class InvoiceSupplierController extends Controller
             ]);
 
             // Redirect ke halaman indeks akun dengan pesan sukses
-            return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle kesalahan pelanggaran integritas constraint
@@ -191,6 +191,7 @@ class InvoiceSupplierController extends Controller
         ]);
     }
 
+
     // public function storeInvoiceSupplier(Request $request)
     // {
     //     try {
@@ -201,31 +202,40 @@ class InvoiceSupplierController extends Controller
     //             'date' => 'required|date_format:Y-m-d',
     //             'nota' => 'required',
     //             'deadline_invoice' => 'required|date_format:Y-m-d',
-    //             // 'pph' => 'required'
     //         ]);
 
     //         $amount = $request->amount;
-    //         $pph_percentage = 0;
+    //         $pph_percentage = null;
 
-    //         if ($request->ppn_status === '2%') {
+    //         if ($request->pph === '2%') {
     //             $pph_percentage = 2;
-    //             $amount *= 0.98;
-    //         } else if ($request->ppn_status === '15%') {
+    //             $amount *= 0.98; // Mengurangi 2%
+    //         } else if ($request->pph === '15%') {
     //             $pph_percentage = 15;
-    //             $amount *= 0.85;
+    //             $amount *= 0.85; // Mengurangi 15%
+    //         }
+
+    //         // Handle file upload
+    //         $imageName = null;
+    //         if ($request->hasFile('image_invoice')) {
+    //             $image = $request->file('image_invoice');
+    //             $imageName = time() . '.' . $image->getClientOriginalExtension();
+    //             $image->move(public_path('uploads'), $imageName);
     //         }
 
     //         $invoice = new InvoiceSupplier();
     //         $invoice->no_invoice = $request->no_invoice;
-    //         $invoice->supplier_id = $request->supplier_id; // Gunakan supplier_id langsung dari request
+    //         $invoice->supplier_id = $request->supplier_id;
     //         $invoice->amount = $amount;
-    //         $invoice->pph = $request->pph;
-    //         $invoice->pph_percentage = $pph_percentage;
+    //         $invoice->pph = $request->pph ?? null;
+    //         $invoice->pph_percentage = $pph_percentage ?? null;
     //         $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
     //         $invoice->nota = $request->nota;
     //         $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
     //         $invoice->payment_status = 'Not Yet';
     //         $invoice->payment_method = 'Cash';
+    //         $invoice->description = $request->description;
+    //         $invoice->image_invoice = $imageName; // Simpan nama file gambar ke dalam database
     //         $invoice->save();
 
     //         return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
@@ -245,18 +255,15 @@ class InvoiceSupplierController extends Controller
                 'date' => 'required|date_format:Y-m-d',
                 'nota' => 'required',
                 'deadline_invoice' => 'required|date_format:Y-m-d',
+                'pph' => 'required|integer',
+                'pph_percentage' => 'required|numeric|min:0|max:100',
             ]);
 
             $amount = $request->amount;
-            $pph_percentage = null;
+            $pph_percentage = $request->pph_percentage;
 
-            if ($request->pph === '2%') {
-                $pph_percentage = 2;
-                $amount *= 0.98; // Mengurangi 2%
-            } else if ($request->pph === '15%') {
-                $pph_percentage = 15;
-                $amount *= 0.85; // Mengurangi 15%
-            }
+            // Mengurangi amount berdasarkan persentase PPH
+            $amount -= ($amount * ($pph_percentage / 100));
 
             // Handle file upload
             $imageName = null;
@@ -270,8 +277,8 @@ class InvoiceSupplierController extends Controller
             $invoice->no_invoice = $request->no_invoice;
             $invoice->supplier_id = $request->supplier_id;
             $invoice->amount = $amount;
-            $invoice->pph = $request->pph ?? null;
-            $invoice->pph_percentage = $pph_percentage ?? null;
+            $invoice->pph = $request->pph;
+            $invoice->pph_percentage = $pph_percentage;
             $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
             $invoice->nota = $request->nota;
             $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
@@ -287,6 +294,7 @@ class InvoiceSupplierController extends Controller
             return back()->withErrors(['error' => 'Something went wrong. Please try again.']);
         }
     }
+    
 
 
 

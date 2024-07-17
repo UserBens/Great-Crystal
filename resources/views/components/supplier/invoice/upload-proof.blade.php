@@ -101,34 +101,31 @@
                                             <div class="form-group">
                                                 <label for="transfer_account_id">Pay From <span
                                                         style="color: red">*</span>:</label>
-                                                    <select name="transfer_account_id" id="transfer_account_id"
-                                                        class="form-control select2">
-                                                        @foreach ($accountNumbers as $accountNumber)
-                                                            <option value="{{ $accountNumber->id }}">
-                                                                {{ $accountNumber->account_no }} -
-                                                                {{ $accountNumber->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    <div class="input-group-append">
-                                                        <button type="button" class="btn text-primary" data-toggle="modal"
-                                                            data-target="#addAccountModal">
-                                                            + Add Account
-                                                        </button>
-                                                    </div>
+                                                <select name="transfer_account_id" id="transfer_account_id"
+                                                    class="form-control select2">
+                                                    @foreach ($accountNumbers as $accountNumber)
+                                                        <option value="{{ $accountNumber->id }}">
+                                                            {{ $accountNumber->account_no }} -
+                                                            {{ $accountNumber->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn text-primary" data-toggle="modal"
+                                                        data-target="#addAccountModal">
+                                                        + Add Account
+                                                    </button>
+                                                </div>
                                                 @if ($errors->any())
                                                     <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
                                                 @endif
                                             </div>
                                         </div>
 
-                                        <div class="col-md-12 mt-3">
+                                        {{-- <div class="col-md-12 mt-3">                                            
                                             <label for="upload_image">Upload Image<span style="color: red">*</span>
                                                 :</label>
-                                            <div class="image-upload-wrap" id="image-upload-wrap{{ $invoice->id }}">
-                                                {{-- <input type="file" name="image_path" class="file-upload-input"
-                                                    onchange="readURL(this, '{{ $invoice->id }}');" accept="image/*"> --}}
-
-                                                <input type="file" name="image_path" class="file-upload-input"
+                                            <div class="image-upload-wrap" id="image-upload-wrap{{ $invoice->id }}">                                               
+                                                <input type="file" name="image_proof" class="file-upload-input"
                                                     onchange="readURL(this, '{{ $invoice->id }}');" accept="image/*">
 
                                                 <div class="drag-text">
@@ -163,7 +160,54 @@
                                                 </div>
 
                                             </div>
+
+                                           
+                                        </div> --}}
+
+                                        <div class="col-md-12 mb-3">
+                                            <label for="upload_image">Upload Image :</label>
+                                            <div class="image-upload-wrap" id="image-upload-wrap">
+
+
+                                                <input type="file" name="image_proof" class="file-upload-input"
+                                                    onchange="readURL(this, '');" accept="image/*">
+
+                                                <div class="drag-text">
+                                                    <h3>Drag and drop a file or select add
+                                                        Image</h3>
+                                                </div>
+                                            </div>
+                                            <div class="file-upload-content" id="file-upload-content" style="display:none;">
+                                                <div class="image-file-name" id="image-file-name"
+                                                    style="text-align: center; margin-top: 10px;">
+                                                </div>
+                                                <img class="file-upload-image" id="file-upload-image" src="#"
+                                                    alt="your image" style="max-width: 100%; max-height: 100%;" />
+                                                <div class="image-title-wrap"
+                                                    style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <button type="button" onclick="removeUpload(this, '')"
+                                                        class="remove-image" style="margin-right: 10px">
+                                                        <i class="fa-solid fa-trash fa-2xl"
+                                                            style="margin-bottom: 1em;"></i>
+                                                        <br> Remove
+                                                        <span class="image-title">Image</span>
+                                                    </button>
+                                                    {{-- <button type="submit" role="button" class="upload-image">
+                                                        <i class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
+                                                            style="margin-bottom: 1em;"></i>
+                                                        <br> Upload Proof
+                                                        <span class="image-title">Image</span>
+                                                    </button> --}}
+                                                </div>
+
+                                            </div>
                                         </div>
+
+
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <input id="submitButton" type="submit"
+                                            class="btn btn-success center col-12 mt-3">
                                     </div>
                                 </form>
 
@@ -185,14 +229,24 @@
 
                                                     @csrf
                                                     <div class="form-group">
-                                                        <label for="account_no">Account Number<span style="color: red">*</span> :</label>
+                                                        <label for="account_no">Account Number<span
+                                                                style="color: red">*</span> :</label>
                                                         <input type="text" class="form-control" id="account_no"
                                                             name="account_no" placeholder="Enter Account Number" required>
+                                                        @if ($errors->any())
+                                                            <p style="color: red">{{ $errors->first('account_no') }}
+                                                            </p>
+                                                        @endif
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="name">Account Name<span style="color: red">*</span> :</label>
+                                                        <label for="name">Account Name<span
+                                                                style="color: red">*</span> :</label>
                                                         <input type="text" class="form-control" id="name"
                                                             name="name" placeholder="Enter Account Name" required>
+                                                        @if ($errors->any())
+                                                            <p style="color: red">{{ $errors->first('name') }}
+                                                            </p>
+                                                        @endif
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Category<span style="color: red">*</span> :</label>
@@ -220,6 +274,7 @@
                                                             data-dismiss="modal">Close</button>
                                                         <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
+
                                                 </form>
                                             </div>
                                         </div>

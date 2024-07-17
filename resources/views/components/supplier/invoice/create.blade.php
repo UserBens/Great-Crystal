@@ -7,8 +7,8 @@
                 <div class="col-md-12">
                     <!-- general form elements -->
                     <div>
-                        <form id="transferForm" method="POST" action="{{ route('invoice-supplier.store') }}" enctype="multipart/form-data"
-                            onsubmit="submitForm()">
+                        <form id="transferForm" method="POST" action="{{ route('invoice-supplier.store') }}"
+                            enctype="multipart/form-data" onsubmit="submitForm()">
                             @csrf
                             <div class="card card-dark">
                                 <div class="card-header">
@@ -123,7 +123,6 @@
                                             <label for="pph_percentage">Percentage<span style="color: red">*</span>
                                                 :</label>
                                             <div class="input-group">
-
                                                 <input name="pph_percentage" type="text" class="form-control"
                                                     id="pph_percentage" placeholder="Enter Percentage" autocomplete="off"
                                                     value="{{ old('pph_percentage') }}">
@@ -132,6 +131,7 @@
                                                 <p style="color: red">{{ $errors->first('pph_percentage') }}</p>
                                             @endif
                                         </div>
+
                                     </div>
 
                                     <div class="form-group row">
@@ -172,12 +172,7 @@
                                                     <br> Remove
                                                     <span class="image-title">Image</span>
                                                 </button>
-                                                <button type="submit" role="button" class="upload-image">
-                                                    <i class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
-                                                        style="margin-bottom: 1em;"></i>
-                                                    <br> Upload Proof
-                                                    <span class="image-title">Image</span>
-                                                </button>
+                                                
                                             </div>
 
                                         </div>

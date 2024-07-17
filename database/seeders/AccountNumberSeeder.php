@@ -217,7 +217,6 @@ class AccountNumberSeeder extends Seeder
             ['name' => 'Makan Siang Siswa', 'account_no' => '700.005',  'account_category_id' => 'BEBAN UMUM & ADMINISTRASI', 'amount' => 0, 'description' => 'BEBAN UMUM & ADMINISTRASI'],
             ['name' => 'BEBAN PERLENGKAPAN SEKOLAH', 'account_no' => '710.000',  'account_category_id' => 'BEBAN UMUM & ADMINISTRASI', 'amount' => 0, 'description' => 'BEBAN UMUM & ADMINISTRASI'],
             ['name' => 'Internet Sekolah', 'account_no' => '710.001',  'account_category_id' => 'BEBAN UMUM & ADMINISTRASI', 'amount' => 0, 'description' => 'BEBAN UMUM & ADMINISTRASI'],
-            ['name' => 'Inventaris Sekolah', 'account_no' => '710.002',  'account_category_id' => 'BEBAN UMUM & ADMINISTRASI', 'amount' => 0, 'description' => 'BEBAN UMUM & ADMINISTRASI'],
             ['name' => 'Kebutuhan - Healty Meal', 'account_no' => '710.003',  'account_category_id' => 'BEBAN UMUM & ADMINISTRASI', 'amount' => 0, 'description' => 'BEBAN UMUM & ADMINISTRASI'],
             ['name' => 'Kebutuhan Kantin', 'account_no' => '710.004',  'account_category_id' => 'BEBAN UMUM & ADMINISTRASI', 'amount' => 0, 'description' => 'BEBAN UMUM & ADMINISTRASI'],
             ['name' => 'Kebutuhan Praktek Eca', 'account_no' => '710.005',  'account_category_id' => 'BEBAN UMUM & ADMINISTRASI', 'amount' => 0, 'description' => 'BEBAN UMUM & ADMINISTRASI'],

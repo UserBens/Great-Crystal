@@ -430,7 +430,7 @@ class AccountingController extends Controller
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-            return redirect()->route('transaction-transfer.create')->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('transaction-transfer.create')->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle the integrity constraint violation error
@@ -715,7 +715,7 @@ class AccountingController extends Controller
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-            return redirect()->route('transaction-send.create')->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('transaction-send.create')->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle the integrity constraint violation error
@@ -971,7 +971,7 @@ class AccountingController extends Controller
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-            return redirect()->route('transaction-receive.create')->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('transaction-receive.create')->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle the integrity constraint violation error

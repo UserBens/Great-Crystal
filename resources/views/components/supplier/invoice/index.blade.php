@@ -135,179 +135,158 @@
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <form id="uploadForm{{ $item->id }}"
-                                                        action="{{ route('invoice-supplier.upload-proof', $item->id) }}"
-                                                        method="post" enctype="multipart/form-data">
-                                                        @csrf
-                                                        <div class="modal-body" style="width: 100%; height: auto;">
-                                                            <div class="file-upload"
-                                                                style=" display: flex; justify-content: center; align-items: center;">
-                                                                <div class="form-group row">
-                                                                    <div class="col-md-6">
-                                                                        <label for="no_invoice"># No. Invoice :</label>
-                                                                        <div class="input-group">
-                                                                            <input name="no_invoice" type="text"
-                                                                                class="form-control" id="no_invoice"
-                                                                                value="{{ $item->no_invoice }}" readonly>
+
+                                                    <div class="modal-body" style="width: 100%; height: auto;">
+                                                        <div class="file-upload"
+                                                            style=" display: flex; justify-content: center; align-items: center;">
+                                                            <div class="form-group row">
+                                                                <div class="col-md-6">
+                                                                    <label for="no_invoice"># No. Invoice :</label>
+                                                                    <div class="input-group">
+                                                                        <input name="no_invoice" type="text"
+                                                                            class="form-control" id="no_invoice"
+                                                                            value="{{ $item->no_invoice }}" readonly>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6">
+                                                                    <label for="name">Supplier
+                                                                        Name<span></span> :</label>
+                                                                    <div class="input-group">
+                                                                        <input name="supplier_name" type="text"
+                                                                            class="form-control" id="supplier_name"
+                                                                            value="{{ $item->supplier->name }}" readonly>
+                                                                    </div>
+                                                                    @if ($errors->any())
+                                                                        <p style="color: red">
+                                                                            {{ $errors->first('name') }}</p>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="nota">Nota<span></span> :</label>
+                                                                    <div class="input-group">
+                                                                        <input name="nota" type="text"
+                                                                            class="form-control" id="nota"
+                                                                            value="{{ $item->nota }}" readonly>
+                                                                    </div>
+                                                                    @if ($errors->any())
+                                                                        <p style="color: red">
+                                                                            {{ $errors->first('nota') }}</p>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="description">Description :</label>
+                                                                    <textarea autocomplete="off" name="description" class="form-control" id="description"
+                                                                        placeholder="Enter description" readonly>{{ $item->description }}</textarea>
+                                                                    @if ($errors->any())
+                                                                        <p style="color: red">
+                                                                            {{ $errors->first('description') }}</p>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="payment_method">Payment Method
+                                                                        :</label>
+                                                                    <select name="payment_method" class="form-control"
+                                                                        id="payment_method" disabled>
+                                                                        <option value="Cash"
+                                                                            {{ $item->payment_method == 'Cash' ? 'selected' : '' }}>
+                                                                            Kas</option>
+                                                                        <option value="Bank"
+                                                                            {{ $item->payment_method == 'Bank' ? 'selected' : '' }}>
+                                                                            Bank</option>
+                                                                    </select>
+                                                                    @if ($errors->any())
+                                                                        <p style="color: red">
+                                                                            {{ $errors->first('payment_method') }}
+                                                                        </p>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="payment_status">Payment Status
+                                                                        :</label>
+                                                                    <select name="payment_status" class="form-control"
+                                                                        id="payment_status" disabled>
+                                                                        <option value="Not Yet"
+                                                                            {{ $item->payment_status == 'Not Yet' ? 'selected' : '' }}>
+                                                                            Not Yet</option>
+                                                                        <option value="Paid"
+                                                                            {{ $item->payment_status == 'Paid' ? 'selected' : '' }}>
+                                                                            Paid</option>
+                                                                    </select>
+                                                                    @if ($errors->any())
+                                                                        <p style="color: red">
+                                                                            {{ $errors->first('payment_status') }}
+                                                                        </p>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="transfer_account_id">Pay
+                                                                        From :</label>
+                                                                    <select name="transfer_account_id"
+                                                                        id="transfer_account_id" class="form-control "
+                                                                        disabled>
+                                                                        @if ($item->transferAccount)
+                                                                            <option
+                                                                                value="{{ $item->transferAccount->id }}">
+                                                                                {{ $item->transferAccount->account_no }}
+                                                                                - {{ $item->transferAccount->name }}
+                                                                            </option>
+                                                                        @endif
+                                                                    </select>
+                                                                    @if ($errors->any())
+                                                                        <p style="color: red">
+                                                                            {{ $errors->first('transfer_account_id') }}
+                                                                        </p>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="col-md-12 mt-3">
+                                                                    <label for="upload_image">Upload Image Proof :</label>
+
+                                                                    @if ($item->image_proof)
+                                                                        <div class="image-container text-center">
+                                                                            <img src="{{ asset('uploads/' . $item->image_proof) }}"
+                                                                                alt="Proof of Payment"
+                                                                                class="img-thumbnail"
+                                                                                style="max-width: 100%;" loading="lazy">
                                                                         </div>
-                                                                    </div>
-
-                                                                    <div class="col-md-6">
-                                                                        <label for="name">Supplier
-                                                                            Name<span></span> :</label>
-                                                                        <div class="input-group">
-                                                                            <input name="supplier_name" type="text"
-                                                                                class="form-control" id="supplier_name"
-                                                                                value="{{ $item->supplier->name }}"
-                                                                                readonly>
+                                                                    @else
+                                                                        <div class="text-center">
+                                                                            <p>No image uploaded.</p>
                                                                         </div>
-                                                                        @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('name') }}</p>
-                                                                        @endif
-                                                                    </div>
+                                                                    @endif
+                                                                </div>
 
-                                                                    <div class="col-md-6 mt-3">
-                                                                        <label for="nota">Nota<span></span> :</label>
-                                                                        <div class="input-group">
-                                                                            <input name="nota" type="text"
-                                                                                class="form-control" id="nota"
-                                                                                value="{{ $item->nota }}" readonly>
+                                                                <div class="col-md-12 mt-3">
+                                                                    <label for="upload_image">Upload Image Invoice
+                                                                        :</label>
+
+                                                                    @if ($item->image_invoice)
+                                                                        <div class="image-container text-center">
+                                                                            <img src="{{ asset('uploads/' . $item->image_invoice) }}"
+                                                                                alt="Proof of Payment"
+                                                                                class="img-thumbnail"
+                                                                                style="max-width: 100%;" loading="lazy">
                                                                         </div>
-                                                                        @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('nota') }}</p>
-                                                                        @endif
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mt-3">
-                                                                        <label for="description">Description :</label>
-                                                                        <textarea autocomplete="off" name="description" class="form-control" id="description"
-                                                                            placeholder="Enter description" readonly>{{ $item->description }}</textarea>
-                                                                        @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('description') }}</p>
-                                                                        @endif
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mt-3">
-                                                                        <label for="payment_method">Payment Method
-                                                                            :</label>
-                                                                        <select name="payment_method" class="form-control"
-                                                                            id="payment_method" disabled>
-                                                                            <option value="Cash"
-                                                                                {{ $item->payment_method == 'Cash' ? 'selected' : '' }}>
-                                                                                Kas</option>
-                                                                            <option value="Bank"
-                                                                                {{ $item->payment_method == 'Bank' ? 'selected' : '' }}>
-                                                                                Bank</option>
-                                                                        </select>
-                                                                        @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('payment_method') }}
-                                                                            </p>
-                                                                        @endif
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mt-3">
-                                                                        <label for="payment_status">Payment Status
-                                                                            :</label>
-                                                                        <select name="payment_status" class="form-control"
-                                                                            id="payment_status" disabled>
-                                                                            <option value="Not Yet"
-                                                                                {{ $item->payment_status == 'Not Yet' ? 'selected' : '' }}>
-                                                                                Not Yet</option>
-                                                                            <option value="Paid"
-                                                                                {{ $item->payment_status == 'Paid' ? 'selected' : '' }}>
-                                                                                Paid</option>
-                                                                        </select>
-                                                                        @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('payment_status') }}
-                                                                            </p>
-                                                                        @endif
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mt-3">
-                                                                        <label for="transfer_account_id">Pay
-                                                                            From :</label>
-                                                                        <select name="transfer_account_id"
-                                                                            id="transfer_account_id"
-                                                                            class="form-control " disabled>
-                                                                            @if ($item->transferAccount)
-                                                                                <option
-                                                                                    value="{{ $item->transferAccount->id }}">
-                                                                                    {{ $item->transferAccount->account_no }}
-                                                                                    - {{ $item->transferAccount->name }}
-                                                                                </option>
-                                                                            @endif
-                                                                        </select>
-                                                                        @if ($errors->any())
-                                                                            <p style="color: red">
-                                                                                {{ $errors->first('transfer_account_id') }}
-                                                                            </p>
-                                                                        @endif
-                                                                    </div>
-
-                                                                    {{-- <div class="col-md-6 mt-3">
-                                                                        <label for="deposit_account_id">Deposit To</label>
-                                                                        <select name="deposit_account_id"
-                                                                            id="deposit_account_id"
-                                                                            class="form-control select2"
-                                                                            style="width: 400px" disabled>
-                                                                            @if ($item->depositAccount)
-                                                                                <option
-                                                                                    value="{{ $item->depositAccount->id }}">
-                                                                                    {{ $item->depositAccount->account_no }}
-                                                                                    - {{ $item->depositAccount->name }}
-                                                                                </option>
-                                                                            @endif
-                                                                        </select>
-                                                                    </div> --}}
-
-                                                                    <div class="col-md-12 mt-3">
-                                                                        <label for="upload_image">Upload Image Proof :</label>
-
-                                                                        @if ($item->image_proof)
-                                                                            <div class="image-container text-center">
-                                                                                <img src="{{ asset('uploads/' . $item->image_proof) }}"
-                                                                                    alt="Proof of Payment"
-                                                                                    class="img-thumbnail"
-                                                                                    style="max-width: 100%;"
-                                                                                    loading="lazy">
-                                                                            </div>
-                                                                        @else
-                                                                            <div class="text-center">
-                                                                                <p>No image uploaded.</p>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
-
-                                                                    <div class="col-md-12 mt-3">
-                                                                        <label for="upload_image">Upload Image Invoice :</label>
-
-                                                                        @if ($item->image_invoice)
-                                                                            <div class="image-container text-center">
-                                                                                <img src="{{ asset('uploads/' . $item->image_invoice) }}"
-                                                                                    alt="Proof of Payment"
-                                                                                    class="img-thumbnail"
-                                                                                    style="max-width: 100%;"
-                                                                                    loading="lazy">
-                                                                            </div>
-                                                                        @else
-                                                                            <div class="text-center">
-                                                                                <p>No image uploaded.</p>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
+                                                                    @else
+                                                                        <div class="text-center">
+                                                                            <p>No image uploaded.</p>
+                                                                        </div>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </form>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
+                                    
                                 </tr>
                             @endforeach
                             <!-- End Loop through transfer data -->

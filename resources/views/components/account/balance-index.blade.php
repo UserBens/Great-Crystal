@@ -5,8 +5,8 @@
         <div class="m-1">
             <form action="{{ route('balance.index') }}" method="GET" class="mb-3">
                 <div class="row">
-                    <div class="col-md-4">
-                        <label for="sort">Sort By</label>
+                    <div class="col-md-3">
+                        <label for="sort">Sort By :</label>
                         <select name="sort" class="form-control" id="sort-select">
                             <option value="">-- Default --</option>
                             <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)
@@ -17,12 +17,17 @@
                         <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
                     </div>
 
-                    <div class="col-md-4">
-                        <label for="date">Date</label>
+                    <div class="col-md-3">
+                        <label for="date">Convertion Date :</label>
                         <input type="month" name="date" class="form-control" value="{{ $form->date ?? '' }}">
                     </div>
-                    <div class="col-md-4">
-                        <label for="date">Search Data</label>
+
+                    {{-- <div class="col-md-3">
+                        <label for="date">Date :</label>
+                        <input type="month" name="date" class="form-control" value="{{ $form->date ?? '' }}">
+                    </div> --}}
+                    <div class="col-md-3">
+                        <label for="date">Search Data :</label>
                         <div class="input-group">
                             <input type="text" name="search" class="form-control" placeholder="Search..."
                                 value="{{ $form->search ?? '' }}">
@@ -72,50 +77,6 @@
                         </button>
                     </div>
                 </div>
-                {{-- <div class="card-body p-0">
-                    <table class="table table-striped projects">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Account</th>
-                                <th>Category</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($data as $account)
-                                <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $account->account_no }} - {{ $account->name }}</td>
-                                    <td>{{ $categories->where('id', $account->account_category_id)->first()->category_name }}
-                                    </td>
-                                    <td>
-                                        <input name="balances[{{ $account->id }}][debit]" type="text"
-                                            class="form-control" placeholder="Enter debit" autocomplete="off"
-                                            value="{{ old('balances.' . $account->id . '.debit') }}">
-                                    </td>
-                                    <td>
-                                        <input name="balances[{{ $account->id }}][credit]" type="text"
-                                            class="form-control" placeholder="Enter credit" autocomplete="off"
-                                            value="{{ old('balances.' . $account->id . '.credit') }}">
-                                    </td>
-                                </tr>
-                            @endforeach
-                            <button type="submit" class="btn btn-primary">Save Balances</button>
-                        </tbody>
-
-                    </table>
-                    <div class="d-flex justify-content-between mt-4 px-3">
-                        <div class="mb-3">
-                            Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }}
-                            results
-                        </div>
-                        <div>
-                            {{ $data->links('pagination::bootstrap-4') }}
-                        </div>
-                    </div>
-                </div> --}}
 
                 <form action="{{ route('account.balance.save') }}" method="POST">
                     @csrf
@@ -149,6 +110,7 @@
 
                                             </div>
                                         </td>
+                                        
                                         <td>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -163,8 +125,12 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                
                             </tbody>
                         </table>
+                        <div class="m-4">
+                            <button type="submit" class="btn btn-sm btn-primary">Save Balances</button>
+                        </div>
                         <div class="d-flex justify-content-between mt-4 px-3">
                             <div class="mb-3">
                                 Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }}
@@ -175,8 +141,8 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save Balances</button>
                 </form>
+
 
             </div>
         @endif
@@ -187,18 +153,29 @@
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
 
-    {{-- <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize AutoNumeric for currency inputs
-            AutoNumeric.multiple('.currency', {
-                currencySymbol: 'Rp.',
-                decimalCharacter: ',',
-                digitGroupSeparator: '.',
-                decimalPlaces: 0,
+
+            initializeAutoNumeric();
+
+            function initializeAutoNumeric() {
+                AutoNumeric.multiple('.currency', {
+                    currencySymbol: 'Rp.',
+                    decimalCharacter: ',',
+                    digitGroupSeparator: '.',
+                    decimalPlaces: 0,
+                });
+            }
+
+            // Remove thousand separators before form submit
+            document.getElementById('accountForm').addEventListener('submit', function() {
+                const currencyInputs = document.querySelectorAll('.currency');
+                currencyInputs.forEach(input => {
+                    input.value = input.value.replace(/\./g, ''); // Remove all thousand separators
+                });
             });
         });
-    </script> --}}
-
+    </script>
 
     <script>
         $(document).ready(function() {
@@ -262,100 +239,7 @@
                 });
             });
 
-            $('.post-btn').click(function() {
-                var id = $(this).data('id');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You want to post this balance?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, post it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ route('balance.post', ['id' => ':id']) }}'.replace(
-                                ':id', id),
-                            type: 'POST',
-                            data: {
-                                "_token": "{{ csrf_token() }}",
-                            },
-                            success: function(response) {
-                                Swal.fire(
-                                    'Posted!',
-                                    response.message,
-                                    'success'
-                                ).then(() => {
-                                    location
-                                        .reload(); // Refresh halaman setelah posting
-                                });
-                            },
-                            error: function(xhr) {
-                                Swal.fire(
-                                    'Error!',
-                                    xhr.responseJSON.message ||
-                                    'An error occurred while posting the balance.',
-                                    'error'
-                                );
-                            }
-                        });
-                    }
-                });
-            });
-
-
-            $('.unpost-btn').click(function() {
-                var id = $(this).data('id');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You want to unpost this balance?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, unpost it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ route('balance.unpost', ['id' => ':id']) }}'
-                                .replace(':id', id),
-                            type: 'POST',
-                            data: {
-                                "_token": "{{ csrf_token() }}",
-                            },
-                            success: function(response) {
-                                Swal.fire(
-                                    'Unposted!',
-                                    response.message,
-                                    'success'
-                                ).then(() => {
-                                    location
-                                        .reload(); // Refresh halaman setelah unposting
-                                });
-                            },
-                            error: function(xhr) {
-                                Swal.fire(
-                                    'Error!',
-                                    xhr.responseJSON.message,
-                                    'error'
-                                );
-                            }
-                        });
-                    }
-                });
-            });
-        });
-    </script>
-
-    {{-- delete button --}}
-    <script>
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                let accountId = this.getAttribute('data-id');
-                $('#deleteModal' + accountId).modal('show');
-                return false;
-            });
+         
         });
     </script>
 

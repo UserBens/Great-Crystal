@@ -278,18 +278,15 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
       Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
       Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
-      Route::post('/calculate-total/{id}', [AccountingController::class, 'calculateTotal'])->name('account.calculateTotal');
-      Route::post('/account/calculate-all', [AccountingController::class, 'calculateAll'])->name('account.calculateAll');
+      Route::post('/account/balance/save', [BalanceController::class, 'saveBalances'])->name('account.balance.save');
 
       Route::get('/account/balance', [BalanceController::class, 'indexBalance'])->name('balance.index');
       Route::get('/account/balance-create', [BalanceController::class, 'createBalance'])->name('balance.create');
       Route::post('/account/balance-create', [BalanceController::class, 'storeBalance'])->name('balance.store');
       Route::delete('/account/balance/{id}', [BalanceController::class, 'deleteBalance'])->name('balance.destroy');
-
-
-
-      Route::post('/balance/post/{id}', [BalanceController::class, 'postBalance'])->name('balance.post');
-      Route::post('balance/unpost/{id}', [BalanceController::class, 'unpostBalance'])->name('balance.unpost');
+      
+      // Route::post('/balance/post/{id}', [BalanceController::class, 'postBalance'])->name('balance.post');
+      // Route::post('balance/unpost/{id}', [BalanceController::class, 'unpostBalance'])->name('balance.unpost');
    });
 
    Route::prefix('/supplier')->group(function () {

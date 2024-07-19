@@ -415,7 +415,7 @@ class AccountingController extends Controller
                 'name' => 'required',
                 'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                'description' => 'required',
+                // 'description' => 'required',
                 // 'account_no' => 'required',
               
             ]);

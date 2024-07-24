@@ -64,6 +64,57 @@ class AccountingController extends Controller
     //     }
     // }
 
+    // public function indexAccount(Request $request)
+    // {
+    //     session()->flash('preloader', true);
+    //     session()->flash('page', (object)[
+    //         'page' => 'AccountNumber',
+    //         'child' => 'Database Account Number',
+    //     ]);
+
+    //     try {
+    //         $form = (object) [
+    //             'sort' => $request->sort ?? null,
+    //             'order' => $request->order ?? 'desc',
+    //             'search' => $request->search ?? null,
+    //             'date' => $request->date ?? null,
+    //         ];
+
+    //         $query = Accountnumber::query();
+
+    //         // Filter berdasarkan parameter pencarian
+    //         if ($request->filled('search')) {
+    //             $query->where(function ($q) use ($request) {
+    //                 $q->where('name', 'LIKE', '%' . $request->search . '%')
+    //                     ->orWhere('account_no', 'LIKE', '%' . $request->search . '%')
+    //                     ->orWhere('amount', 'LIKE', '%' . $request->search . '%')
+    //                     ->orWhere('created_at', 'LIKE', '%' . $request->search . '%');
+    //             });
+    //         }
+
+    //         // Filter berdasarkan tanggal
+    //         if ($request->filled('date')) {
+    //             $searchDate = date('Y-m-d', strtotime($request->date));
+    //             $query->whereDate('created_at', $searchDate);
+    //         }
+
+    //         // Mengatur urutan berdasarkan parameter yang dipilih
+    //         if ($request->filled('sort') && $request->filled('order')) {
+    //             $query->orderBy($request->sort, $request->order);
+    //         } else {
+    //             $query->orderBy('created_at', 'desc');
+    //         }
+
+    //         $data = $query->paginate(15);
+
+    //         $categories = Accountcategory::all();
+
+    //         return view('components.account.index')->with('data', $data)->with('categories', $categories)->with('form', $form);
+    //     } catch (Exception $err) {
+    //         return dd($err);
+    //     }
+    // }
+
     public function indexAccount(Request $request)
     {
         session()->flash('preloader', true);
@@ -92,10 +143,10 @@ class AccountingController extends Controller
                 });
             }
 
-            // Filter berdasarkan tanggal
+            // Filter berdasarkan tanggal konversi
             if ($request->filled('date')) {
-                $searchDate = date('Y-m-d', strtotime($request->date));
-                $query->whereDate('created_at', $searchDate);
+                $month = Carbon::createFromFormat('Y-m', $request->date)->startOfMonth();
+                $query->where('month', $month);
             }
 
             // Mengatur urutan berdasarkan parameter yang dipilih
@@ -131,10 +182,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
                 'description' => 'required',
+                // 'account_no' => 'required',
+                // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
             ]);
 
@@ -241,30 +293,30 @@ class AccountingController extends Controller
         }
     }
 
-    public function calculateAll(Request $request)
-    {
-        try {
-            // Ambil semua account numbers
-            $accounts = Accountnumber::all();
+    // public function calculateAll(Request $request)
+    // {
+    //     try {
+    //         // Ambil semua account numbers
+    //         $accounts = Accountnumber::all();
 
-            // Loop untuk menghitung ending balance untuk setiap account
-            foreach ($accounts as $account) {
-                $ending_balance = $account->calculateEndingBalance();
-                $account->update(['ending_balance' => $ending_balance]);
+    //         // Loop untuk menghitung ending balance untuk setiap account
+    //         foreach ($accounts as $account) {
+    //             $ending_balance = $account->calculateEndingBalance();
+    //             $account->update(['ending_balance' => $ending_balance]);
 
-                // Tentukan tipe debit atau kredit berdasarkan ending balance
-                $position = $account->getBalanceType(); // Fungsi getBalanceType dari model Accountnumber
+    //             // Tentukan tipe debit atau kredit berdasarkan ending balance
+    //             $position = $account->getBalanceType(); // Fungsi getBalanceType dari model Accountnumber
 
-                // Update kolom position dengan nilai debit atau kredit
-                $account->update(['position' => $position]);
-            }
+    //             // Update kolom position dengan nilai debit atau kredit
+    //             $account->update(['position' => $position]);
+    //         }
 
-            // Redirect dengan pesan sukses
-            return redirect()->route('account.index')->with('success', 'Ending balances calculation successful for all accounts.');
-        } catch (\Exception $ex) {
-            return redirect()->route('account.index')->with('error', 'Failed to calculate ending balances.');
-        }
-    }
+    //         // Redirect dengan pesan sukses
+    //         return redirect()->route('account.index')->with('success', 'Ending balances calculation successful for all accounts.');
+    //     } catch (\Exception $ex) {
+    //         return redirect()->route('account.index')->with('error', 'Failed to calculate ending balances.');
+    //     }
+    // }
 
 
 
@@ -412,11 +464,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
-                'description' => 'required',
-                // 'beginning_balance' => 'required|numeric',
+                // 'description' => 'required',
+                // 'account_no' => 'required',
+
             ]);
 
             Accountnumber::create([
@@ -425,13 +477,11 @@ class AccountingController extends Controller
                 'account_category_id' => $request->account_category_id,
                 'amount' => $request->amount,
                 'description' => $request->description,
-                // 'beginning_balance' => $request->beginning_balance,
-                // 'ending_balance' => $request->ending_balance,
-                // 'transactions_total' => 0, // Set transactions_total default ke 0
+
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-            return redirect()->route('transaction-transfer.create')->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('transaction-transfer.create')->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle the integrity constraint violation error
@@ -696,10 +746,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
                 'description' => 'required',
+                // 'account_no' => 'required',
+                // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
             ]);
 
@@ -715,7 +766,7 @@ class AccountingController extends Controller
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-            return redirect()->route('transaction-send.create')->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('transaction-send.create')->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle the integrity constraint violation error
@@ -951,10 +1002,11 @@ class AccountingController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'amount' => 'required|numeric',
                 'description' => 'required',
+                // 'account_no' => 'required',
+                // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
             ]);
 
@@ -970,7 +1022,7 @@ class AccountingController extends Controller
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-            return redirect()->route('transaction-receive.create')->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('transaction-receive.create')->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle the integrity constraint violation error

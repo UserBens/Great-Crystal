@@ -372,6 +372,13 @@
                                     <p>Beginning Balance</p>
                                 </a>
                             </li>                          
+                            <li class="nav-item">
+                                <a href="{{ route('balance-post.index') }}"
+                                    class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Post Balance' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Posting Balance</p>
+                                </a>
+                            </li>                          
 
                         </ul>
                     </li>

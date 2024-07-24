@@ -314,8 +314,8 @@
                                                                 style="font-size: 14px; color: #F16522; line-height: 120%; text-align: center; word-wrap: break-word;">
                                                                 <p style="font-size: 14px; line-height: 120%;"><span
                                                                         style="font-size: 28px; line-height: 33.6px;"><strong><span
-                                                                                style="line-height: 33.6px; font-size: 28px;">Payment
-                                                                                received</span></strong>
+                                                                                style="line-height: 33.6px; font-size: 28px;">Pembayaran
+                                                                                Diterima</span></strong>
                                                                     </span>
                                                                 </p>
                                                             </div>
@@ -373,12 +373,12 @@
                                                                 </p>
                                                                 <p
                                                                     style="font-size: 1.2em; line-height: 160%;color:#333333;">
-                                                                    Your transaction was successful,</p>
+                                                                    Transaksi Anda berhasil,</p>
                                                                 {{-- <p style="font-size: 14px; line-height: 160%;">&nbsp;</p> --}}
                                                                 <p
                                                                     style="font-size: 1.2em; line-height: 160%;color:#333333;">
-                                                                    We advise to keep this email for future reference!
-                                                                </p>
+                                                                    Kami menyarankan Anda untuk menyimpan email ini
+                                                                    untuk referensi di masa mendatang! </p>
                                                             </div>
 
                                                         </td>
@@ -442,7 +442,7 @@
                                                                                         <th colspan="2"
                                                                                             align="left"
                                                                                             style="padding-bottom: 10px; color: #7e7e7e; font-size: 12px; line-height: 16px; font-weight: 700; text-transform: uppercase;">
-                                                                                            Date :
+                                                                                            Tanggal :
                                                                                             {{ date('d/m/Y', strtotime($mailData['bill'][0]->paid_date)) }}
                                                                                         </th>
                                                                                         <th align="right"
@@ -498,7 +498,16 @@
                                                                                                     {{-- {{$item->subject}} --}}
 
                                                                                                     @if ($item->type === 'SPP')
-                                                                                                        Monthly Fee
+                                                                                                        @php
+                                                                                                            $monthYear = date(
+                                                                                                                'F Y',
+                                                                                                                strtotime(
+                                                                                                                    $item->created_at,
+                                                                                                                ),
+                                                                                                            );
+                                                                                                        @endphp
+                                                                                                        Monthly Fee –
+                                                                                                        {{ $monthYear }}
                                                                                                     @else
                                                                                                         @if ($item->type != 'Book' && $item->installment)
                                                                                                             {{ $item->type . ' ' . $item->subject }}
@@ -613,7 +622,7 @@
                                                                         <span
                                                                             style="font-size: 18px; line-height: 28.8px;">
                                                                             Great Crystal School and Course Center
-                                                                            </span>
+                                                                        </span>
                                                                     </p>
                                                                 </div>
 
@@ -634,11 +643,11 @@
                                                             <div
                                                                 style="font-size: 14px; color: #F16522; line-height: 160%; text-align: center; word-wrap: break-word;">
                                                                 <p style="font-size: 14px; line-height: 160%;"><span
-                                                                        style="font-size: 20px; line-height: 32px;"><strong>Get
-                                                                            in touch</strong></span></p>
+                                                                        style="font-size: 20px; line-height: 32px;"><strong>Hubungi
+                                                                            Kami</strong></span></p>
                                                                 <p style="font-size: 14px; line-height: 160%;"><span
                                                                         style="font-size: 16px; line-height: 25.6px; color: #000000;">+62
-                                                                        813 32525678</span></p>
+                                                                        81332 525678</span></p>
                                                                 <p style="font-size: 14px; line-height: 160%;"><span
                                                                         style="font-size: 16px; line-height: 25.6px; color: #000000;">Admin@Great.sch.id</span>
                                                                 </p>

@@ -226,13 +226,13 @@ class NotificationBillCreated extends Controller
          $billCreated = [];
 
          $data = Student::with([
-            'relationship', 'grade.paymentGrades' => function ($query) {
+            'relationship', 'grade.payment_grade' => function ($query) {
                $query->where('type', 'Paket');
             }
          ])->where('is_active', true)->orderBy('id', 'asc')->get();
 
          foreach ($data as $student) {
-            foreach ($student->grade->paymentGrades as $paymentGrade) {
+            foreach ($student->grade->payment_grade as $paymentGrade) {
                if ($paymentGrade->type == 'Paket') {
                   $createBill = Bill::create([
                      'student_id' => $student->id,
@@ -259,15 +259,40 @@ class NotificationBillCreated extends Controller
             }
          }
 
+         // foreach ($billCreated as $idx => $mailData) {
+         //    try {
+         //       $array_email = [];
+         //       foreach ($mailData['student']->relationship as $el) {
+         //          $mailData['name'] = $mailData['student']->relationship[0]->name;
+         //          array_push($array_email, $el->email);
+         //          $pdf = app('dompdf.wrapper');
+         //          $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $mailData['bill'][0]])->setPaper('a4', 'portrait');
+         //          // Mail::to($el->email)->send(new PaketMail($mailData, "Tagihan Paket " . $mailData['student']->name . " bulan " . date('F Y') . " sudah dibuat.", $pdf));
+         //          Mail::to($el->email)->send(new PaketMail($mailData, "Tagihan Biaya Kegiatan " . $mailData['student']->name . " School Year " . date('F Y') . " sudah dibuat.", $pdf));
+         //       }
+         //       dispatch(new SendEmailJob($array_email, 'Paket', $mailData, "Pemberitahuan Tagihan Paket " . " " . date('F Y') . ".", $mailData['bill'][0]->id));
+         //    } catch (Exception $e) {
+         //       statusInvoiceMail::create([
+         //          'bill_id' => $mailData['bill'][0]->id,
+         //          'status' => false,
+         //       ]);
+         //    }
+         // }
+
          foreach ($billCreated as $idx => $mailData) {
             try {
                $array_email = [];
+               $currentYear = date('Y');
+               $nextYear = $currentYear + 1;
+               $schoolYear = $currentYear . '/' . $nextYear;
+
                foreach ($mailData['student']->relationship as $el) {
                   $mailData['name'] = $mailData['student']->relationship[0]->name;
                   array_push($array_email, $el->email);
                   $pdf = app('dompdf.wrapper');
                   $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $mailData['bill'][0]])->setPaper('a4', 'portrait');
-                  Mail::to($el->email)->send(new PaketMail($mailData, "Tagihan Paket " . $mailData['student']->name . " bulan " . date('F Y') . " sudah dibuat.", $pdf));
+                  // Mail::to($el->email)->send(new PaketMail($mailData, "Tagihan Paket " . $mailData['student']->name . " bulan " . date('F Y') . " sudah dibuat.", $pdf));
+                  Mail::to($el->email)->send(new PaketMail($mailData, "Tagihan Biaya Kegiatan " . $mailData['student']->name . " School Year " . $schoolYear . " sudah dibuat.", $pdf));
                }
                dispatch(new SendEmailJob($array_email, 'Paket', $mailData, "Pemberitahuan Tagihan Paket " . " " . date('F Y') . ".", $mailData['bill'][0]->id));
             } catch (Exception $e) {

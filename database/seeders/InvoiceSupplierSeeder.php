@@ -21,7 +21,6 @@ class InvoiceSupplierSeeder extends Seeder
                 'name' => "Supplier $i",
                 'no_telp' => '08123456789' . $i, // Example phone number
                 'email' => "supplier$i@example.com",
-                'fax' => '02123456789' . $i, // Example fax number
                 'address' => "Address of Supplier $i",
                 'city' => "City $i",
                 'province' => "Province $i",
@@ -36,6 +35,9 @@ class InvoiceSupplierSeeder extends Seeder
         }
         DB::table('supplier_data')->insert($suppliers);
 
+        // Get all supplier ids
+        $supplierIds = DB::table('supplier_data')->pluck('id')->toArray();
+
         // Seed invoice_suppliers table
         $invoices = [];
         $accountIds = DB::table('accountnumbers')->pluck('id'); // Get all account ids
@@ -43,7 +45,7 @@ class InvoiceSupplierSeeder extends Seeder
         for ($i = 1; $i <= 20; $i++) {
             $invoices[] = [
                 'no_invoice' => 'INV-' . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'supplier_name' => "Supplier $i",
+                'supplier_id' => $supplierIds[$i - 1], // Use the correct supplier id
                 'amount' => rand(100000, 1000000),
                 'pph' => rand(5000, 150000), // Adjusted to match the new column 'pph'
                 'pph_percentage' => rand(5, 15),
@@ -54,8 +56,8 @@ class InvoiceSupplierSeeder extends Seeder
                 'description' => 'Description for invoice ' . $i,
                 'payment_method' => 'Cash', // Added to match the new column 'payment_method'
                 'transfer_account_id' => $accountIds->random(), // Randomly select one transfer account ID
-                // 'deposit_account_id' => $accountIds->random(), // Randomly select one deposit account ID
-                'image_path' => 'images/invoice_' . $i . '.jpg',
+                'image_invoice' => 'images/invoice_' . $i . '.jpg',
+                'image_proof' => 'images/proof_' . $i . '.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

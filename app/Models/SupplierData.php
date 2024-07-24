@@ -13,6 +13,6 @@ class SupplierData extends Model
 
     public function invoices()
     {
-        return $this->hasMany(InvoiceSupplier::class, 'supplier_name', 'name');
+        return $this->hasMany(InvoiceSupplier::class, 'supplier_id', 'id');
     }
 }

@@ -108,7 +108,7 @@ class InvoiceSupplierController extends Controller
 
             // Validasi data request
             $request->validate([
-                'image_path' => 'required|image|mimes:jpeg,png,jpg,gif',
+                'image_proof' => 'required',
                 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
@@ -117,14 +117,14 @@ class InvoiceSupplierController extends Controller
             ]);
 
             // Handle file upload
-            if ($request->hasFile('image_path')) {
-                $image = $request->file('image_path');
+            if ($request->hasFile('image_proof')) {
+                $image = $request->file('image_proof');
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('uploads'), $imageName);
 
                 // Update invoice supplier data
                 $invoice->update([
-                    'image_path' => $imageName,
+                    'image_proof' => $imageName,
                     'payment_status' => $request->payment_status,
                     'payment_method' => $request->payment_method,
                     'description' => $request->description,
@@ -151,7 +151,8 @@ class InvoiceSupplierController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                'account_no' => 'required',
+                // 'account_no' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
                 'description' => 'required',
                 // 'amount' => ['required', 'numeric'], // Validasi numerik
@@ -167,7 +168,7 @@ class InvoiceSupplierController extends Controller
             ]);
 
             // Redirect ke halaman indeks akun dengan pesan sukses
-            return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Accountnumber created successfully!');
+            return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
             if ($ex->errorInfo[1] == 1062) {
                 // Handle kesalahan pelanggaran integritas constraint
@@ -181,9 +182,6 @@ class InvoiceSupplierController extends Controller
     }
 
 
-
-
-
     public function createInvoiceSupplier()
     {
         $supplierDatas = SupplierData::all();
@@ -192,6 +190,7 @@ class InvoiceSupplierController extends Controller
             'supplierDatas' => $supplierDatas,
         ]);
     }
+
 
     // public function storeInvoiceSupplier(Request $request)
     // {
@@ -203,31 +202,40 @@ class InvoiceSupplierController extends Controller
     //             'date' => 'required|date_format:Y-m-d',
     //             'nota' => 'required',
     //             'deadline_invoice' => 'required|date_format:Y-m-d',
-    //             // 'pph' => 'required'
     //         ]);
 
     //         $amount = $request->amount;
-    //         $pph_percentage = 0;
+    //         $pph_percentage = null;
 
-    //         if ($request->ppn_status === '2%') {
+    //         if ($request->pph === '2%') {
     //             $pph_percentage = 2;
-    //             $amount *= 0.98;
-    //         } else if ($request->ppn_status === '15%') {
+    //             $amount *= 0.98; // Mengurangi 2%
+    //         } else if ($request->pph === '15%') {
     //             $pph_percentage = 15;
-    //             $amount *= 0.85;
+    //             $amount *= 0.85; // Mengurangi 15%
+    //         }
+
+    //         // Handle file upload
+    //         $imageName = null;
+    //         if ($request->hasFile('image_invoice')) {
+    //             $image = $request->file('image_invoice');
+    //             $imageName = time() . '.' . $image->getClientOriginalExtension();
+    //             $image->move(public_path('uploads'), $imageName);
     //         }
 
     //         $invoice = new InvoiceSupplier();
     //         $invoice->no_invoice = $request->no_invoice;
-    //         $invoice->supplier_id = $request->supplier_id; // Gunakan supplier_id langsung dari request
+    //         $invoice->supplier_id = $request->supplier_id;
     //         $invoice->amount = $amount;
-    //         $invoice->pph = $request->pph;
-    //         $invoice->pph_percentage = $pph_percentage;
+    //         $invoice->pph = $request->pph ?? null;
+    //         $invoice->pph_percentage = $pph_percentage ?? null;
     //         $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
     //         $invoice->nota = $request->nota;
     //         $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
     //         $invoice->payment_status = 'Not Yet';
     //         $invoice->payment_method = 'Cash';
+    //         $invoice->description = $request->description;
+    //         $invoice->image_invoice = $imageName; // Simpan nama file gambar ke dalam database
     //         $invoice->save();
 
     //         return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
@@ -236,7 +244,6 @@ class InvoiceSupplierController extends Controller
     //         return back()->withErrors(['error' => 'Something went wrong. Please try again.']);
     //     }
     // }
-
 
     public function storeInvoiceSupplier(Request $request)
     {
@@ -248,32 +255,37 @@ class InvoiceSupplierController extends Controller
                 'date' => 'required|date_format:Y-m-d',
                 'nota' => 'required',
                 'deadline_invoice' => 'required|date_format:Y-m-d',
-                // Kolom pph dan pph_percentage tidak wajib diisi
+                'pph' => 'required|integer',
+                'pph_percentage' => 'required|numeric|min:0|max:100',
             ]);
 
             $amount = $request->amount;
-            $pph_percentage = null;
+            $pph_percentage = $request->pph_percentage;
 
-            if ($request->pph === '2%') {
-                $pph_percentage = 2;
-                $amount *= 0.98; // Mengurangi 2%
-            } else if ($request->pph === '15%') {
-                $pph_percentage = 15;
-                $amount *= 0.85; // Mengurangi 15%
+            // Mengurangi amount berdasarkan persentase PPH
+            $amount -= ($amount * ($pph_percentage / 100));
+
+            // Handle file upload
+            $imageName = null;
+            if ($request->hasFile('image_invoice')) {
+                $image = $request->file('image_invoice');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads'), $imageName);
             }
 
             $invoice = new InvoiceSupplier();
             $invoice->no_invoice = $request->no_invoice;
-            $invoice->supplier_id = $request->supplier_id; // Gunakan supplier_id langsung dari request
+            $invoice->supplier_id = $request->supplier_id;
             $invoice->amount = $amount;
-            $invoice->pph = $request->pph ?? null; // Tetapkan null jika tidak diisi
-            $invoice->pph_percentage = $pph_percentage ?? null; // Tetapkan null jika tidak diisi
+            $invoice->pph = $request->pph;
+            $invoice->pph_percentage = $pph_percentage;
             $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
             $invoice->nota = $request->nota;
             $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
             $invoice->payment_status = 'Not Yet';
             $invoice->payment_method = 'Cash';
             $invoice->description = $request->description;
+            $invoice->image_invoice = $imageName; // Simpan nama file gambar ke dalam database
             $invoice->save();
 
             return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
@@ -282,21 +294,87 @@ class InvoiceSupplierController extends Controller
             return back()->withErrors(['error' => 'Something went wrong. Please try again.']);
         }
     }
+    
 
 
 
+    public function storeSupplierAtInvoice(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'no_telp' => 'required',
+            // 'email' => 'required',
+            // 'address' => 'required',
+            // 'city' => 'required',
+            // 'province' => 'required',
+            // 'accountnumber' => 'required',
+            // 'accountnumber_holders_name' => 'required',
+            // 'bank_name' => 'required',
+        ]);
+
+        try {
+            SupplierData::create([
+                'name' => $request->name,
+                'no_telp' => $request->no_telp,
+                'email' => $request->email,
+                'address' => $request->address,
+                'city' => $request->city,
+                'province' => $request->province,
+                'post_code' => $request->post_code,
+                'accountnumber' => $request->accountnumber,
+                'accountnumber_holders_name' => $request->accountnumber_holders_name,
+                'bank_name' => $request->bank_name,
+                'description' => $request->description,
+            ]);
+
+            return redirect()->route('create-invoice-supplier.create')->with('success', 'Supplier Data Created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create Supplier Data: ' . $e->getMessage()]);
+        }
+    }
+
+
+    // public function destroyInvoiceSupplier($id)
+    // {
+    //     try {
+    //         $invoice = InvoiceSupplier::findOrFail($id);
+
+    //         // Ambil path gambar
+    //         $imagePath = public_path('uploads/' . $invoice->image_path);
+
+    //         // Hapus file gambar jika ada
+    //         if (File::exists($imagePath)) {
+    //             File::delete($imagePath);
+    //         }
+
+    //         // Hapus data invoice dari database
+    //         $invoice->delete();
+
+    //         return response()->json(['message' => 'Invoice supplier deleted successfully.']);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to delete invoice supplier.']);
+    //     }
+    // }
 
     public function destroyInvoiceSupplier($id)
     {
         try {
             $invoice = InvoiceSupplier::findOrFail($id);
 
-            // Ambil path gambar
-            $imagePath = public_path('uploads/' . $invoice->image_path);
+            // Hapus file gambar image_invoice jika ada
+            if ($invoice->image_invoice) {
+                $imagePath = public_path('uploads/' . $invoice->image_invoice);
+                if (File::exists($imagePath)) {
+                    File::delete($imagePath);
+                }
+            }
 
-            // Hapus file gambar jika ada
-            if (File::exists($imagePath)) {
-                File::delete($imagePath);
+            // Hapus file gambar image_proof jika ada
+            if ($invoice->image_proof) {
+                $proofPath = public_path('uploads/' . $invoice->image_proof);
+                if (File::exists($proofPath)) {
+                    File::delete($proofPath);
+                }
             }
 
             // Hapus data invoice dari database
@@ -307,6 +385,10 @@ class InvoiceSupplierController extends Controller
             return response()->json(['error' => 'Failed to delete invoice supplier.']);
         }
     }
+
+
+
+
 
 
 
@@ -377,32 +459,34 @@ class InvoiceSupplierController extends Controller
         $request->validate([
             'name' => 'required',
             'no_telp' => 'required',
-            'email' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'province' => 'required',
-            'accountnumber' => 'required',
-            'accountnumber_holders_name' => 'required',
-            'bank_name' => 'required',
-
+            // 'email' => 'required',
+            // 'address' => 'required',
+            // 'city' => 'required',
+            // 'province' => 'required',
+            // 'accountnumber' => 'required',
+            // 'accountnumber_holders_name' => 'required',
+            // 'bank_name' => 'required',
         ]);
 
-        SupplierData::create([
-            'name' => $request->name,
-            'no_telp' => $request->no_telp,
-            'email' => $request->email,
-            'fax' => $request->fax,
-            'address' => $request->address,
-            'city' => $request->city,
-            'province' => $request->province,
-            'post_code' => $request->post_code,
-            'accountnumber' => $request->accountnumber,
-            'accountnumber_holders_name' => $request->accountnumber_holders_name,
-            'bank_name' => $request->bank_name,
-            'description' => $request->description,
-        ]);
+        try {
+            SupplierData::create([
+                'name' => $request->name,
+                'no_telp' => $request->no_telp,
+                'email' => $request->email,
+                'address' => $request->address,
+                'city' => $request->city,
+                'province' => $request->province,
+                'post_code' => $request->post_code,
+                'accountnumber' => $request->accountnumber,
+                'accountnumber_holders_name' => $request->accountnumber_holders_name,
+                'bank_name' => $request->bank_name,
+                'description' => $request->description,
+            ]);
 
-        return redirect()->route('supplier.index')->with('success', 'Supplier Data Created successfully!');
+            return redirect()->route('supplier.index')->with('success', 'Supplier Data Created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create Supplier Data: ' . $e->getMessage()]);
+        }
     }
 
     public function destroySupplier($id)

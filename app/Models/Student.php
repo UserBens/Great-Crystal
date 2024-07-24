@@ -71,4 +71,9 @@ class Student extends Model
    {
       return $this->hasMany(Transaction_receive::class, 'student_id');
    }
+
+   public function paymentGrades()
+   {
+      return $this->hasMany(Payment_grade::class, 'grade_id', 'grade_id');
+   }
 }

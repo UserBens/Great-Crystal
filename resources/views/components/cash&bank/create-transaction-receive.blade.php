@@ -148,12 +148,18 @@
                                                     :</label>
                                                 <input type="text" class="form-control" id="account_no"
                                                     name="account_no" placeholder="Enter Account Number" required>
+                                                @if ($errors->any())
+                                                    <p style="color: red">{{ $errors->first('account_no') }}</p>
+                                                @endif
                                             </div>
                                             <div class="form-group">
                                                 <label for="name">Account Name<span style="color: red">*</span>
                                                     :</label>
                                                 <input type="text" class="form-control" id="name" name="name"
                                                     placeholder="Enter Account Name" required>
+                                                @if ($errors->any())
+                                                    <p style="color: red">{{ $errors->first('name') }}</p>
+                                                @endif
                                             </div>
                                             <div class="form-group">
                                                 <label>Category<span style="color: red">*</span> :</label>

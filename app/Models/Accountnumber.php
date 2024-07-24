@@ -16,18 +16,18 @@ class Accountnumber extends Model
         return $this->belongsTo(Accountcategory::class, 'account_category_id');
     }
 
-    public function calculateEndingBalance()
+    public function post($date)
     {
-        return $this->beginning_balance + $this->transactions_total;
+        $this->posted = true;
+        $this->posted_date = $date; // Menyimpan tanggal lengkap
+        $this->save();
     }
 
-    public function getBalanceType()
-    {
-        return $this->ending_balance >= 0 ? 'debit' : 'kredit';
-    }
 
-    public function beginningBalances()
+    public function unpost()
     {
-        return $this->hasMany(BalanceAccount::class, 'accountnumber_id');
+        $this->posted = false;
+        $this->posted_date = null;
+        $this->save();
     }
 }

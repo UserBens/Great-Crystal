@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('accountnumbers', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('account_no')->unique();        
+            $table->string('account_no')->unique();
             $table->unsignedBigInteger('account_category_id');
             $table->foreign('account_category_id')->references('id')->on('accountcategories')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->bigInteger('amount')->nullable();   
-            $table->bigInteger('debit')->nullable();           
-            $table->bigInteger('credit')->nullable();           
-            $table->date('month')->nullable();
-            $table->boolean('posted')->default(false); // Menambahkan kolom posted        
+            $table->bigInteger('amount')->nullable();
+            $table->bigInteger('debit')->nullable();
+            $table->bigInteger('credit')->nullable();
+            $table->date('date')->nullable(); // Changed to date type
+            $table->date('posted_date')->nullable(); // Menambahkan kolom posted_date
+            $table->boolean('posted')->default(false); // Menambahkan kolom posted
             $table->string('description')->nullable();
             $table->timestamps();
         });

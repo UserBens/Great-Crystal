@@ -1,7 +1,7 @@
 @extends('layouts.admin.master')
 @section('content')
     <div class="container-fluid">
-        <h2 class="text-center display-4 mb-4">Balance Account Search</h2>
+        <h2 class="text-center display-4 mb-4">Posting Balance Account Search</h2>
         <div class="m-1">
             <form action="{{ route('balance.index') }}" method="GET" class="mb-3">
                 <div class="row">
@@ -72,71 +72,87 @@
                     </div>
                 </div>
 
-                <form action="{{ route('account.balance.save') }}" method="POST">
-                    @csrf
-                    <div class="card-body p-0">
-                        <table class="table table-striped projects">
-                            <thead>
+                <div class="card-body p-0">
+                    <table class="table table-striped projects">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Account</th>
+                                <th>Category</th>
+                                <th>Blance</th>
+                                <th>Post/Unpost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data as $account)
                                 <tr>
-                                    <th>#</th>
-                                    <th>Account</th>
-                                    <th>Category</th>
-                                    <th>Debit</th>
-                                    <th>Credit</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($data as $account)
-                                    <tr>
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $account->account_no }} - {{ $account->name }}</td>
-                                        <td>{{ $categories->where('id', $account->account_category_id)->first()->category_name }}
-                                        </td>
-                                        <td>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input name="balances[{{ $account->id }}][debit]" type="text"
-                                                    class="form-control currency" placeholder="Enter debit"
-                                                    autocomplete="off"
-                                                    value="{{ number_format($account->debit, 0, '.', '.') }}">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input name="balances[{{ $account->id }}][credit]" type="text"
-                                                    class="form-control currency" placeholder="Enter credit"
-                                                    autocomplete="off"
-                                                    value="{{ number_format($account->credit, 0, '.', '.') }}">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer">
-                        <div class="float-right">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Save Balance
-                            </button>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-4 px-3">
-                        <div class="mb-3">
-                            Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }}
-                            results
-                        </div>
-                        <div>
-                            {{ $data->links('pagination::bootstrap-4') }}
-                        </div>
-                    </div>
+                                    <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $account->account_no }} - {{ $account->name }}</td>
+                                    <td>{{ $categories->where('id', $account->account_category_id)->first()->category_name }}
+                                    </td>
+                                    <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
 
-                </form>
+                                    <td>
+                                        <div class="d-flex flex-column gap-2">
+                                            <!-- Post Form -->
+                                            <form action="{{ route('balance.post', $account->id) }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="id" value="{{ $account->id }}">
+
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="me-2 flex-grow-1">
+                                                        <label for="posted_date" class="form-label">Post Date:</label>
+                                                        <div class="input-group">
+                                                            <input type="month" id="posted_date" name="posted_date"
+                                                                value="{{ isset($account->posted_date) ? \Carbon\Carbon::parse($account->posted_date)->format('Y-m') : '' }}"
+                                                                required class="form-control">
+                                                            <button class="btn btn-sm btn-primary" type="submit"
+                                                                style="margin-left: 12px;">Post</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                            <!-- Unpost Form -->
+                                            <form action="{{ route('balance.unpost') }}" method="POST">
+                                                @csrf
+
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-2 flex-grow-1">
+                                                        <label for="date" class="form-label">Unpost Date:</label>
+                                                        <div class="input-group">
+                                                            <input type="month" id="date" name="date"
+                                                                value="{{ isset($account->posted_date) ? \Carbon\Carbon::parse($account->posted_date)->format('Y-m') : '' }}"
+                                                                required class="form-control">
+                                                            <button class="btn btn-sm btn-danger" type="submit"
+                                                                style="margin-left: 12px;">Unpost</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+
+
+
+
+
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 px-3">
+                    <div class="mb-3">
+                        Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }}
+                        results
+                    </div>
+                    <div>
+                        {{ $data->links('pagination::bootstrap-4') }}
+                    </div>
+                </div>
+
             </div>
         @endif
     </div>

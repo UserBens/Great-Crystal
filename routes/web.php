@@ -278,15 +278,21 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
       Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
       Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
-      Route::post('/account/balance/save', [BalanceController::class, 'saveBalances'])->name('account.balance.save');
+      // Route::post('/account/balance/save', [BalanceController::class, 'saveBalances'])->name('account.balance.save');
 
-      Route::get('/account/balance', [BalanceController::class, 'indexBalance'])->name('balance.index');
+      // web.php
+
+      Route::get('balance', [BalanceController::class, 'indexBalance'])->name('balance.index');
+      Route::post('balance/save', [BalanceController::class, 'saveBalances'])->name('account.balance.save');
+      Route::post('/balance/post/{id}', [BalanceController::class, 'postBalances'])->name('balance.post');
+      Route::post('/balance/unpost', [BalanceController::class, 'unpostBalances'])->name('balance.unpost');
+   
+      Route::get('post/balance', [BalanceController::class, 'indexPostBalance'])->name('balance-post.index');
+
       Route::get('/account/balance-create', [BalanceController::class, 'createBalance'])->name('balance.create');
       Route::post('/account/balance-create', [BalanceController::class, 'storeBalance'])->name('balance.store');
       Route::delete('/account/balance/{id}', [BalanceController::class, 'deleteBalance'])->name('balance.destroy');
-      
-      // Route::post('/balance/post/{id}', [BalanceController::class, 'postBalance'])->name('balance.post');
-      // Route::post('balance/unpost/{id}', [BalanceController::class, 'unpostBalance'])->name('balance.unpost');
+
    });
 
    Route::prefix('/supplier')->group(function () {
@@ -306,7 +312,6 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
          ->name('invoice-supplier.destroy');
       Route::post('/create-account/store', [InvoiceSupplierController::class, 'storeAccount'])->name('invoice-supplier.account.store');
       Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplierAtInvoice'])->name('invoice-create-supplier.store');
-
    });
 });
 

@@ -9,9 +9,9 @@ date_default_timezone_set('Asia/Jakarta');
 
 class Bill extends Model
 {
-    use HasFactory;
+   use HasFactory;
 
-    protected $fillable = [
+   protected $fillable = [
       'id',
       'student_id',
       'type',
@@ -25,29 +25,28 @@ class Bill extends Model
       'installment',
       'amount_installment',
       'created_by',
-      'created_at',	
+      'created_at',
       'updated_at',
-      'number_invoice',	
-    ]; 
+      'number_invoice',
+   ];
 
 
-    protected static function boot()
-    {
-        parent::boot();
+   protected static function boot()
+   {
+      parent::boot();
 
-        static::creating(function ($model) {
-            // Perform actions before creating
-            date_default_timezone_set('Asia/Jakarta');
-            $year = date('Y');
-            $month = date('m');
-            $number = Bill::where('number_invoice', "LIKE", '%'.$year.'%')->count();
+      static::creating(function ($model) {
+         // Perform actions before creating
+         date_default_timezone_set('Asia/Jakarta');
+         $year = date('Y');
+         $month = date('m');
+         $number = Bill::where('number_invoice', "LIKE", '%' . $year . '%')->count();
 
-            $model->number_invoice = $year."/".$month."/".str_pad($number+1, 4, '0', STR_PAD_LEFT);
+         $model->number_invoice = $year . "/" . $month . "/" . str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+      });
+   }
 
-        });
-    }
 
-    
    public function student()
    {
       return $this->belongsTo(Student::class, 'student_id');
@@ -67,5 +66,10 @@ class Bill extends Model
    public function bill_status()
    {
       return $this->hasMany(statusInvoiceMail::class, 'bill_id');
+   }
+
+   public function accountnumber()
+   {
+      return $this->belongsTo(AccountNumber::class, 'accountnumber_id');
    }
 }

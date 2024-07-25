@@ -22,6 +22,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use PDO;
@@ -346,7 +347,6 @@ class BillController extends Controller
          //code...
          $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
 
-
          $data = Bill::with([
             'student' => function ($query) {
 
@@ -354,7 +354,7 @@ class BillController extends Controller
             }, 'bill_collection', 'bill_installments'
          ])->where('id', $id)->first();
 
-         $selectedAccountId = $data->deposit_account_id; // Sesuaikan dengan nama kolom yang benar di model Bill
+         $selectedAccountId = $data->accountnumber_id; // Sesuaikan dengan nama kolom yang benar di model Bill
 
 
          return view('components.bill.spp.detail-spp', [
@@ -369,6 +369,39 @@ class BillController extends Controller
       }
    }
 
+   public function chooseaccountnumber(Request $request)
+   {
+      try {
+         // Validasi input
+         $request->validate([
+            'id' => 'required|integer',
+            'accountnumber_id' => 'required|integer'
+         ]);
+
+         // Temukan bill berdasarkan ID
+         $bill = Bill::find($request->id);
+         if ($bill) {
+            // Update accountnumber_id dan simpan
+            $bill->accountnumber_id = $request->accountnumber_id;
+            $bill->save();
+
+            // Log info
+            Log::info('Bill Updated', ['id' => $bill->id, 'accountnumber_id' => $bill->accountnumber_id]);
+
+            // Redirect ke halaman yang sesuai dengan pesan sukses
+            return redirect()->back()->with('success', 'Choose Account number successfully!');
+         }
+
+         // Jika tidak ditemukan, tampilkan pesan error
+         return redirect()->back()->withErrors(['error' => 'Bill not found.']);
+      } catch (\Exception $e) {
+         // Log error
+         Log::error('Error updating account number: ' . $e->getMessage());
+
+         // Redirect dengan pesan error
+         return redirect()->back()->withErrors(['error' => 'Failed to update account number. Please try again.']);
+      }
+   }
 
    public function paidOf($id)
    {

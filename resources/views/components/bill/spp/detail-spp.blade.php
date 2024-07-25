@@ -1,7 +1,5 @@
 @extends('layouts.admin.master')
 @section('content')
-
-
     <section style="background-color: #eee;">
         <div class="container py-5">
             <div class="row">
@@ -36,11 +34,7 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <p class="text-muted mb-0">
-                                        {{-- @if ($data->is_active)
-                           <h1 class="badge badge-success">Active</h1>
-                        @else
-                           <h1 class="badge badge-danger">Inactive</h1>
-                        @endif --}}
+
                                         {{ $data->student->name }}
                                     </p>
                                 </div>
@@ -137,30 +131,35 @@
                                     </p>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <p class="mb-0">Payment Method </p>
+                            <hr>                        
+
+                            <form method="POST" action="{{ route('choose-accountnumber') }}"
+                                id="choose-accountnumber-form">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $data->id }}">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <p class="mb-0">Payment Method</p>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <select name="accountnumber_id" class="form-control select2">
+                                            @foreach ($accountNumbers as $accountNumber)
+                                                <option value="{{ $accountNumber->id }}"
+                                                    @if ($accountNumber->id == $selectedAccountId) selected @endif>
+                                                    {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->any())
+                                            <p style="color: red">{{ $errors->first('accountnumber_id') }}</p>
+                                        @endif
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary">Choose</button>
                                 </div>
-                                <div class="col-sm-6">
-                                    <select name="deposit_account_id" class="form-control select2">
-                                        {{-- <option value="" selected disabled>Select an Account Number</option> --}}
-                                        @foreach ($accountNumbers as $accountNumber)
-                                            <option value="{{ $accountNumber->id }}"
-                                                @if ($accountNumber->id == $selectedAccountId) selected @endif>
-                                                {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @if ($errors->any())
-                                        <p style="color: red">{{ $errors->first('deposit_account_id') }}</p>
-                                    @endif
-                                </div>
-                            </div>
+                            </form>
 
 
                             <hr>
-
                             @if ($data->installment)
                                 <div class="row">
                                     <div class="col-sm-4">
@@ -184,11 +183,7 @@
                                     Installments
                                 </h3>
                                 <div class="card-tools">
-                                    {{-- <ul class="nav nav-pills ml-auto">
-                   <li class="nav-item">
-                     <a class="nav-link active" href="#revenue-chart" data-toggle="tab">New</a>
-                   </li>
-                 </ul> --}}
+
                                 </div>
                             </div><!-- /.card-header -->
                             <div class="card-body">
@@ -259,9 +254,6 @@
                                                 </ul>
                                             </div>
                                         </div>
-
-
-
                                     </div>
                                 </div>
                             </div><!-- /.card-body -->
@@ -281,9 +273,6 @@
                                 <th></th>
                             </thead>
                             <tbody>
-
-
-
                                 @if (sizeof($data->bill_collection) > 0)
                                     @foreach ($data->bill_collection as $el)
                                         <tr>
@@ -372,8 +361,6 @@
 
                         @if ($data->bill_collection && $data->installment && $data->type === 'Book')
                             <hr>
-
-
                             <table>
                                 <thead>
                                     <th></th>
@@ -479,17 +466,52 @@
     @endif
 
     <script>
-        $(document).ready(function() {
-            $('.select1').select1({
-                minimumResultsForSearch: 1
-            }).on('select1:select', function(e) {
-                // Get the selected data
-                var data = e.params.data;
-                console.log("Selected value: ", data.id);
-                // Set the selected value
-                $(this).val(data.id).trigger('change');
+        $('#choose-accountnumber').on('click', function() {
+            var id = $(this).data('id');
+            var accountnumber_id = $('select[name="accountnumber_id"]').val();
+
+            $.ajax({
+                url: '/admin/bills/choose-accountnumber',
+                method: 'POST',
+                data: {
+                    id: id,
+                    accountnumber_id: accountnumber_id,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Status updated successfully.');
+                        location.reload(); // Optional: reload to reflect changes
+                    } else {
+                        alert('Failed to update status.');
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+        });
+    </script>
+
 
 @endsection

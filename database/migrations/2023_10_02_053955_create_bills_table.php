@@ -29,6 +29,8 @@ return new class extends Migration
             $table->integer('installment')->nullable()->default(null);
             $table->integer('amount_installment')->default(0);
             $table->dateTime('date_change_bill')->default(null)->nullable();
+            $table->unsignedBigInteger('accountnumber_id')->nullable();
+            $table->foreign('accountnumber_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

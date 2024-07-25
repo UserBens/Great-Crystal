@@ -543,18 +543,6 @@
         </script>
     @endif
 
-    {{-- <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: '{{ session('success') }}',
-                timer: 3000
-            });
-        </script>
-    @endif --}}
-
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>

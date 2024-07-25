@@ -105,6 +105,9 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/update-paid/{bill_id}/{student_id}', [BillController::class, 'paidOfBook'])->name('action.book.payment');
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
 
+      // web.php
+      Route::post('/admin/bills/choose-accountnumber', [BillController::class, 'chooseaccountnumber'])->name('choose-accountnumber');
+
       // Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
       Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
    });
@@ -286,13 +289,12 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('balance/save', [BalanceController::class, 'saveBalances'])->name('account.balance.save');
       Route::post('/balance/post/{id}', [BalanceController::class, 'postBalances'])->name('balance.post');
       Route::post('/balance/unpost', [BalanceController::class, 'unpostBalances'])->name('balance.unpost');
-   
+
       Route::get('post/balance', [BalanceController::class, 'indexPostBalance'])->name('balance-post.index');
 
       Route::get('/account/balance-create', [BalanceController::class, 'createBalance'])->name('balance.create');
       Route::post('/account/balance-create', [BalanceController::class, 'storeBalance'])->name('balance.store');
       Route::delete('/account/balance/{id}', [BalanceController::class, 'deleteBalance'])->name('balance.destroy');
-
    });
 
    Route::prefix('/supplier')->group(function () {

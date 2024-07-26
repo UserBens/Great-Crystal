@@ -16,9 +16,9 @@ class InvoiceSupplier extends Model
         return $this->belongsTo(SupplierData::class, 'supplier_id');
     }
 
-    public function transferAccount()
+    public function accountnumber()
     {
-        return $this->belongsTo(AccountNumber::class, 'transfer_account_id');
+        return $this->belongsTo(AccountNumber::class, 'accountnumber_id');
     }
 
 }

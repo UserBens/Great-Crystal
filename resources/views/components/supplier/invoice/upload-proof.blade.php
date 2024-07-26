@@ -18,8 +18,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="no_invoice"># No. Invoice <span style="color: red">*</span>
-                                                    :</label>
+                                                <label for="no_invoice"># No. Invoice :</label>
                                                 <input name="no_invoice" type="text" class="form-control" id="no_invoice"
                                                     value="{{ $invoice->no_invoice }}" readonly>
                                             </div>
@@ -27,8 +26,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="supplier_name">Supplier Name <span style="color: red">*</span>
-                                                    :</label>
+                                                <label for="supplier_name">Supplier Name :</label>
                                                 <input name="supplier_name" type="text" class="form-control"
                                                     id="supplier_name" value="{{ $invoice->supplier->name }}" readonly>
                                                 {{-- @if ($errors->has('supplier_name'))
@@ -39,7 +37,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="nota">Nota <span style="color: red">*</span> :</label>
+                                                <label for="nota">Nota :</label>
                                                 <input name="nota" type="text" class="form-control" id="nota"
                                                     value="{{ $invoice->nota }}" readonly>
                                             </div>
@@ -47,8 +45,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="description">Description <span style="color: red">*</span>
-                                                    :</label>
+                                                <label for="description">Description :</label>
                                                 <textarea name="description" class="form-control" id="description" readonly>{{ $invoice->description }}</textarea>
                                                 {{-- @if ($errors->has('description'))
                                                     <span class="text-danger">{{ $errors->first('description') }}</span>
@@ -99,9 +96,9 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="transfer_account_id">Pay From <span
+                                                <label for="accountnumber_id">Pay From <span
                                                         style="color: red">*</span>:</label>
-                                                <select name="transfer_account_id" id="transfer_account_id"
+                                                <select name="accountnumber_id" id="accountnumber_id"
                                                     class="form-control select2">
                                                     @foreach ($accountNumbers as $accountNumber)
                                                         <option value="{{ $accountNumber->id }}">
@@ -116,53 +113,10 @@
                                                     </button>
                                                 </div>
                                                 @if ($errors->any())
-                                                    <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
+                                                    <p style="color: red">{{ $errors->first('accountnumber_id') }}</p>
                                                 @endif
                                             </div>
-                                        </div>
-
-                                        {{-- <div class="col-md-12 mt-3">                                            
-                                            <label for="upload_image">Upload Image<span style="color: red">*</span>
-                                                :</label>
-                                            <div class="image-upload-wrap" id="image-upload-wrap{{ $invoice->id }}">                                               
-                                                <input type="file" name="image_proof" class="file-upload-input"
-                                                    onchange="readURL(this, '{{ $invoice->id }}');" accept="image/*">
-
-                                                <div class="drag-text">
-                                                    <h3>Drag and drop a file or select add
-                                                        Image</h3>
-                                                </div>
-                                            </div>
-                                            <div class="file-upload-content" id="file-upload-content{{ $invoice->id }}"
-                                                style="display:none;">
-                                                <div class="image-file-name" id="image-file-name{{ $invoice->id }}"
-                                                    style="text-align: center; margin-top: 10px;">
-                                                </div>
-                                                <img class="file-upload-image" id="file-upload-image{{ $invoice->id }}"
-                                                    src="#" alt="your image"
-                                                    style="max-width: 100%; max-height: 100%;" />
-                                                <div class="image-title-wrap"
-                                                    style="display: flex; justify-content: space-between; align-items: center;">
-                                                    <button type="button"
-                                                        onclick="removeUpload(this, '{{ $invoice->id }}')"
-                                                        class="remove-image" style="margin-right: 10px">
-                                                        <i class="fa-solid fa-trash fa-2xl"
-                                                            style="margin-bottom: 1em;"></i>
-                                                        <br> Remove
-                                                        <span class="image-title">Image</span>
-                                                    </button>
-                                                    <button type="submit" role="button" class="upload-image">
-                                                        <i class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
-                                                            style="margin-bottom: 1em;"></i>
-                                                        <br> Upload Proof
-                                                        <span class="image-title">Image</span>
-                                                    </button>
-                                                </div>
-
-                                            </div>
-
-                                           
-                                        </div> --}}
+                                        </div>                                
 
                                         <div class="col-md-12 mb-3">
                                             <label for="upload_image">Upload Image :</label>
@@ -191,25 +145,16 @@
                                                             style="margin-bottom: 1em;"></i>
                                                         <br> Remove
                                                         <span class="image-title">Image</span>
-                                                    </button>
-                                                    {{-- <button type="submit" role="button" class="upload-image">
-                                                        <i class="fa-solid fa-cloud-arrow-up fa-2xl fa-bounce"
-                                                            style="margin-bottom: 1em;"></i>
-                                                        <br> Upload Proof
-                                                        <span class="image-title">Image</span>
-                                                    </button> --}}
+                                                    </button>                                                   
                                                 </div>
-
                                             </div>
                                         </div>
-
-
                                     </div>
                                     <div class="row d-flex justify-content-center">
                                         <input id="submitButton" type="submit"
                                             class="btn btn-success center col-12 mt-3">
                                     </div>
-                                </form>
+                                </form>                    
 
                                 <div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog"
                                     aria-labelledby="addAccountModalLabel" aria-hidden="true">
@@ -226,27 +171,26 @@
                                                 <form
                                                     action="{{ route('invoice-supplier.account.store', ['invoice_id' => $invoice->id]) }}"
                                                     id="addAccountForm" method="POST">
-
                                                     @csrf
                                                     <div class="form-group">
                                                         <label for="account_no">Account Number<span
                                                                 style="color: red">*</span> :</label>
                                                         <input type="text" class="form-control" id="account_no"
-                                                            name="account_no" placeholder="Enter Account Number" required>
-                                                        @if ($errors->any())
-                                                            <p style="color: red">{{ $errors->first('account_no') }}
-                                                            </p>
-                                                        @endif
+                                                            name="account_no" placeholder="Enter Account Number"
+                                                            value="{{ old('account_no') }}" required>
+                                                        @error('account_no')
+                                                            <p style="color: red;">{{ $message }}</p>
+                                                        @enderror
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="name">Account Name<span
                                                                 style="color: red">*</span> :</label>
                                                         <input type="text" class="form-control" id="name"
-                                                            name="name" placeholder="Enter Account Name" required>
-                                                        @if ($errors->any())
-                                                            <p style="color: red">{{ $errors->first('name') }}
-                                                            </p>
-                                                        @endif
+                                                            name="name" placeholder="Enter Account Name"
+                                                            value="{{ old('name') }}" required>
+                                                        @error('name')
+                                                            <p style="color: red;">{{ $message }}</p>
+                                                        @enderror
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Category<span style="color: red">*</span> :</label>
@@ -255,8 +199,10 @@
                                                                 class="form-control select2" id="account_category_id"
                                                                 style="width: 100%">
                                                                 @foreach ($accountCategory as $category)
-                                                                    <option value="{{ $category->id }}">
-                                                                        {{ $category->category_name }}</option>
+                                                                    <option value="{{ $category->id }}"
+                                                                        {{ old('account_category_id') == $category->id ? 'selected' : '' }}>
+                                                                        {{ $category->category_name }}
+                                                                    </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -267,19 +213,19 @@
 
                                                     <div class="form-group">
                                                         <label for="description">Description :</label>
-                                                        <textarea class="form-control" id="description" name="description" placeholder="Enter Description"></textarea>
+                                                        <textarea class="form-control" id="description" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>                                                     
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-dismiss="modal">Close</button>
                                                         <button type="submit" class="btn btn-primary">Save</button>
                                                     </div>
-
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -295,8 +241,10 @@
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
+
+    <!-- Tambahkan di bagian bawah view atau di dalam modal -->
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             @if (session('success'))
                 Swal.fire({
                     icon: 'success',
@@ -305,17 +253,23 @@
                 });
             @endif
 
-            @if (session('error'))
+            @if ($errors->any())
+                let errorMessages = "";
+                @foreach ($errors->all() as $error)
+                    errorMessages += "{{ $error }}<br>";
+                @endforeach
+
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: '{{ session('error') }}'
+                    title: 'Error!',
+                    html: errorMessages,
+                    timer: 5000,
+                    showConfirmButton: false
                 });
             @endif
-
-
         });
     </script>
+
 
     <script>
         // Fungsi untuk menghapus pemisah ribuan sebelum formulir disubmit

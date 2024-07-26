@@ -26,9 +26,9 @@
                                                     placeholder="Enter No Invoice" autocomplete="off"
                                                     value="{{ old('no_invoice') }}">
                                             </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('no_invoice') }}</p>
-                                            @endif
+                                            @error('no_invoice')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
                                         </div>
                                         <div class="col-md-6">
                                             <label for="supplier_id">Supplier Name<span style="color: red">*</span>
@@ -39,9 +39,9 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('supplier_id') }}</p>
-                                            @endif
+                                            @error('supplier_id')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
                                             <div class="input-group-append">
                                                 <button type="button" class="btn text-primary" data-toggle="modal"
                                                     data-target="#importModal">
@@ -63,24 +63,13 @@
                                                     placeholder="Enter amount" autocomplete="off"
                                                     value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}">
                                             </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('amount') }}</p>
-                                            @endif
+                                            @error('amount')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <label for="date">Date<span style="color: red">*</span> :</label>
-                                            <input type="date" name="date" class="form-control"
-                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
 
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('date') }}</p>
-                                            @endif
-                                        </div>
 
-                                    </div>
-
-                                    <div class="form-group row">
                                         <div class="col-md-6">
                                             <label for="nota">Nota<span style="color: red">*</span> :</label>
                                             <div class="input-group">
@@ -88,48 +77,59 @@
                                                 <input name="nota" type="text" class="form-control" id="nota"
                                                     placeholder="Enter Nota" autocomplete="off" value="{{ old('nota') }}">
                                             </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('nota') }}</p>
-                                            @endif
-                                        </div>
 
-                                        <div class="col-md-6">
-                                            <label for="deadline_invoice">Deadline Invoice<span style="color: red">*</span>
-                                                :</label>
-                                            <input type="date" name="deadline_invoice" class="form-control"
-                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
-
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('deadline_invoice') }}</p>
-                                            @endif
+                                            @error('nota')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
                                         </div>
 
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="pph">PPH<span style="color: red">*</span> :</label>
+                                            <label for="date">Date<span style="color: red">*</span> :</label>
+                                            <input type="date" name="date" class="form-control"
+                                                value="{{ old('date') }}"
+                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+
+                                            @error('date')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="deadline_invoice">Deadline Invoice<span style="color: red">*</span>
+                                                :</label>
+                                            <input type="date" name="deadline_invoice" class="form-control"
+                                                value="{{ old('deadline_invoice') }}"
+                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+
+                                            @error('deadline_invoice')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="pph">PPH :</label>
                                             <div class="input-group">
 
                                                 <input name="pph" type="text" class="form-control" id="pph"
                                                     placeholder="Enter PPH" autocomplete="off" value="{{ old('pph') }}">
                                             </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('pph') }}</p>
-                                            @endif
+
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="pph_percentage">Percentage<span style="color: red">*</span>
-                                                :</label>
+                                            <label for="pph_percentage">PPH Percentage :</label>
                                             <div class="input-group">
                                                 <input name="pph_percentage" type="text" class="form-control"
                                                     id="pph_percentage" placeholder="Enter Percentage" autocomplete="off"
                                                     value="{{ old('pph_percentage') }}">
                                             </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('pph_percentage') }}</p>
-                                            @endif
+
                                         </div>
 
                                     </div>
@@ -139,9 +139,7 @@
                                             <label for="description">Description :</label>
                                             <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
                                                 rows="5" placeholder="Enter description">{{ old('description') }}</textarea>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('description') }}</p>
-                                            @endif
+
                                         </div>
                                     </div>
 
@@ -172,7 +170,7 @@
                                                     <br> Remove
                                                     <span class="image-title">Image</span>
                                                 </button>
-                                                
+
                                             </div>
 
                                         </div>
@@ -362,8 +360,9 @@
             </div>
         </div>
     </section>
+
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             @if (session('success'))
                 Swal.fire({
                     icon: 'success',
@@ -372,15 +371,23 @@
                 });
             @endif
 
-            @if (session('error'))
+            @if ($errors->any())
+                let errorMessages = "";
+                @foreach ($errors->all() as $error)
+                    errorMessages += "{{ $error }}<br>";
+                @endforeach
+
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: '{{ session('error') }}'
+                    title: 'Error!',
+                    html: errorMessages,
+                    timer: 5000,
+                    showConfirmButton: false
                 });
             @endif
         });
     </script>
+
 
     <script>
         function readURL(input, id) {

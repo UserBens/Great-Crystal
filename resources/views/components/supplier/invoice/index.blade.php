@@ -18,7 +18,7 @@
                 <div class="col-md-3">
                     <label for="sort">Sort By</label>
                     <select name="sort" class="form-control" id="sort-select">
-                        <option value="">-- All Data --</option>
+                        <option value="">Default</option>
                         <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)</option>
                         <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
                     </select>
@@ -225,22 +225,22 @@
                                                                 </div>
 
                                                                 <div class="col-md-6 mt-3">
-                                                                    <label for="transfer_account_id">Pay
+                                                                    <label for="accountnumber_id">Pay
                                                                         From :</label>
-                                                                    <select name="transfer_account_id"
-                                                                        id="transfer_account_id" class="form-control "
+                                                                    <select name="accountnumber_id"
+                                                                        id="accountnumber_id" class="form-control "
                                                                         disabled>
-                                                                        @if ($item->transferAccount)
+                                                                        @if ($item->accountnumber)
                                                                             <option
-                                                                                value="{{ $item->transferAccount->id }}">
-                                                                                {{ $item->transferAccount->account_no }}
-                                                                                - {{ $item->transferAccount->name }}
+                                                                                value="{{ $item->accountnumber->id }}">
+                                                                                {{ $item->accountnumber->account_no }}
+                                                                                - {{ $item->accountnumber->name }}
                                                                             </option>
                                                                         @endif
                                                                     </select>
                                                                     @if ($errors->any())
                                                                         <p style="color: red">
-                                                                            {{ $errors->first('transfer_account_id') }}
+                                                                            {{ $errors->first('accountnumber_id') }}
                                                                         </p>
                                                                     @endif
                                                                 </div>
@@ -311,7 +311,6 @@
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
-
 
     <script>
         function readURL(input, id) {

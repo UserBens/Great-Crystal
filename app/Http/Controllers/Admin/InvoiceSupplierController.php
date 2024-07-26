@@ -18,6 +18,77 @@ use Illuminate\Support\Facades\File;
 
 class InvoiceSupplierController extends Controller
 {
+    // public function indexInvoiceSupplier(Request $request)
+    // {
+    //     session()->flash('preloader', true);
+    //     session()->flash('page', (object)[
+    //         'page' => 'Supplier',
+    //         'child' => 'database Invoice Supplier',
+    //     ]);
+
+    //     try {
+    //         // Inisialisasi objek form dengan nilai default
+    //         $form = (object) [
+    //             'search' => $request->search ?? null,
+    //             'sort' => $request->sort ?? null,
+    //             'status' => $request->status ?? null,
+    //             'date' => $request->date ?? null,
+    //             'type' => $request->type ?? null,
+    //             'order' => $request->order ?? null,
+    //         ];
+
+    //         // Query data berdasarkan parameter pencarian yang diberikan
+    //         $query = InvoiceSupplier::with(['accountnumber', 'supplier']);
+
+    //         if ($request->filled('search')) {
+    //             $searchTerm = '%' . $request->search . '%';
+    //             $query->where('no_invoice', 'LIKE', $searchTerm)
+    //                 ->orWhere('no_invoice', 'LIKE', $searchTerm)
+    //                 ->orWhere('nota', 'LIKE', $searchTerm)
+    //                 ->orWhere('amount', 'LIKE', $searchTerm)
+    //                 ->orWhere('date', 'LIKE', $searchTerm);
+    //         }
+
+    //         // Filter data berdasarkan tanggal
+    //         if ($request->filled('date')) {
+    //             $searchDate = date('Y-m-d', strtotime($request->date));
+    //             $query->whereDate('date', $searchDate);
+    //         }
+
+    //         // Mengatur urutan berdasarkan parameter yang dipilih
+    //         if ($request->filled('sort')) {
+    //             if ($request->sort === 'oldest') {
+    //                 $query->orderBy('date', 'asc');
+    //             } elseif ($request->sort === 'newest') {
+    //                 $query->orderBy('date', 'desc');
+    //             }
+    //         }
+
+    //         // Filter data berdasarkan status pembayaran
+    //         if ($request->filled('status')) {
+    //             if ($request->status === 'Paid') {
+    //                 $query->where('payment_status', 'Paid');
+    //             } elseif ($request->status === 'Not Yet') {
+    //                 $query->where('payment_status', 'Not Yet');
+    //             }
+    //         }
+
+    //         // Memuat data dengan pagination dan menambahkan parameter filter ke URL paginasi
+    //         $data = $query->paginate(10)->appends([
+    //             'search' => $request->search,
+    //             'sort' => $request->sort,
+    //             'status' => $request->status,
+    //             'date' => $request->date,
+    //         ]);
+
+    //         // Menampilkan view dengan data dan form
+    //         return view('components.supplier.invoice.index', compact('data', 'form'));
+    //     } catch (Exception $err) {
+    //         // Menampilkan pesan error jika terjadi kesalahan
+    //         return dd($err);
+    //     }
+    // }
+
     public function indexInvoiceSupplier(Request $request)
     {
         session()->flash('preloader', true);
@@ -38,15 +109,17 @@ class InvoiceSupplierController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = InvoiceSupplier::with(['transferAccount', 'supplier']);
+            $query = InvoiceSupplier::with(['accountnumber', 'supplier']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
-                $query->where('supplier_name', 'LIKE', $searchTerm)
-                    ->orWhere('no_invoice', 'LIKE', $searchTerm)
+                $query->where('no_invoice', 'LIKE', $searchTerm)
                     ->orWhere('nota', 'LIKE', $searchTerm)
                     ->orWhere('amount', 'LIKE', $searchTerm)
-                    ->orWhere('date', 'LIKE', $searchTerm);
+                    ->orWhere('date', 'LIKE', $searchTerm)
+                    ->orWhereHas('supplier', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', $searchTerm);
+                    });
             }
 
             // Filter data berdasarkan tanggal
@@ -90,6 +163,7 @@ class InvoiceSupplierController extends Controller
     }
 
 
+
     public function uploadProofOfPaymentView($id)
     {
         $invoice = InvoiceSupplier::findOrFail($id);
@@ -109,10 +183,10 @@ class InvoiceSupplierController extends Controller
             // Validasi data request
             $request->validate([
                 'image_proof' => 'required',
-                'description' => 'required|string',
+                // 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
-                'transfer_account_id' => 'required',
+                'accountnumber_id' => 'required',
                 // 'deposit_account_id' => 'required',
             ]);
 
@@ -128,7 +202,7 @@ class InvoiceSupplierController extends Controller
                     'payment_status' => $request->payment_status,
                     'payment_method' => $request->payment_method,
                     'description' => $request->description,
-                    'transfer_account_id' => $request->transfer_account_id,
+                    'accountnumber_id' => $request->accountnumber_id,
                     // 'deposit_account_id' => $request->deposit_account_id,
                 ]);
 
@@ -151,11 +225,9 @@ class InvoiceSupplierController extends Controller
             // Validasi input
             $request->validate([
                 'name' => 'required',
-                // 'account_no' => 'required',
-                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'],
                 'account_category_id' => 'required',
-                'description' => 'required',
-                // 'amount' => ['required', 'numeric'], // Validasi numerik
+                // 'description' => 'required',
             ]);
 
             // Buat data akun baru
@@ -164,20 +236,17 @@ class InvoiceSupplierController extends Controller
                 'account_no' => $request->account_no,
                 'account_category_id' => $request->account_category_id,
                 'description' => $request->description,
-                // 'amount' => str_replace('.', '', $request->amount), // Hapus pemisah ribuan sebelum menyimpan
             ]);
 
             // Redirect ke halaman indeks akun dengan pesan sukses
-            return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)->with('success', 'Account Number created successfully!');
+            return redirect()->route('invoice-supplier.upload-proof', $request->invoice_id)
+                ->with('success', 'Account Number created successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
+            $errorMessage = 'Database error occurred. Please try again later.';
             if ($ex->errorInfo[1] == 1062) {
-                // Handle kesalahan pelanggaran integritas constraint
-                $errorMessage = "The account name already exists.";
-                return redirect()->back()->withErrors(['name' => $errorMessage]);
-            } else {
-                // Handle kesalahan database lainnya
-                return redirect()->back()->withErrors(['message' => 'Database error occurred. Please try again later.']);
+                $errorMessage = "The account name or number already exists.";
             }
+            return redirect()->back()->withInput()->with('error', $errorMessage);
         }
     }
 
@@ -192,62 +261,10 @@ class InvoiceSupplierController extends Controller
     }
 
 
-    // public function storeInvoiceSupplier(Request $request)
-    // {
-    //     try {
-    //         $request->validate([
-    //             'no_invoice' => 'required|unique:invoice_suppliers,no_invoice',
-    //             'supplier_id' => 'required|exists:supplier_data,id',
-    //             'amount' => 'required|numeric',
-    //             'date' => 'required|date_format:Y-m-d',
-    //             'nota' => 'required',
-    //             'deadline_invoice' => 'required|date_format:Y-m-d',
-    //         ]);
-
-    //         $amount = $request->amount;
-    //         $pph_percentage = null;
-
-    //         if ($request->pph === '2%') {
-    //             $pph_percentage = 2;
-    //             $amount *= 0.98; // Mengurangi 2%
-    //         } else if ($request->pph === '15%') {
-    //             $pph_percentage = 15;
-    //             $amount *= 0.85; // Mengurangi 15%
-    //         }
-
-    //         // Handle file upload
-    //         $imageName = null;
-    //         if ($request->hasFile('image_invoice')) {
-    //             $image = $request->file('image_invoice');
-    //             $imageName = time() . '.' . $image->getClientOriginalExtension();
-    //             $image->move(public_path('uploads'), $imageName);
-    //         }
-
-    //         $invoice = new InvoiceSupplier();
-    //         $invoice->no_invoice = $request->no_invoice;
-    //         $invoice->supplier_id = $request->supplier_id;
-    //         $invoice->amount = $amount;
-    //         $invoice->pph = $request->pph ?? null;
-    //         $invoice->pph_percentage = $pph_percentage ?? null;
-    //         $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
-    //         $invoice->nota = $request->nota;
-    //         $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
-    //         $invoice->payment_status = 'Not Yet';
-    //         $invoice->payment_method = 'Cash';
-    //         $invoice->description = $request->description;
-    //         $invoice->image_invoice = $imageName; // Simpan nama file gambar ke dalam database
-    //         $invoice->save();
-
-    //         return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
-    //     } catch (\Exception $e) {
-    //         Log::error('Error creating invoice supplier: ' . $e->getMessage());
-    //         return back()->withErrors(['error' => 'Something went wrong. Please try again.']);
-    //     }
-    // }
-
     public function storeInvoiceSupplier(Request $request)
     {
         try {
+            // Validasi input
             $request->validate([
                 'no_invoice' => 'required|unique:invoice_suppliers,no_invoice',
                 'supplier_id' => 'required|exists:supplier_data,id',
@@ -255,8 +272,8 @@ class InvoiceSupplierController extends Controller
                 'date' => 'required|date_format:Y-m-d',
                 'nota' => 'required',
                 'deadline_invoice' => 'required|date_format:Y-m-d',
-                'pph' => 'required|integer',
-                'pph_percentage' => 'required|numeric|min:0|max:100',
+                // 'pph' => 'required|integer',
+                // 'pph_percentage' => 'required|numeric|min:0|max:100',
             ]);
 
             $amount = $request->amount;
@@ -273,6 +290,7 @@ class InvoiceSupplierController extends Controller
                 $image->move(public_path('uploads'), $imageName);
             }
 
+            // Simpan data invoice
             $invoice = new InvoiceSupplier();
             $invoice->no_invoice = $request->no_invoice;
             $invoice->supplier_id = $request->supplier_id;
@@ -285,17 +303,19 @@ class InvoiceSupplierController extends Controller
             $invoice->payment_status = 'Not Yet';
             $invoice->payment_method = 'Cash';
             $invoice->description = $request->description;
-            $invoice->image_invoice = $imageName; // Simpan nama file gambar ke dalam database
+            $invoice->image_invoice = $imageName;
             $invoice->save();
 
             return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
-        } catch (\Exception $e) {
-            Log::error('Error creating invoice supplier: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Something went wrong. Please try again.']);
+
+        } catch (\Illuminate\Database\QueryException $ex) {
+            $errorMessage = 'Database error occurred. Please try again later.';
+            if ($ex->errorInfo[1] == 1062) {
+                $errorMessage = "The account name or number already exists.";
+            }
+            return redirect()->back()->withInput()->with('error', $errorMessage);
         }
     }
-    
-
 
 
     public function storeSupplierAtInvoice(Request $request)
@@ -332,29 +352,6 @@ class InvoiceSupplierController extends Controller
             return redirect()->back()->withErrors(['error' => 'Failed to create Supplier Data: ' . $e->getMessage()]);
         }
     }
-
-
-    // public function destroyInvoiceSupplier($id)
-    // {
-    //     try {
-    //         $invoice = InvoiceSupplier::findOrFail($id);
-
-    //         // Ambil path gambar
-    //         $imagePath = public_path('uploads/' . $invoice->image_path);
-
-    //         // Hapus file gambar jika ada
-    //         if (File::exists($imagePath)) {
-    //             File::delete($imagePath);
-    //         }
-
-    //         // Hapus data invoice dari database
-    //         $invoice->delete();
-
-    //         return response()->json(['message' => 'Invoice supplier deleted successfully.']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => 'Failed to delete invoice supplier.']);
-    //     }
-    // }
 
     public function destroyInvoiceSupplier($id)
     {
@@ -418,10 +415,21 @@ class InvoiceSupplierController extends Controller
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
                 $query->where('name', 'LIKE', $searchTerm)
-                    ->orWhere('instansi_name', 'LIKE', $searchTerm)
-                    ->orWhere('no_rek', 'LIKE', $searchTerm)
+                    ->orWhere('email', 'LIKE', $searchTerm)
+                    ->orWhere('no_telp', 'LIKE', $searchTerm)
                     ->orWhere('created_at', 'LIKE', $searchTerm);
             }
+
+            // if ($request->filled('search')) {
+            //     $searchTerm = '%' . $request->search . '%';
+            //     $query->where('no_invoice', 'LIKE', $searchTerm)
+            //         ->orWhere('nota', 'LIKE', $searchTerm)
+            //         ->orWhere('amount', 'LIKE', $searchTerm)
+            //         ->orWhere('date', 'LIKE', $searchTerm)
+            //         ->orWhereHas('supplier', function ($q) use ($searchTerm) {
+            //             $q->where('name', 'LIKE', $searchTerm);
+            //         });
+            // }
 
             // Filter data berdasarkan tanggal
             if ($request->filled('created_at')) {

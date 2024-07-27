@@ -131,7 +131,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <hr>                        
+                            <hr>
 
                             <form method="POST" action="{{ route('choose-accountnumber') }}"
                                 id="choose-accountnumber-form">
@@ -150,13 +150,90 @@
                                                 </option>
                                             @endforeach
                                         </select>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn text-primary" data-toggle="modal"
+                                                data-target="#addAccountModal">
+                                                + Add Account
+                                            </button>
+                                        </div>
                                         @if ($errors->any())
                                             <p style="color: red">{{ $errors->first('accountnumber_id') }}</p>
                                         @endif
                                     </div>
-                                    <button type="submit" class="btn btn-sm btn-primary">Choose</button>
+                                    <div class="col mt-1">
+                                        <button type="submit" class="btn btn-primary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Choose</button>
+                                    </div>
                                 </div>
                             </form>
+
+                            <div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog"
+                                aria-labelledby="addAccountModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addAccountModalLabel">Add Account</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('bills-create-accountnumber') }}"
+                                            id="addAccountForm" method="POST">
+
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="account_no">Account Number<span style="color: red">*</span>
+                                                    :</label>
+                                                <input type="text" class="form-control" id="account_no"
+                                                    name="account_no" placeholder="xxx.xxx"
+                                                    value="{{ old('account_no') }}" required>
+                                                @error('account_no')
+                                                    <p style="color: red;">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="name">Account Name<span style="color: red">*</span>
+                                                    :</label>
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                    placeholder="Enter Account Name" value="{{ old('name') }}"
+                                                    required>
+                                                @error('name')
+                                                    <p style="color: red;">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Category<span style="color: red">*</span> :</label>
+                                                <div class="input-group">
+                                                    <select name="account_category_id" class="form-control select2"
+                                                        id="account_category_id" style="width: 100%">
+                                                        @foreach ($accountCategory as $category)
+                                                            <option value="{{ $category->id }}"
+                                                                {{ old('account_category_id') == $category->id ? 'selected' : '' }}>
+                                                                {{ $category->category_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                @error('account_category_id')
+                                                    <p style="color: red;">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="description">Description :</label>
+                                                <textarea class="form-control" id="description" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
 
                             <hr>
@@ -493,7 +570,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             @if (session('success'))
                 Swal.fire({
@@ -508,6 +585,33 @@
                     icon: 'error',
                     title: 'Error',
                     text: '{{ session('error') }}'
+                });
+            @endif
+        });
+    </script> --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if ($errors->any())
+                let errorMessages = "";
+                @foreach ($errors->all() as $error)
+                    errorMessages += "{{ $error }}<br>";
+                @endforeach
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    html: errorMessages,
+                    timer: 5000,
+                    showConfirmButton: false
                 });
             @endif
         });

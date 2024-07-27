@@ -147,7 +147,7 @@ class InvoiceSupplierController extends Controller
             }
 
             // Memuat data dengan pagination dan menambahkan parameter filter ke URL paginasi
-            $data = $query->paginate(10)->appends([
+            $data = $query->paginate(15)->appends([
                 'search' => $request->search,
                 'sort' => $request->sort,
                 'status' => $request->status,
@@ -307,7 +307,6 @@ class InvoiceSupplierController extends Controller
             $invoice->save();
 
             return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
-
         } catch (\Illuminate\Database\QueryException $ex) {
             $errorMessage = 'Database error occurred. Please try again later.';
             if ($ex->errorInfo[1] == 1062) {
@@ -420,17 +419,6 @@ class InvoiceSupplierController extends Controller
                     ->orWhere('created_at', 'LIKE', $searchTerm);
             }
 
-            // if ($request->filled('search')) {
-            //     $searchTerm = '%' . $request->search . '%';
-            //     $query->where('no_invoice', 'LIKE', $searchTerm)
-            //         ->orWhere('nota', 'LIKE', $searchTerm)
-            //         ->orWhere('amount', 'LIKE', $searchTerm)
-            //         ->orWhere('date', 'LIKE', $searchTerm)
-            //         ->orWhereHas('supplier', function ($q) use ($searchTerm) {
-            //             $q->where('name', 'LIKE', $searchTerm);
-            //         });
-            // }
-
             // Filter data berdasarkan tanggal
             if ($request->filled('created_at')) {
                 $searchDate = date('Y-m-d', strtotime($request->created_at));
@@ -447,7 +435,7 @@ class InvoiceSupplierController extends Controller
             }
 
             // Memuat data dengan pagination
-            $data = $query->paginate(10);
+            $data = $query->paginate(15);
 
             // Menampilkan view dengan data dan form
             return view('components.supplier.data.index', compact('data', 'form'));
@@ -500,13 +488,59 @@ class InvoiceSupplierController extends Controller
     public function destroySupplier($id)
     {
         try {
-            $invoice = SupplierData::findOrFail($id);
+            $suppliers = SupplierData::findOrFail($id);
 
-            $invoice->delete();
+            $suppliers->delete();
 
             return response()->json(['message' => 'Supplier Data deleted successfully.']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to delete Supplier Data.']);
+        }
+    }
+
+    public function viewupdateSupplier($id)
+    {
+        $suppliers = SupplierData::findOrFail($id);
+
+        return view('components.supplier.data.edit-supplier', [
+            'suppliers' => $suppliers,
+        ]);
+    }
+
+    public function updateSupplier(Request $request, $id)
+    {
+        $suppliers = SupplierData::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required',
+            'no_telp' => 'required',
+            // 'email' => 'required',
+            // 'address' => 'required',
+            // 'city' => 'required',
+            // 'province' => 'required',
+            // 'accountnumber' => 'required',
+            // 'accountnumber_holders_name' => 'required',
+            // 'bank_name' => 'required',
+        ]);
+
+        try {
+            $suppliers->update([
+                'name' => $request->name,
+                'no_telp' => $request->no_telp,
+                'email' => $request->email,
+                'address' => $request->address,
+                'city' => $request->city,
+                'province' => $request->province,
+                'post_code' => $request->post_code,
+                'accountnumber' => $request->accountnumber,
+                'accountnumber_holders_name' => $request->accountnumber_holders_name,
+                'bank_name' => $request->bank_name,
+                'description' => $request->description,
+            ]);
+
+            return redirect()->route('supplier.index')->with('success', 'Supplier Data Created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create Supplier Data: ' . $e->getMessage()]);
         }
     }
 }

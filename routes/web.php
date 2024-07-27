@@ -107,6 +107,8 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
 
       // web.php
       Route::post('/admin/bills/choose-accountnumber', [BillController::class, 'chooseaccountnumber'])->name('choose-accountnumber');
+      Route::post('/admin/bills/create-accountnumber', [BillController::class, 'storeAccount'])->name('bills-create-accountnumber');
+
 
       // Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
       Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
@@ -301,6 +303,10 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/', [InvoiceSupplierController::class, 'indexsupplier'])->name('supplier.index');
       Route::get('/create-supplier', [InvoiceSupplierController::class, 'createSupplier'])->name('create-supplier.create');
       Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplier'])->name('supplier.store');
+
+      Route::get('/update-supplier/{id}', [InvoiceSupplierController::class, 'viewupdateSupplier'])->name('view-supplier.update');
+      Route::post('/update-supplier/{id}', [InvoiceSupplierController::class, 'updateSupplier'])->name('supplier.update');
+
       Route::delete('/supplier/{id}', [InvoiceSupplierController::class, 'destroySupplier'])->name('supplier.destroy');
    });
 

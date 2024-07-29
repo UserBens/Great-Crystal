@@ -8,7 +8,7 @@
                     <div class="col-md-4">
                         <label for="sort">Sort By</label>
                         <select name="sort" class="form-control" id="sort-select">
-                            <option value="">-- All Data --</option>
+                            <option value="">Default</option>
                             <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)
                             </option>
                             <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)
@@ -61,13 +61,6 @@
                     style="margin-right: 8px">
                     <i class="fa-solid fa-plus"></i> Create Account
                 </a>            
-                {{-- <form action="{{ route('account.calculateAll') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-primary mt-3" name="calculate_all">
-                        <i class="fas fa-calculator"></i> Calculate All
-                    </button>
-                </form> --}}            
-
             </div>
             <div class="card card-dark mt-4">
                 <div class="card-header">
@@ -86,10 +79,7 @@
                                 <th>Account</th>
                                 <th>Name</th>
                                 <th>Category</th>
-                                <th>Balance</th>
-                                {{-- <th>Beginning Balance</th>
-                                <th>Ending Balance</th> --}}
-                                {{-- <th>Type</th> --}}
+                                <th>Balance</th>                                
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -101,12 +91,8 @@
                                     <td>{{ $account->name }}</td>
                                     <td>{{ $categories->firstWhere('id', $account->account_category_id)->category_name }}
                                     </td>
-                                    <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
-                                    {{-- <td>Rp.{{ number_format($account->beginning_balance, 0, ',', '.') }}</td>
-                                    <td>Rp.{{ number_format($account->ending_balance, 0, ',', '.') }}</td> --}}
-                                    {{-- <td>{{ $account->position }}</td> --}}
-
-                                    <td class="">                                        
+                                    <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>                                    
+                                    <td class="">
                                         <a class="btn btn-warning btn-sm" style="margin-right: 4px"
                                             href="/admin/account/{{ $account->id }}/edit">
                                             <i class="fas fa-pencil"></i> Edit
@@ -115,6 +101,7 @@
                                             data-id="{{ $account->id }}">
                                             <i class="fas fa-trash"></i>Delete
                                         </button>
+                                        
                                     </td>
                                 </tr>
                             @endforeach
@@ -137,7 +124,6 @@
     <script src="{{ asset('template') }}/plugins/sweetalert2/sweetalert2.min.js"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
-
 
     <script>
         $(document).ready(function() {
@@ -200,7 +186,6 @@
                     }
                 });
             });
-
         });
     </script>
 

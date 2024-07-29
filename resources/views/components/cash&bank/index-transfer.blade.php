@@ -48,7 +48,7 @@
                     <h3>Click the button below to create Transaction Transfer!</h3>
                     <div class="btn-group">
                         <a type="button" href="{{ route('transaction-transfer.create') }}" class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Create Transaction
+                            <i class="fa-solid fa-plus"></i> Add Transaction
                         </a>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
         @else
             <div class="btn-group">
                 <a type="button" href="{{ route('transaction-transfer.create') }}" class="btn btn-success btn-sm mt-3">
-                    <i class="fa-solid fa-plus"></i> Create Transaction
+                    <i class="fa-solid fa-plus"></i> Add Transaction
                 </a>
             </div>
             <!-- Display Cash or Bank data in a table -->

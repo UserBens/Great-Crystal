@@ -156,7 +156,7 @@ class AccountingController extends Controller
                 $query->orderBy('created_at', 'desc');
             }
 
-            $data = $query->paginate(15);
+            $data = $query->paginate(25);
 
             $categories = Accountcategory::all();
 

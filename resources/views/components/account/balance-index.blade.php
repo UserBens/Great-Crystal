@@ -6,9 +6,9 @@
             <form action="{{ route('balance.index') }}" method="GET" class="mb-3">
                 <div class="row">
                     <div class="col-md-4">
-                        <label for="sort">Sort By :</label>
+                        <label for="sort">Sort By</label>
                         <select name="sort" class="form-control" id="sort-select">
-                            {{-- <option value="id" {{ $form->sort === 'id' ? 'selected' : '' }}>ID</option> --}}
+                            <option value="">Default</option>
                             <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)
                             </option>
                             <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)
@@ -18,15 +18,18 @@
                     </div>
 
                     <div class="col-md-4">
+                        <label for="date">Date</label>
+                        <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
+                    </div>
+
+                    {{-- <div class="col-md-4">
                         <label for="date">Conversion Date :</label>
                         <input type="month" name="date" class="form-control"
                             value="{{ date('Y-m', strtotime($form->date ?? now())) }}">
-                    </div>
-
-
+                    </div> --}}
 
                     <div class="col-md-4">
-                        <label for="search">Search Data :</label>
+                        <label for="date">Search Data</label>
                         <div class="input-group">
                             <input type="text" name="search" class="form-control" placeholder="Search..."
                                 value="{{ $form->search ?? '' }}">
@@ -80,6 +83,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Account</th>
+                                    <th>Name</th>
                                     <th>Category</th>
                                     <th>Debit</th>
                                     <th>Credit</th>
@@ -89,7 +93,8 @@
                                 @foreach ($data as $account)
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $account->account_no }} - {{ $account->name }}</td>
+                                        <td>{{ $account->account_no }}</td>
+                                        <td>{{ $account->name }}</td>
                                         <td>{{ $categories->where('id', $account->account_category_id)->first()->category_name }}
                                         </td>
                                         <td>
@@ -231,8 +236,6 @@
                     }
                 });
             });
-
-
         });
     </script>
 

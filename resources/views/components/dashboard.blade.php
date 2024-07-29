@@ -164,89 +164,6 @@
             @endif
         </section>
 
-        {{-- 
-        <section class="col-lg-7 connectedSortable">
-            @if ($user == 'accounting')
-                <div class="{{ $listBill }} card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fa-solid fa-hourglass-end mr-1"></i>
-                            Deadline Invoice Supplier
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="tab-content p-0">
-                            @if ($data->invoiceSuppliers->isEmpty())
-                                <div class="d-flex justify-content-center">
-                                    <h2>Data Invoice Supplier does not exist !!!</h2>
-                                </div>
-                            @else
-                                <div style="overflow-y: auto; max-height: 300px;">
-                                    <ul class="todo-list" data-widget="todo-list">
-                                        @foreach ($data->invoiceSuppliers as $invoiceSupplier)
-                                            @php
-                                                $currentDate = \Carbon\Carbon::now();
-                                                $deadline = \Carbon\Carbon::parse($invoiceSupplier->deadline_invoice);
-                                                $daysLeft = $currentDate->diffInDays($deadline, false);
-                                                $isDueSoon = $daysLeft <= 3 && $daysLeft >= 0;
-                                                $isPaid = $invoiceSupplier->payment_status === 'Paid';
-                                                $daysOverdue = $currentDate->diffInDays($deadline, false);
-                                                $overdueClass = $daysOverdue > 0 ? 'text-danger' : '';
-                                            @endphp
-                                            <li>
-                                                <span class="handle">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </span>
-                                                <div class="icheck-primary d-inline ml-2">
-                                                    <span class="{{ $isPaid ? 'text-black' : 'text-danger' }}">
-                                                        [{{ date('d F Y', strtotime($invoiceSupplier->deadline_invoice)) }}]
-                                                    </span>
-                                                    <span class="{{ $isPaid ? 'text-black' : 'text-danger' }}">
-                                                        Deadline Invoice -
-                                                    </span>
-                                                    <span class="{{ $isPaid ? 'text-black' : 'text-danger' }}">
-                                                        {{ $invoiceSupplier->supplier_name }}
-                                                        ({{ $invoiceSupplier->no_invoice }})
-                                                    </span>
-                                                    @if ($isDueSoon)
-                                                        @if ($daysLeft == 1)
-                                                            <span class="text-danger">1 day left</span>
-                                                        @else
-                                                            <span class="text-danger">{{ $daysLeft }} days left</span>
-                                                        @endif
-                                                    @elseif ($daysOverdue > 0)
-                                                        <span class="text-danger">Overdue by {{ $daysOverdue }}
-                                                            days</span>
-                                                    @endif
-                                                    @if ($isPaid)
-                                                        <span class="text-success">(Paid)</span>
-                                                    @endif
-                                                    <a href="{{ route('supplier.index') }}" class="small-box-footer"
-                                                        style="color: orange">
-                                                        <i class="fas fa-arrow-circle-right"></i>
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            @endif
-        </section> --}}
-
-
-
-
-
-
-
-
-
-
         <section class="col-lg-5 connectedSortable">
             @if ($user == 'accounting')
                 <div class="col-md-12">
@@ -273,31 +190,31 @@
                 <div class="card-body">
                     <div id="pie_chart"></div>
                 </div>
-    </div>
-    </section>
+            </section>
 
-    <section class="col-lg-6 connectedSortable">
-        <div class="card mb-3">
-            <div class="card-header">
-                Basic Bar
-            </div>
-            <div class="card-body">
-                <div id="basic_bar"></div>
-            </div>
-        </div>
-    </section>
+            <section class="col-lg-6 connectedSortable">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Basic Bar
+                    </div>
+                    <div class="card-body">
+                        <div id="basic_bar"></div>
+                    </div>
+                </div>
+            </section>
 
-    <div class="col-md-12">
-        <div class="card mb-3">
-            <div class="card-header">
-                Column Chart
+
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Area Chart
+                    </div>
+                    <div class="card-body">
+                        <div id="area_chart"></div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div id="column_chart"></div>
-            </div>
-        </div>
-    </div>
-    @endif
+        @endif
     </div>
 
     <script>
@@ -346,12 +263,15 @@
                     type: 'pie'
                 },
                 title: {
-                    text: 'Transaction Types Distribution'
+                    text: 'Transaction Distribution by Count and Amount'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.y}</b><br>Total Amount: <b>{point.amount}</b>'
                 },
                 series: [{
-                    name: 'Transactions',
+                    name: 'Transactions Count',
                     colorByPoint: true,
-                    data: @json($data->pie)
+                    data: @json($data->pieData)
                 }]
             });
 
@@ -360,28 +280,21 @@
                     type: 'column'
                 },
                 title: {
-                    text: 'Corn vs wheat estimated production for 2020',
-                    align: 'left'
-                },
-                subtitle: {
-                    text: 'Source: <a target="_blank" href="https://www.indexmundi.com/agriculture/?commodity=corn">indexmundi</a>',
+                    text: 'Invoice Supplier Payment Status',
                     align: 'left'
                 },
                 xAxis: {
-                    categories: ['USA', 'China', 'Brazil', 'EU', 'India', 'Russia'],
+                    categories: @json($data->invoiceSuppliersChart->pluck('name')),
                     crosshair: true,
                     accessibility: {
-                        description: 'Countries'
+                        description: 'Payment Status'
                     }
                 },
                 yAxis: {
                     min: 0,
                     title: {
-                        text: '1000 metric tons (MT)'
+                        text: 'Total Invoices'
                     }
-                },
-                tooltip: {
-                    valueSuffix: ' (1000 MT)'
                 },
                 plotOptions: {
                     column: {
@@ -390,50 +303,79 @@
                     }
                 },
                 series: [{
-                    name: 'Corn',
-                    data: [406292, 260000, 107000, 68300, 27500, 14500]
-                }, {
-                    name: 'Wheat',
-                    data: [51086, 136000, 5500, 141000, 107180, 77000]
-                }, {
-                    name: 'Potato',
-                    data: [53086, 146000, 52300, 14000, 101180, 745000]
+                    name: 'Invoices',
+                    data: @json($data->invoiceSuppliersChart->pluck('y'))
                 }]
             });
 
-            Highcharts.chart('column_chart', {
+            Highcharts.chart('area_chart', {
                 chart: {
-                    type: 'column'
+                    type: 'area'
                 },
                 title: {
-                    text: 'Yearly Transaction Amounts'
+                    text: 'Monthly Transaction and Invoice Distribution'
                 },
                 xAxis: {
-                    categories: @json($data->column['categories']),
-                    crosshair: true
+                    categories: @json($data->months),
+                    title: {
+                        text: 'Month'
+                    }
                 },
                 yAxis: {
-                    min: 0,
                     title: {
                         text: 'Amount'
+                    },
+                    labels: {
+                        formatter: function() {
+                            return Highcharts.numberFormat(this.value, 0, ',', '.');
+                        }
                     }
                 },
                 tooltip: {
-                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
-                    footerFormat: '</table>',
-                    shared: true,
-                    useHTML: true
+                    pointFormat: '{series.name}: <b>{point.y:,.0f}</b><br/>Amount'
                 },
                 plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
+                    area: {
+                        marker: {
+                            enabled: false,
+                            symbol: 'circle',
+                            radius: 2,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        }
                     }
                 },
-                series: @json(array_values($data->column['series']))
+                series: [{
+                        name: 'Transaction Send',
+                        data: @json($data->transactionSendData),
+                        color: '#28a745'
+                    },
+                    {
+                        name: 'Transaction Receive',
+                        data: @json($data->transactionReceiveData),
+                        color: '#007bff'
+                    },
+                    {
+                        name: 'Transaction Transfer',
+                        data: @json($data->transactionTransferData),
+                        color: '#ff5733'
+                    },
+                    {
+                        name: 'Invoice Supplier',
+                        data: @json($data->invoiceSupplierData),
+                        color: '#ffc107'
+                    },
+                    {
+                        name: 'Bills',
+                        data: @json($data->billsData),
+                        color: '#6c757d'
+                    }
+                ]
             });
+
         });
     </script>
 @endsection

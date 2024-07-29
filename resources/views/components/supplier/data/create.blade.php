@@ -23,7 +23,7 @@
                                             <div class="input-group">
                                                 <input name="name" type="text" class="form-control"
                                                     id="name" placeholder="Enter Supplier Name"
-                                                    autocomplete="off" value="{{ old('name') }}" required>
+                                                    autocomplete="off" value="{{ old('name') }}" >
                                             </div>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('name') }}</p>
@@ -169,10 +169,7 @@
                             <div class="row d-flex justify-content-center">
                                 <input role="button" type="submit" class="btn btn-success center col-12 mt-3">
                             </div>
-                        </form>
-
-                       
-
+                        </form>                
                     </div>
                 </div>
             </div>

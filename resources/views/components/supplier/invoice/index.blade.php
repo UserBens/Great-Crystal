@@ -59,7 +59,7 @@
                     <div class="btn-group">
                         <a type="button" href="{{ route('create-invoice-supplier.create') }}"
                             class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Create Invoice
+                            <i class="fa-solid fa-plus"></i> Add Invoice
                         </a>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
         @else
             <div class="btn-group">
                 <a type="button" href="{{ route('create-invoice-supplier.create') }}" class="btn btn-success btn-sm mt-3">
-                    <i class="fa-solid fa-plus"></i> Create Invoice
+                    <i class="fa-solid fa-plus"></i> Add Invoice
                 </a>
             </div>
             <!-- Display Cash or Bank data in a table -->

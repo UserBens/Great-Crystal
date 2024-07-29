@@ -17,7 +17,7 @@ class TransactionTransferSeeder extends Seeder
             [
                 'transfer_account_id' => 1,
                 'deposit_account_id' => 2,
-                'no_transaction' => 'TFX001',
+                'no_transaction' => rand(1, 365),
                 'amount' => 2000000,
                 'date' => $this->randomDate(),
                 'description' => 'Transfer from account 1 to account 2',
@@ -27,7 +27,7 @@ class TransactionTransferSeeder extends Seeder
             [
                 'transfer_account_id' => 2,
                 'deposit_account_id' => 3,
-                'no_transaction' => 'TFX002',
+                'no_transaction' => rand(1, 365),
                 'amount' => 2000000,
                 'date' => $this->randomDate(),
                 'description' => 'Transfer from account 2 to account 3',
@@ -37,7 +37,7 @@ class TransactionTransferSeeder extends Seeder
             [
                 'transfer_account_id' => 3,
                 'deposit_account_id' => 1,
-                'no_transaction' => 'TFX003',
+                'no_transaction' => rand(1, 365),
                 'amount' => 2000000,
                 'date' => $this->randomDate(),
                 'description' => 'Transfer from account 3 to account 1',
@@ -47,7 +47,7 @@ class TransactionTransferSeeder extends Seeder
             [
                 'transfer_account_id' => 3,
                 'deposit_account_id' => 1,
-                'no_transaction' => 'TFX004',
+                'no_transaction' => rand(1, 365),
                 'amount' => 2000000,
                 'date' => $this->randomDate(),
                 'description' => 'Transfer from account 3 to account 1',

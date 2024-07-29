@@ -164,11 +164,8 @@
                                                 alt="your image" style="max-width: 100%; max-height: 100%;" />
                                             <div class="image-title-wrap"
                                                 style="display: flex; justify-content: space-between; align-items: center;">
-                                                <button type="button" onclick="removeUpload(this, '')"
-                                                    class="remove-image" style="margin-right: 10px">
-                                                    <i class="fa-solid fa-trash fa-2xl" style="margin-bottom: 1em;"></i>
-                                                    <br> Remove
-                                                    <span class="image-title">Image</span>
+                                                <button type="button" onclick="removeUpload(this, '')" class="btn btn-danger btn-sm" style="border: none; background: none;">
+                                                    <i class="fa-solid fa-trash" style="font-size: 1.5rem; color: black;"></i>
                                                 </button>
 
                                             </div>

@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use Exception;
+use Carbon\Carbon;
 use App\Models\Bill;
-use App\Models\InvoiceSupplier;
 use App\Models\Student;
 use App\Models\Teacher;
-use App\Models\Transaction_send;
-use App\Models\Transaction_transfer;
-use App\Models\Transaction_receive;
-use Carbon\Carbon;
-use Exception;
+use App\Models\Expenditure;
 use Illuminate\Http\Request;
+use App\Models\InvoiceSupplier;
+use App\Models\Transaction_send;
+use App\Models\Transaction_receive;
+use App\Http\Controllers\Controller;
+use App\Models\Transaction_transfer;
 
 class DashboardController extends Controller
 {
@@ -345,7 +346,8 @@ class DashboardController extends Controller
     public function index()
     {
         try {
-            session()->flash('page',  $page = (object)[
+            session()->flash('preloader', true);
+            session()->flash('page', $page = (object)[
                 'page' => 'dashboard',
                 'child' => 'dashboard',
             ]);
@@ -353,47 +355,130 @@ class DashboardController extends Controller
             // Menghitung jumlah siswa, guru, tagihan baru, dan tagihan jatuh tempo
             $newStudent = Student::where('is_active', true)->count();
             $newTeacher = Teacher::where('is_active', true)->count();
-            $newBill = Bill::where('created_at', '>',  Carbon::now()->subDays(30)->setTimezone('Asia/Jakarta'))->count();
+            $newBill = Bill::where('created_at', '>', Carbon::now()->subDays(30)->setTimezone('Asia/Jakarta'))->count();
             $billPastDue = Bill::where('paidOf', false)
-                ->where('deadline_invoice', '<',  Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d'))
+                ->where('deadline_invoice', '<', Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d'))
                 ->count();
 
             // Mengambil data terbaru untuk beberapa entitas
             $newBillData = Bill::with('student')->orderBy('id', 'desc')->take(6)->get();
             $pastDueData = Bill::with('student')
                 ->where('paidOf', false)
-                ->where('deadline_invoice', '<',  Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d'))
+                ->where('deadline_invoice', '<', Carbon::now()->setTimezone('Asia/Jakarta')->format('Y-m-d'))
                 ->take(6)
                 ->get();
 
             $teacherData = Teacher::where('is_active', true)->orderBy('id', 'desc')->take(6)->get();
             $studentData = Student::where('is_active', true)->orderBy('id', 'desc')->take(6)->get();
 
-            $invoiceSuppliers = InvoiceSupplier::all();
 
             // Mengambil jumlah data transaksi
             $transactionSend = Transaction_send::count();
-            // $transactionSend = $transactionSendSupplier->count();
             $transactionReceive = Transaction_receive::count();
             $transactionTransfer = Transaction_transfer::count();
 
-
+            // start code pie chart
             // Data untuk diagram
-            // Data pie chart untuk tipe transaksi
-            $transactionTypes = [
-                'send' => Transaction_send::count(),
-                'receive' => Transaction_receive::count(),
-                // 'transfer' => Transaction_transfer::count()
+            $transactionpieData = [
+                'send' => [
+                    'count' => Transaction_send::count(),
+                    'amount' => Transaction_send::sum('amount')
+                ],
+                'receive' => [
+                    'count' => Transaction_receive::count(),
+                    'amount' => Transaction_receive::sum('amount')
+                ],
+                'invoicesupplier' => [
+                    'count' => InvoiceSupplier::count(),
+                    'amount' => InvoiceSupplier::sum('amount')
+                ],
+                'bills' => [
+                    'count' => Bill::count(),
+                    'amount' => Bill::sum('amount')
+                ],
             ];
-            $pie = [];
-            foreach ($transactionTypes as $type => $count) {
-                $pie[] = [
+
+            // pie chart
+            $pieData = [];
+            foreach ($transactionpieData as $type => $data) {
+                $pieData[] = [
                     'name' => ucfirst($type),
-                    'y' => $count
+                    'y' => $data['count'],
+                    'amount' => 'Rp. ' . number_format($data['amount'], 0, ',', '.')
                 ];
             }
+            // end code pie chart
+            
 
-            // Data line chart untuk transaksi bulanan
+            // start code area chart 
+            // Data untuk chart
+            $currentYear = date('Y');
+
+            // Data untuk area chart
+            $months = [];
+            $transactionSendData = [];
+            $transactionReceiveData = [];
+            $transactionTransferData = [];
+            $invoiceSupplierData = [];
+            $billsData = [];
+
+            // Mengambil data untuk area chart
+            $transactionSendRows = Transaction_send::selectRaw('MONTH(date) AS month, SUM(amount) AS total')
+                ->whereYear('date', $currentYear)
+                ->groupByRaw('MONTH(date)')
+                ->get();
+
+            $transactionReceiveRows = Transaction_receive::selectRaw('MONTH(date) AS month, SUM(amount) AS total')
+                ->whereYear('date', $currentYear)
+                ->groupByRaw('MONTH(date)')
+                ->get();
+
+            $transactionTransferRows = Transaction_transfer::selectRaw('MONTH(date) AS month, SUM(amount) AS total')
+                ->whereYear('date', $currentYear)
+                ->groupByRaw('MONTH(date)')
+                ->get();
+
+            $invoiceSupplierRows = InvoiceSupplier::selectRaw('MONTH(created_at) AS month, SUM(amount) AS total')
+                ->whereYear('created_at', $currentYear)
+                ->groupByRaw('MONTH(created_at)')
+                ->get();
+
+            $billsRows = Bill::selectRaw('MONTH(paid_date) AS month, SUM(amount) AS total')
+                ->whereYear('paid_date', $currentYear)
+                ->groupByRaw('MONTH(paid_date)')
+                ->get();
+
+            for ($i = 1; $i <= 12; $i++) {
+                $months[] = date('F', mktime(0, 0, 0, $i, 1));
+                $transactionSendData[$i] = 0;
+                $transactionReceiveData[$i] = 0;
+                $transactionTransferData[$i] = 0;
+                $invoiceSupplierData[$i] = 0;
+                $billsData[$i] = 0;
+            }
+
+            foreach ($transactionSendRows as $row) {
+                $transactionSendData[$row->month] = (float)$row->total;
+            }
+
+            foreach ($transactionReceiveRows as $row) {
+                $transactionReceiveData[$row->month] = (float)$row->total;
+            }
+
+            foreach ($transactionTransferRows as $row) {
+                $transactionTransferData[$row->month] = (float)$row->total;
+            }
+
+            foreach ($invoiceSupplierRows as $row) {
+                $invoiceSupplierData[$row->month] = (float)$row->total;
+            }
+
+            foreach ($billsRows as $row) {
+                $billsData[$row->month] = (float)$row->total;
+            }
+            // end code area chart
+
+            // // Data line chart untuk transaksi bulanan
             $rows = Transaction_send::selectRaw('MAX(date) AS date, COUNT(*) AS total')
                 ->groupByRaw('YEAR(date), MONTH(date)')
                 ->get();
@@ -444,32 +529,72 @@ class DashboardController extends Controller
             }
             $column['series'] = array_values($column['series']);
 
-            $currentYear = date('Y'); // Ambil tahun saat ini, atau bisa diganti dengan tahun yang diinginkan
+            // Mengambil tahun saat ini
+            $currentYear = date('Y');
+
+            // Fetch monthly income (Total paid bills)
             $incomeRows = Bill::selectRaw('MONTH(paid_date) AS month, SUM(amount) AS total')
-                ->where('paidOf', true)
-                ->whereYear('paid_date', $currentYear) // Filter untuk tahun tertentu
+                ->where('paidOf', true) // Filter hanya tagihan yang sudah dibayar
+                ->whereYear('paid_date', $currentYear)
                 ->groupByRaw('MONTH(paid_date)')
                 ->get();
 
-            // Inisialisasi array untuk pendapatan bulanan
-            $income = [
+            // Fetch monthly expenses (Total expenditures)
+            $expenseRows = Expenditure::selectRaw('MONTH(spent_at) AS month, SUM(amount_spent) AS total')
+                ->whereYear('spent_at', $currentYear)
+                ->groupByRaw('MONTH(spent_at)')
+                ->get();
+
+            // Initialize arrays for income and expenses
+            $incomeData = [
                 'categories' => [],
-                'data' => array_fill(0, 12, 0) // Inisialisasi 12 bulan dengan nilai 0
+                'data' => array_fill(0, 12, 0) // Initialize with 12 months of 0 values
             ];
 
-            // Isi data ke dalam array
+            $expenseData = [
+                'categories' => [],
+                'data' => array_fill(0, 12, 0)
+            ];
+
+            // Fill income data
             foreach ($incomeRows as $row) {
-                $monthIndex = $row->month - 1; // Konversi bulan ke indeks array (0-11)
-                $income['categories'][$monthIndex] = date('F', mktime(0, 0, 0, $row->month, 1));
-                $income['data'][$monthIndex] = (float) $row->total; // Pastikan data dalam format float
+                $monthIndex = $row->month - 1;
+                $incomeData['categories'][$monthIndex] = date('F', mktime(0, 0, 0, $row->month, 1));
+                $incomeData['data'][$monthIndex] = (float) $row->total;
             }
 
-            // Isi kategori untuk bulan yang kosong
+            // Fill expense data
+            foreach ($expenseRows as $row) {
+                $monthIndex = $row->month - 1;
+                $expenseData['categories'][$monthIndex] = date('F', mktime(0, 0, 0, $row->month, 1));
+                $expenseData['data'][$monthIndex] = (float) $row->total;
+            }
+
+            // Fill missing categories
             for ($i = 0; $i < 12; $i++) {
-                if (!isset($income['categories'][$i])) {
-                    $income['categories'][$i] = date('F', mktime(0, 0, 0, $i + 1, 1));
+                if (!isset($incomeData['categories'][$i])) {
+                    $incomeData['categories'][$i] = date('F', mktime(0, 0, 0, $i + 1, 1));
+                }
+                if (!isset($expenseData['categories'][$i])) {
+                    $expenseData['categories'][$i] = date('F', mktime(0, 0, 0, $i + 1, 1));
                 }
             }
+
+            // Sort categories to ensure correct order
+            array_multisort(array_map('strtotime', $incomeData['categories']), $incomeData['categories']);
+            array_multisort(array_map('strtotime', $expenseData['categories']), $expenseData['categories']);
+
+            $invoiceSuppliers = InvoiceSupplier::all();
+
+            $invoiceSuppliersChart = InvoiceSupplier::selectRaw('payment_status, COUNT(*) as total')
+                ->groupBy('payment_status')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'name' => $item->payment_status,
+                        'y' => (int) $item->total
+                    ];
+                });
 
             $data = (object)[
                 'student' => (int)$newStudent,
@@ -480,14 +605,26 @@ class DashboardController extends Controller
                 'dataPastDue' => $pastDueData,
                 'dataTeacher' => $teacherData,
                 'dataStudent' => $studentData,
+
                 'transactionSend' => $transactionSend,
-                'invoiceSuppliers' => $invoiceSuppliers,
                 'transactionReceive' => $transactionReceive,
                 'transactionTransfer' => $transactionTransfer,
-                'pie' => $pie,
+
+                'pieData' => $pieData,
+                'months' => $months,
+                'transactionSendData' => array_values($transactionSendData),
+                'transactionReceiveData' => array_values($transactionReceiveData),
+                'transactionTransferData' => array_values($transactionTransferData),
+                'invoiceSupplierData' => array_values($invoiceSupplierData),
+                'billsData' => array_values($billsData),
+
                 'line' => $line,
                 'column' => $column,
-                'income' => $income // Include income data
+                'incomeData' => $incomeData,
+                'expenseData' => $expenseData,
+                'invoiceSuppliers' => $invoiceSuppliers,
+                'invoiceSuppliersChart' => $invoiceSuppliersChart,
+
             ];
 
             return view('components.dashboard')->with('data', $data);
@@ -495,6 +632,7 @@ class DashboardController extends Controller
             return dd($err);
         }
     }
+
 
 
     // public function index()

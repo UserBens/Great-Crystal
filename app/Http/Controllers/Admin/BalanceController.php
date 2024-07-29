@@ -67,11 +67,6 @@ class BalanceController extends Controller
     //     }
     // }
 
-
-
-
-
-
     public function indexBalance(Request $request)
     {
         session()->flash('preloader', true);
@@ -125,6 +120,7 @@ class BalanceController extends Controller
         }
     }
 
+
     public function saveBalances(Request $request)
     {
         // Manipulasi nilai debit dan kredit sebelum validasi
@@ -176,13 +172,6 @@ class BalanceController extends Controller
             return redirect()->back()->with('error', 'Failed to save balances.');
         }
     }
-
-
-
-
-
-
-
 
 
     public function indexPostBalance(Request $request)
@@ -238,6 +227,7 @@ class BalanceController extends Controller
         }
     }
 
+
     public function postBalances(Request $request, $id)
     {
         $request->validate([
@@ -263,13 +253,6 @@ class BalanceController extends Controller
             return redirect()->back()->with('error', 'Failed to post balance.');
         }
     }
-
-
-
-
-
-
-
 
 
     public function unpostBalances(Request $request)
@@ -299,10 +282,6 @@ class BalanceController extends Controller
             return redirect()->back()->with('error', 'Failed to unpost balances.');
         }
     }
-
-
-
-
 
     // public function indexBalance(Request $request)
     // {

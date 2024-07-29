@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Notification\NotificationPaymentSuccess;
 use App\Mail\PaymentSuccessMail;
 use App\Mail\SppMail;
+use App\Models\Accountcategory;
 use App\Models\Accountnumber;
 use App\Models\Bill;
 use App\Models\BillCollection;
@@ -346,6 +347,8 @@ class BillController extends Controller
       try {
          //code...
          $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
+         $accountCategory = Accountcategory::all();
+
 
          $data = Bill::with([
             'student' => function ($query) {
@@ -360,7 +363,8 @@ class BillController extends Controller
          return view('components.bill.spp.detail-spp', [
             'data' => $data,
             'accountNumbers' => $accountNumbers,
-            'selectedAccountId' => $selectedAccountId
+            'selectedAccountId' => $selectedAccountId,
+            'accountCategory' => $accountCategory
 
          ]);
       } catch (Exception $err) {
@@ -400,6 +404,36 @@ class BillController extends Controller
 
          // Redirect dengan pesan error
          return redirect()->back()->withErrors(['error' => 'Failed to update account number. Please try again.']);
+      }
+   }
+
+   public function storeAccount(Request $request)
+   {
+      try {
+         // Validasi input
+         $request->validate([
+            'name' => 'required',
+            'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'],
+            'account_category_id' => 'required',
+            // 'description' => 'required',
+         ]);
+
+         // Buat data akun baru
+         Accountnumber::create([
+            'name' => $request->name,
+            'account_no' => $request->account_no,
+            'account_category_id' => $request->account_category_id,
+            'description' => $request->description,
+         ]);
+
+         // Redirect ke halaman indeks akun dengan pesan sukses
+         return redirect()->back()->with('success', 'Account Number created successfully!');
+      } catch (\Illuminate\Database\QueryException $ex) {
+         $errorMessage = 'Database error occurred. Please try again later.';
+         if ($ex->errorInfo[1] == 1062) {
+            $errorMessage = "The account name or number already exists.";
+         }
+         return redirect()->back()->withInput()->with('error', $errorMessage);
       }
    }
 

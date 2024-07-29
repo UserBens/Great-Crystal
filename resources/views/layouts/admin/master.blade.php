@@ -38,8 +38,6 @@
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.6.0/dist/autoNumeric.min.js"></script>
-
-
     <div class="wrapper">
 
         <!-- Preloader -->

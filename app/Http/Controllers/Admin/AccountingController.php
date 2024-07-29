@@ -156,7 +156,7 @@ class AccountingController extends Controller
                 $query->orderBy('created_at', 'desc');
             }
 
-            $data = $query->paginate(15);
+            $data = $query->paginate(25);
 
             $categories = Accountcategory::all();
 
@@ -748,7 +748,7 @@ class AccountingController extends Controller
                 'name' => 'required',
                 'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                'description' => 'required',
+                // 'description' => 'required',
                 // 'account_no' => 'required',
                 // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
@@ -1004,7 +1004,7 @@ class AccountingController extends Controller
                 'name' => 'required',
                 'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                'description' => 'required',
+                // 'description' => 'required',
                 // 'account_no' => 'required',
                 // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',

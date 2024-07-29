@@ -47,7 +47,7 @@
                     <h3>Click the button below to create Supplier Data!</h3>
                     <div class="btn-group">
                         <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Create Supplier
+                            <i class="fa-solid fa-plus"></i> Add Supplier
                         </a>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
         @else
             <div class="btn-group">
                 <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success btn-sm mt-3">
-                    <i class="fa-solid fa-plus"></i> Create Supplier
+                    <i class="fa-solid fa-plus"></i> Add Supplier
                 </a>
             </div>
             <!-- Display Cash or Bank data in a table -->
@@ -93,7 +93,10 @@
                                     <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
 
                                     <td>
-                                        <div class="btn-group">
+                                        <a href="{{ route('view-supplier.update', $item->id) }}"
+                                            class="btn btn-sm btn-warning"><i class="fas fa-pen"
+                                                style="margin-right: 4px"></i>Edit</a>
+
                                             <button type="button" class="btn btn-sm delete-btn btn-danger"
                                                 data-id="{{ $item->id }}">
                                                 <i class="fas fa-trash mr-1"></i>Delete
@@ -103,7 +106,7 @@
                                                 data-target="#importModal" data-id="{{ $item->id }}">
                                                 <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
                                             </button> --}}
-                                        </div>
+                                            
                                     </td>
 
                                 </tr>

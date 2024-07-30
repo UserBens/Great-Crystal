@@ -141,28 +141,57 @@ class FinancialController extends Controller
     }
 
 
+    // public function destroyExpenditure($id)
+    // {
+    //     // Temukan data yang akan dihapus
+    //     $expenditure = Expenditure::findOrFail($id);
+
+    //     // Simpan nilai total pengeluaran sebelum penghapusan
+    //     $totalExpenditureBeforeDeletion = Expenditure::sum('amount_spent');
+
+    //     // Lakukan soft delete
+    //     $expenditure->delete();
+
+    //     // Hitung total pengeluaran setelah penghapusan
+    //     $totalExpenditureAfterDeletion = Expenditure::sum('amount_spent');
+
+    //     // Kurangi jumlah pengeluaran yang dihapus dari total pengeluaran sebelumnya
+    //     $totalExpenditure = $totalExpenditureBeforeDeletion - $expenditure->amount_spent;
+
+    //     // Simpan total pengeluaran yang baru
+    //     // Misalnya, Anda ingin menyimpannya dalam session
+    //     session()->put('totalExpenditure', $totalExpenditure);
+
+    //     // Redirect ke halaman indeks pengeluaran dengan pesan sukses
+    //     return redirect()->route('expenditure.index')->with('success', 'Expenditure deleted successfully!');
+    // }
+
     public function destroyExpenditure($id)
     {
-        // Temukan data yang akan dihapus
-        $expenditure = Expenditure::findOrFail($id);
+        try {
+            // Temukan data yang akan dihapus
+            $expenditure = Expenditure::findOrFail($id);
 
-        // Simpan nilai total pengeluaran sebelum penghapusan
-        $totalExpenditureBeforeDeletion = Expenditure::sum('amount_spent');
+            // Simpan nilai total pengeluaran sebelum penghapusan
+            $totalExpenditureBeforeDeletion = Expenditure::sum('amount_spent');
 
-        // Lakukan soft delete
-        $expenditure->delete();
+            // Lakukan soft delete
+            $expenditure->delete();
 
-        // Hitung total pengeluaran setelah penghapusan
-        $totalExpenditureAfterDeletion = Expenditure::sum('amount_spent');
+            // Hitung total pengeluaran setelah penghapusan
+            $totalExpenditureAfterDeletion = Expenditure::sum('amount_spent');
 
-        // Kurangi jumlah pengeluaran yang dihapus dari total pengeluaran sebelumnya
-        $totalExpenditure = $totalExpenditureBeforeDeletion - $expenditure->amount_spent;
+            // Kurangi jumlah pengeluaran yang dihapus dari total pengeluaran sebelumnya
+            $totalExpenditure = $totalExpenditureBeforeDeletion - $expenditure->amount_spent;
 
-        // Simpan total pengeluaran yang baru
-        // Misalnya, Anda ingin menyimpannya dalam session
-        session()->put('totalExpenditure', $totalExpenditure);
+            // Simpan total pengeluaran yang baru
+            session()->put('totalExpenditure', $totalExpenditure);
 
-        // Redirect ke halaman indeks pengeluaran dengan pesan sukses
-        return redirect()->route('expenditure.index')->with('success', 'Expenditure deleted successfully!');
+            // Kembalikan respons JSON dengan pesan sukses
+            return response()->json(['message' => 'Expenditure deleted successfully.']);
+        } catch (\Exception $e) {
+            // Tangani pengecualian jika terjadi kesalahan
+            return response()->json(['error' => 'Failed to delete Expenditure.'], 500);
+        }
     }
 }

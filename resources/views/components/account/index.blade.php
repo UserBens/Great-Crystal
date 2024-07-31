@@ -50,7 +50,7 @@
                     <h3>No Account Number has been created yet. Click the button below to create Account Number!</h3>
                     <div class="btn-group">
                         <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Create Account
+                            <i class="fa-solid fa-plus"></i> Add Account
                         </a>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
             <div class="btn-group mt-2">
                 <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3"
                     style="margin-right: 8px">
-                    <i class="fa-solid fa-plus"></i> Create Account
+                    <i class="fa-solid fa-plus"></i> Add Account
                 </a>            
             </div>
             <div class="card card-dark mt-4">
@@ -79,6 +79,7 @@
                                 <th>Account</th>
                                 <th>Name</th>
                                 <th>Category</th>
+                                <th>Type</th>
                                 <th>Balance</th>                                
                                 <th>Actions</th>
                             </tr>
@@ -90,6 +91,7 @@
                                     <td>{{ $account->account_no }}</td>
                                     <td>{{ $account->name }}</td>
                                     <td>{{ $categories->firstWhere('id', $account->account_category_id)->category_name }}
+                                    <td>{{ $account->type }}
                                     </td>
                                     <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>                                    
                                     <td class="">
@@ -100,8 +102,7 @@
                                         <button type="button" class="btn btn-sm delete-btn btn-danger"
                                             data-id="{{ $account->id }}">
                                             <i class="fas fa-trash"></i>Delete
-                                        </button>
-                                        
+                                        </button>                                        
                                     </td>
                                 </tr>
                             @endforeach

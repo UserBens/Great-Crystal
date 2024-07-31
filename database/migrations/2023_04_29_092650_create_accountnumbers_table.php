@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('date')->nullable(); // Changed to date type
             $table->date('posted_date')->nullable(); // Menambahkan kolom posted_date
             $table->boolean('posted')->default(false); // Menambahkan kolom posted
+            $table->enum('type', ['Debit', 'Kredit'])->default(null);
             $table->string('description')->nullable();
             $table->timestamps();
         });

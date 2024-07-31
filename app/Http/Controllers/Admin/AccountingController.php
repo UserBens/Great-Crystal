@@ -128,6 +128,7 @@ class AccountingController extends Controller
                 'sort' => $request->sort ?? null,
                 'order' => $request->order ?? 'desc',
                 'search' => $request->search ?? null,
+                'type' => $request->type ?? null,
                 'date' => $request->date ?? null,
             ];
 

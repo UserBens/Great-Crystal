@@ -96,9 +96,9 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="accountnumber_id">Pay From <span
+                                                <label for="transfer_account_id">Pay From <span
                                                         style="color: red">*</span>:</label>
-                                                <select name="accountnumber_id" id="accountnumber_id"
+                                                <select name="transfer_account_id" id="transfer_account_id"
                                                     class="form-control select2">
                                                     @foreach ($accountNumbers as $accountNumber)
                                                         <option value="{{ $accountNumber->id }}">
@@ -113,7 +113,7 @@
                                                     </button>
                                                 </div>
                                                 @if ($errors->any())
-                                                    <p style="color: red">{{ $errors->first('accountnumber_id') }}</p>
+                                                    <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
                                                 @endif
                                             </div>
                                         </div>                                

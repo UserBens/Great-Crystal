@@ -109,7 +109,7 @@ class InvoiceSupplierController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = InvoiceSupplier::with(['accountnumber', 'supplier']);
+            $query = InvoiceSupplier::with(['transferAccount', 'depositAccount', 'supplier']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -186,8 +186,8 @@ class InvoiceSupplierController extends Controller
                 // 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
-                'accountnumber_id' => 'required',
-                // 'deposit_account_id' => 'required',
+                'transfer_account_id' => 'required',
+                // 'accountnumber_id' => 'required',
             ]);
 
             // Handle file upload
@@ -202,7 +202,7 @@ class InvoiceSupplierController extends Controller
                     'payment_status' => $request->payment_status,
                     'payment_method' => $request->payment_method,
                     'description' => $request->description,
-                    'accountnumber_id' => $request->accountnumber_id,
+                    'transfer_account_id' => $request->transfer_account_id,
                     // 'deposit_account_id' => $request->deposit_account_id,
                 ]);
 

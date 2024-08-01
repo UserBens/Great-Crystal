@@ -132,13 +132,8 @@
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $item->no_transaction }}</td>
-                                        @if ($item->type === 'invoice_supplier')
-                                            <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
-                                            <td>-</td> <!-- No deposit account for invoice_supplier -->
-                                        @else
-                                            <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
-                                            <td>{{ $item->deposit_account_no }} - {{ $item->deposit_account_name }}</td>
-                                        @endif
+                                        <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
+                                        <td>{{ $item->deposit_account_no }} - {{ $item->deposit_account_name }}</td>
                                         <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
                                         <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>

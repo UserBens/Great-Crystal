@@ -532,6 +532,7 @@ class JournalController extends Controller
         }
 
 
+        // Logika untuk mengambil transaksi berdasarkan jenis transaksi
         if ($type === 'transaction_receive' || empty($type)) {
             $transactionReceives = Transaction_receive::with(['transferAccount', 'depositAccount'])
                 ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
@@ -542,6 +543,13 @@ class JournalController extends Controller
             foreach ($transactionReceives as $transaction) {
                 $transferAccount = $transaction->transferAccount;
                 $depositAccount = $transaction->depositAccount;
+
+                // Log debugging untuk memeriksa data
+                Log::info('Transaction Receive Data:', [
+                    'no_transaction' => $transaction->no_transaction,
+                    'transfer_account' => $transferAccount ? $transferAccount->account_no : 'N/A',
+                    'deposit_account' => $depositAccount ? $depositAccount->account_no : 'N/A'
+                ]);
 
                 $transactionDetails[] = [
                     [
@@ -569,30 +577,36 @@ class JournalController extends Controller
         }
 
 
+
         if ($type === 'invoice_supplier' || empty($type)) {
             $invoiceSuppliers = InvoiceSupplier::with(['transferAccount', 'depositAccount'])
                 ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                     return $query->whereBetween('date', [$startDate, $endDate]);
                 })
-                ->when($search, function ($query, $search) {
-                    return $query->where('no_invoice', 'LIKE', "%{$search}%");
-                })
-                ->when($sort && $order, function ($query) use ($sort, $order) {
-                    return $query->orderBy($sort, $order);
-                })
                 ->get();
 
             foreach ($invoiceSuppliers as $invoice) {
-                $supplier = $invoice->transferAccount;
+                $transferAccount = $invoice->transferAccount;
+                $depositAccount = $invoice->depositAccount;
 
                 $transactionDetails[] = [
                     [
                         'no_transaction' => $invoice->no_invoice ?? 'N/A',
-                        'account_number' => $supplier->account_no,
-                        'account_name' => $supplier->name,
+                        'account_number' => $transferAccount->account_no,
+                        'account_name' => $transferAccount->name,
                         'debit' => 0,
                         'credit' => $invoice->amount > 0 ? $invoice->amount : 0,
                         'date' => $invoice->invoice_date,
+                        'description' => $invoice->description,
+                        'created_at' => $invoice->created_at
+                    ],
+                    [
+                        'no_transaction' => $invoice->no_invoice ?? 'N/A',
+                        'account_number' => $depositAccount->account_no,
+                        'account_name' => $depositAccount->name,
+                        'debit' => $invoice->amount > 0 ? $invoice->amount : 0,
+                        'credit' => 0,
+                        'date' => $invoice->date,
                         'description' => $invoice->description,
                         'created_at' => $invoice->created_at
                     ]

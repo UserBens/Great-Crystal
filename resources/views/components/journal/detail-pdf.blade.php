@@ -53,7 +53,8 @@
         .transaction-details th,
         .transaction-details td {
             padding: 5px;
-            border: 1px solid gray; /* Menggunakan rgba untuk garis yang lebih halus */
+            border: 1px solid gray;
+            /* Menggunakan rgba untuk garis yang lebih halus */
         }
 
         .transaction-details th {
@@ -96,7 +97,7 @@
         <tbody class="body_table">
             @foreach ($transactionDetails as $detail)
                 <tr>
-                    <td>{{ $transaction->no_transaction }}</td>
+                    <td>{{ $detail['no_transaction'] ?? 'N/A' }}</td>
                     <td>{{ $detail['account_number'] }} - {{ $detail['account_name'] }}</td>
                     <td>{{ $detail['debit'] > 0 ? 'Rp ' . number_format($detail['debit'], 0, ',', '.') : '0' }}</td>
                     <td>{{ $detail['credit'] > 0 ? 'Rp ' . number_format($detail['credit'], 0, ',', '.') : '0' }}</td>

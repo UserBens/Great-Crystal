@@ -68,29 +68,37 @@
                                             @enderror
                                         </div>
 
-
-
                                         <div class="col-md-6">
-                                            <label for="nota">Nota<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
-
-                                                <input name="nota" type="text" class="form-control" id="nota"
-                                                    placeholder="Enter Nota" autocomplete="off" value="{{ old('nota') }}">
+                                            <div class="form-group">
+                                                <label for="transfer_account_id">Debt <span
+                                                        style="color: red">*</span>:</label>
+                                                <select name="transfer_account_id" id="transfer_account_id"
+                                                    class="form-control select2">
+                                                    @foreach ($accountNumbers as $accountNumber)
+                                                        <option value="{{ $accountNumber->id }}">
+                                                            {{ $accountNumber->account_no }} -
+                                                            {{ $accountNumber->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn text-primary" data-toggle="modal"
+                                                        data-target="#addAccountModal">
+                                                        + Add Account
+                                                    </button>
+                                                </div>
+                                                @if ($errors->any())
+                                                    <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
+                                                @endif
                                             </div>
-
-                                            @error('nota')
-                                                <p style="color: red">{{ $message }}</p>
-                                            @enderror
                                         </div>
-
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label for="date">Date<span style="color: red">*</span> :</label>
                                             <input type="date" name="date" class="form-control"
-                                                value="{{ old('date') }}"
-                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                                                value="{{ old('date') }}" data-inputmask-inputformat="dd/mm/yyyy"
+                                                data-mask>
 
                                             @error('date')
                                                 <p style="color: red">{{ $message }}</p>
@@ -115,11 +123,9 @@
                                         <div class="col-md-6">
                                             <label for="pph">PPH :</label>
                                             <div class="input-group">
-
                                                 <input name="pph" type="text" class="form-control" id="pph"
                                                     placeholder="Enter PPH" autocomplete="off" value="{{ old('pph') }}">
                                             </div>
-
                                         </div>
 
                                         <div class="col-md-6">
@@ -129,9 +135,23 @@
                                                     id="pph_percentage" placeholder="Enter Percentage" autocomplete="off"
                                                     value="{{ old('pph_percentage') }}">
                                             </div>
-
                                         </div>
+                                    </div>
 
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="nota">Nota<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+
+                                                <input name="nota" type="text" class="form-control" id="nota"
+                                                    placeholder="Enter Nota" autocomplete="off"
+                                                    value="{{ old('nota') }}">
+                                            </div>
+
+                                            @error('nota')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
+                                        </div>
                                     </div>
 
                                     <div class="form-group row">
@@ -139,15 +159,12 @@
                                             <label for="description">Description :</label>
                                             <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30"
                                                 rows="5" placeholder="Enter description">{{ old('description') }}</textarea>
-
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 mt-3">
                                         <label for="upload_image">Upload Image :</label>
                                         <div class="image-upload-wrap" id="image-upload-wrap">
-
-
                                             <input type="file" name="image_invoice" class="file-upload-input"
                                                 onchange="readURL(this, '');" accept="image/*">
 
@@ -164,12 +181,12 @@
                                                 alt="your image" style="max-width: 100%; max-height: 100%;" />
                                             <div class="image-title-wrap"
                                                 style="display: flex; justify-content: space-between; align-items: center;">
-                                                <button type="button" onclick="removeUpload(this, '')" class="btn btn-danger btn-sm" style="border: none; background: none;">
-                                                    <i class="fa-solid fa-trash" style="font-size: 1.5rem; color: black;"></i>
+                                                <button type="button" onclick="removeUpload(this, '')"
+                                                    class="btn btn-danger btn-sm" style="border: none; background: none;">
+                                                    <i class="fa-solid fa-trash"
+                                                        style="font-size: 1.5rem; color: black;"></i>
                                                 </button>
-
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -177,8 +194,74 @@
                             <div class="row d-flex justify-content-center">
                                 <input id="submitButton" type="submit" class="btn btn-success center col-12 mt-3">
                             </div>
-
                         </form>
+
+                        <div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog"
+                            aria-labelledby="addAccountModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addAccountModalLabel">Add Account</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ route('invoice-supplier-createinvoice.account.store') }}" id="addAccountForm"
+                                            method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="account_no">Account Number<span style="color: red">*</span>
+                                                    :</label>
+                                                <input type="text" class="form-control" id="account_no"
+                                                    name="account_no" placeholder="xxx.xxx"
+                                                    value="{{ old('account_no') }}" required>
+                                                @error('account_no')
+                                                    <p style="color: red;">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="name">Account Name<span style="color: red">*</span>
+                                                    :</label>
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                    placeholder="Enter Account Name" value="{{ old('name') }}"
+                                                    required>
+                                                @error('name')
+                                                    <p style="color: red;">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Category<span style="color: red">*</span> :</label>
+                                                <div class="input-group">
+                                                    <select name="account_category_id" class="form-control select2"
+                                                        id="account_category_id" style="width: 100%">
+                                                        @foreach ($accountCategory as $category)
+                                                            <option value="{{ $category->id }}"
+                                                                {{ old('account_category_id') == $category->id ? 'selected' : '' }}>
+                                                                {{ $category->category_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                @error('account_category_id')
+                                                    <p style="color: red;">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="description">Description :</label>
+                                                <textarea class="form-control" id="description" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="modal fade" id="importModal" tabindex="-1" role="dialog"
                             aria-labelledby="importModalLabel" aria-hidden="true">

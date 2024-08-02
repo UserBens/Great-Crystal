@@ -418,7 +418,7 @@ $(document).ready(function () {
                             
                             Swal.fire(
                                 "Updated!",
-                                `Payment 2${subject} from ${name} has been successfully.`,
+                                `Payment ${subject} from ${name} has been successfully.`,
                                 "success"
                             );
     

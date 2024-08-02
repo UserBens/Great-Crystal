@@ -318,7 +318,8 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/create-invoice-supplier/store', [InvoiceSupplierController::class, 'storeInvoiceSupplier'])->name('invoice-supplier.store');
       Route::delete('/invoice-supplier/{id}', [InvoiceSupplierController::class, 'destroyInvoiceSupplier'])
          ->name('invoice-supplier.destroy');
-      Route::post('/create-account/store', [InvoiceSupplierController::class, 'storeAccount'])->name('invoice-supplier.account.store');
+      Route::post('/create-account-uploadproof/store', [InvoiceSupplierController::class, 'storeAccountatUploadProof'])->name('invoice-supplier-uploadproof.account.store');
+      Route::post('/create-account-createinvoice/store', [InvoiceSupplierController::class, 'storeAccountatCreateInvoice'])->name('invoice-supplier-createinvoice.account.store');
       Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplierAtInvoice'])->name('invoice-create-supplier.store');
    });
 });

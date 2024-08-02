@@ -29,7 +29,16 @@
                                     @endphp
                                     @foreach ($transactionDetails as $detail)
                                         <tr>
-                                            <td>{{ $transaction->no_transaction }}</td>
+                                            {{-- <td>{{ $transaction->no_transaction ?? $transaction->no_invoice }}</td> --}}
+                                            <td>
+                                                @if ($type === 'invoice_supplier')
+                                                    {{ $transaction->no_invoice ?? 'N/A' }}
+                                                @elseif ($type === 'bill')
+                                                    {{ $transaction->number_invoice ?? 'N/A' }}
+                                                @else
+                                                    {{ $transaction->no_transaction ?? 'N/A' }}
+                                                @endif
+                                            </td>
                                             <td>{{ $detail['account_number'] }} - {{ $detail['account_name'] }}</td>
                                             <td>{{ $detail['debit'] > 0 ? 'Rp ' . number_format($detail['debit'], 0, ',', '.') : '0' }}
                                             </td>

@@ -28,6 +28,8 @@ class Bill extends Model
       'created_at',
       'updated_at',
       'number_invoice',
+      'transfer_account_id', // tambahkan field ini jika belum ada
+      'deposit_account_id',  // tambahkan field ini jika belum ada
    ];
 
 
@@ -43,6 +45,17 @@ class Bill extends Model
          $number = Bill::where('number_invoice', "LIKE", '%' . $year . '%')->count();
 
          $model->number_invoice = $year . "/" . $month . "/" . str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+
+         // Set default transfer_account_id if not set
+         if (is_null($model->transfer_account_id)) {
+            $model->transfer_account_id = 22; // Default id for Piutang Monthly Fee
+         }
+
+         // Set default deposit_account_id if not set
+         if (is_null($model->deposit_account_id)) {
+            $model->deposit_account_id = 110; // Default id for Monthly Fee
+         }
+         
       });
    }
 
@@ -68,8 +81,19 @@ class Bill extends Model
       return $this->hasMany(statusInvoiceMail::class, 'bill_id');
    }
 
-   public function accountnumber()
+   // public function accountnumber()
+   // {
+   //    return $this->belongsTo(AccountNumber::class, 'accountnumber_id');
+   // }
+
+
+   public function transferAccount()
    {
-      return $this->belongsTo(AccountNumber::class, 'accountnumber_id');
+      return $this->belongsTo(AccountNumber::class, 'transfer_account_id');
+   }
+
+   public function depositAccount()
+   {
+      return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
    }
 }

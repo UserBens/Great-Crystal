@@ -13,7 +13,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-         
         date_default_timezone_set('Asia/Jakarta');
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
@@ -29,8 +28,10 @@ return new class extends Migration
             $table->integer('installment')->nullable()->default(null);
             $table->integer('amount_installment')->default(0);
             $table->dateTime('date_change_bill')->default(null)->nullable();
-            $table->unsignedBigInteger('accountnumber_id')->nullable();
-            $table->foreign('accountnumber_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->unsignedBigInteger('transfer_account_id')->nullable();
+            $table->foreign('transfer_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->unsignedBigInteger('deposit_account_id')->nullable();
+            $table->foreign('deposit_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

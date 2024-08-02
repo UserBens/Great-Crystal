@@ -18,12 +18,16 @@
                                 </option>
                                 <option value="transaction_send" {{ $form->type === 'transaction_send' ? 'selected' : '' }}>
                                     Transaction Send</option>
+                                <option value="invoice_supplier" {{ $form->type === 'invoice_supplier' ? 'selected' : '' }}>
+                                    Invoice Supplier</option>
+                                <option value="bill" {{ $form->type === 'bill' ? 'selected' : '' }}>
+                                    Bill</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label>Sort By </label>
                             <select name="sort" class="form-control" id="sort-select">
-                                {{-- <option value="" selected disabled>-- Select Sort --</option> --}}
+                                <option value="">Default</option>
                                 <option value="date"
                                     {{ $form->sort === 'date' && $form->order === 'asc' ? 'selected' : '' }}
                                     data-order="asc">Date (Oldest First)</option>
@@ -69,14 +73,14 @@
                     <input type="hidden" name="search" value="{{ $form->search }}">
                     <input type="hidden" name="sort" value="{{ $form->sort }}">
                     <input type="hidden" name="order" value="{{ $form->order }}">
-                    <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-filter fa-bounce"
-                            style="margin-right: 4px"></i>View Filter
+                    <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-filter "
+                            style="margin-right: 4px"></i>Filter
                     </button>
                 </form>
             </div>
 
             <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importModal">
-                <i class="fas fa-file-import fa-bounce" style="margin-right: 4px"></i>Import Data
+                <i class="fas fa-file-import" style="margin-right: 4px"></i>Import
             </button>
         </div>
 
@@ -87,8 +91,6 @@
                         <h3 class="card-title">Report Journal</h3>
                     </div>
                     <div class="card-body p-0">
-
-
                         <table class="table table-striped projects">
                             <thead>
                                 <tr class="">
@@ -102,7 +104,7 @@
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            {{-- <tbody>
                                 @foreach ($allData as $item)
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
@@ -123,11 +125,29 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                            </tbody> --}}
+
+                            <tbody>
+                                @foreach ($allData as $item)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $item->no_transaction }}</td>
+                                        <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
+                                        <td>{{ $item->deposit_account_no }} - {{ $item->deposit_account_name }}</td>
+                                        <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
+                                                    class="btn btn-primary btn-sm"><i class="fas fa-folder"></i> View</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
+
                         </table>
-
-
-
                         <div class="d-flex justify-content-between mt-4 px-3">
                             <div class="mb-3">
                                 Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of
@@ -284,7 +304,6 @@
             @endif
         </script>
     @endif
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

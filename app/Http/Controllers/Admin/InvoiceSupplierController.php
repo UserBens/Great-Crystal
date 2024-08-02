@@ -109,7 +109,7 @@ class InvoiceSupplierController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = InvoiceSupplier::with(['accountnumber', 'supplier']);
+            $query = InvoiceSupplier::with(['transferAccount', 'depositAccount', 'supplier']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -147,7 +147,7 @@ class InvoiceSupplierController extends Controller
             }
 
             // Memuat data dengan pagination dan menambahkan parameter filter ke URL paginasi
-            $data = $query->paginate(15)->appends([
+            $data = $query->paginate(25)->appends([
                 'search' => $request->search,
                 'sort' => $request->sort,
                 'status' => $request->status,
@@ -186,8 +186,8 @@ class InvoiceSupplierController extends Controller
                 // 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
-                'accountnumber_id' => 'required',
-                // 'deposit_account_id' => 'required',
+                'deposit_account_id' => 'required',
+                // 'accountnumber_id' => 'required',
             ]);
 
             // Handle file upload
@@ -202,7 +202,7 @@ class InvoiceSupplierController extends Controller
                     'payment_status' => $request->payment_status,
                     'payment_method' => $request->payment_method,
                     'description' => $request->description,
-                    'accountnumber_id' => $request->accountnumber_id,
+                    'deposit_account_id' => $request->deposit_account_id,
                     // 'deposit_account_id' => $request->deposit_account_id,
                 ]);
 
@@ -219,7 +219,7 @@ class InvoiceSupplierController extends Controller
         }
     }
 
-    public function storeAccount(Request $request)
+    public function storeAccountatUploadProof(Request $request)
     {
         try {
             // Validasi input
@@ -250,17 +250,109 @@ class InvoiceSupplierController extends Controller
         }
     }
 
+    public function storeAccountatCreateInvoice(Request $request)
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'name' => 'required',
+                'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'],
+                'account_category_id' => 'required',
+                // 'description' => 'required',
+            ]);
+
+            // Buat data akun baru
+            Accountnumber::create([
+                'name' => $request->name,
+                'account_no' => $request->account_no,
+                'account_category_id' => $request->account_category_id,
+                'description' => $request->description,
+            ]);
+
+            // Redirect ke halaman indeks akun dengan pesan sukses
+            return redirect()->route('create-invoice-supplier.create')
+                ->with('success', 'Account Number created successfully!');
+        } catch (\Illuminate\Database\QueryException $ex) {
+            $errorMessage = 'Database error occurred. Please try again later.';
+            if ($ex->errorInfo[1] == 1062) {
+                $errorMessage = "The account name or number already exists.";
+            }
+            return redirect()->back()->withInput()->with('error', $errorMessage);
+        }
+    }
+
 
     public function createInvoiceSupplier()
     {
         $supplierDatas = SupplierData::all();
+        $accountNumbers = Accountnumber::all();
+        $accountCategory = Accountcategory::all();
 
         return view('components.supplier.invoice.create', [
             'supplierDatas' => $supplierDatas,
+            'accountNumbers' => $accountNumbers,
+            'accountCategory' => $accountCategory,
         ]);
     }
 
 
+    // kodingan awal store invoice supplier berjalan
+    // public function storeInvoiceSupplier(Request $request)
+    // {
+    //     try {
+    //         // Validasi input
+    //         $request->validate([
+    //             'no_invoice' => 'required|unique:invoice_suppliers,no_invoice',
+    //             'supplier_id' => 'required|exists:supplier_data,id',
+    //             'amount' => 'required|numeric',
+    //             'date' => 'required|date_format:Y-m-d',
+    //             'nota' => 'required',
+    //             'deadline_invoice' => 'required|date_format:Y-m-d',
+    //             // 'pph' => 'required|integer',
+    //             // 'pph_percentage' => 'required|numeric|min:0|max:100',
+    //         ]);
+
+    //         $amount = $request->amount;
+    //         $pph_percentage = $request->pph_percentage;
+
+    //         // Mengurangi amount berdasarkan persentase PPH
+    //         $amount -= ($amount * ($pph_percentage / 100));
+
+    //         // Handle file upload
+    //         $imageName = null;
+    //         if ($request->hasFile('image_invoice')) {
+    //             $image = $request->file('image_invoice');
+    //             $imageName = time() . '.' . $image->getClientOriginalExtension();
+    //             $image->move(public_path('uploads'), $imageName);
+    //         }
+
+    //         // Simpan data invoice
+    //         $invoice = new InvoiceSupplier();
+    //         $invoice->no_invoice = $request->no_invoice;
+    //         $invoice->supplier_id = $request->supplier_id;
+    //         $invoice->amount = $amount;
+    //         $invoice->pph = $request->pph;
+    //         $invoice->pph_percentage = $pph_percentage;
+    //         $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
+    //         $invoice->nota = $request->nota;
+    //         $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
+    //         $invoice->payment_status = 'Not Yet';
+    //         $invoice->payment_method = 'Cash';
+    //         $invoice->description = $request->description;
+    //         $invoice->image_invoice = $imageName;
+    //         $invoice->save();
+
+    //         return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
+    //     } catch (\Illuminate\Database\QueryException $ex) {
+    //         $errorMessage = 'Database error occurred. Please try again later.';
+    //         if ($ex->errorInfo[1] == 1062) {
+    //             $errorMessage = "The account name or number already exists.";
+    //         }
+    //         return redirect()->back()->withInput()->with('error', $errorMessage);
+    //     }
+    // }
+
+    // testing kodingan invoice supplier gpt
     public function storeInvoiceSupplier(Request $request)
     {
         try {
@@ -272,15 +364,18 @@ class InvoiceSupplierController extends Controller
                 'date' => 'required|date_format:Y-m-d',
                 'nota' => 'required',
                 'deadline_invoice' => 'required|date_format:Y-m-d',
-                // 'pph' => 'required|integer',
-                // 'pph_percentage' => 'required|numeric|min:0|max:100',
+                'transfer_account_id' => 'required',
+                // 'pph' => 'nullable|string', // PPh Pasal type
+                // 'pph_percentage' => 'nullable|numeric|min:0|max:100',
             ]);
 
             $amount = $request->amount;
             $pph_percentage = $request->pph_percentage;
 
-            // Mengurangi amount berdasarkan persentase PPH
-            $amount -= ($amount * ($pph_percentage / 100));
+            // Mengurangi amount berdasarkan persentase PPH jika ada
+            if ($pph_percentage) {
+                $amount -= ($amount * ($pph_percentage / 100));
+            }
 
             // Handle file upload
             $imageName = null;
@@ -300,11 +395,26 @@ class InvoiceSupplierController extends Controller
             $invoice->date = Carbon::parse($request->date)->format('Y-m-d');
             $invoice->nota = $request->nota;
             $invoice->deadline_invoice = Carbon::parse($request->deadline_invoice)->format('Y-m-d');
+            $invoice->transfer_account_id = $request->transfer_account_id;
             $invoice->payment_status = 'Not Yet';
             $invoice->payment_method = 'Cash';
             $invoice->description = $request->description;
             $invoice->image_invoice = $imageName;
             $invoice->save();
+
+            // Jika ada PPH, lakukan pemotongan
+            if ($request->pph && $pph_percentage) {
+                $pphAccount = AccountNumber::where('name', 'like', "%{$request->pph}%")->first();
+                if ($pphAccount) {
+                    // Simpan potongan PPH ke akun terkait
+                    $pphAmount = ($request->amount * ($pph_percentage / 100));
+                    // Update balance untuk akun PPH
+                    // Misalnya, tambahkan ke saldo debit atau kredit tergantung tipe akun
+                    // Anda bisa menyesuaikan sesuai logika dan struktur data Anda
+                    $pphAccount->amount += $pphAmount; // Misalnya tambahkan ke saldo
+                    $pphAccount->save();
+                }
+            }
 
             return redirect()->route('invoice-supplier.index')->with('success', 'Invoice Supplier Created Successfully!');
         } catch (\Illuminate\Database\QueryException $ex) {
@@ -315,6 +425,8 @@ class InvoiceSupplierController extends Controller
             return redirect()->back()->withInput()->with('error', $errorMessage);
         }
     }
+
+
 
 
     public function storeSupplierAtInvoice(Request $request)

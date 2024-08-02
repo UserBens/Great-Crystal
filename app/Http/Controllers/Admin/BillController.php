@@ -357,7 +357,7 @@ class BillController extends Controller
             }, 'bill_collection', 'bill_installments'
          ])->where('id', $id)->first();
 
-         $selectedAccountId = $data->accountnumber_id; // Sesuaikan dengan nama kolom yang benar di model Bill
+         $selectedAccountId = $data->deposit_account_id; // Sesuaikan dengan nama kolom yang benar di model Bill
 
 
          return view('components.bill.spp.detail-spp', [
@@ -379,18 +379,18 @@ class BillController extends Controller
          // Validasi input
          $request->validate([
             'id' => 'required|integer',
-            'accountnumber_id' => 'required|integer'
+            'deposit_account_id' => 'required|integer'
          ]);
 
          // Temukan bill berdasarkan ID
          $bill = Bill::find($request->id);
          if ($bill) {
             // Update accountnumber_id dan simpan
-            $bill->accountnumber_id = $request->accountnumber_id;
+            $bill->deposit_account_id = $request->deposit_account_id;
             $bill->save();
 
             // Log info
-            Log::info('Bill Updated', ['id' => $bill->id, 'accountnumber_id' => $bill->accountnumber_id]);
+            Log::info('Bill Updated', ['id' => $bill->id, 'deposit_account_id' => $bill->deposit_account_id]);
 
             // Redirect ke halaman yang sesuai dengan pesan sukses
             return redirect()->back()->with('success', 'Choose Account number successfully!');
@@ -505,8 +505,6 @@ class BillController extends Controller
 
    public function paidOfBook($bill_id, $student_id)
    {
-
-
       session()->flash('page', (object)[
          'page' => 'Bills',
          'child' => 'database bills'
@@ -518,9 +516,6 @@ class BillController extends Controller
          $bill = Bill::with(['bill_collection'])
             ->where('id', $bill_id)
             ->first();
-
-
-
 
          foreach ($bill->bill_collection as $el) {
             if ($el->book_id) {

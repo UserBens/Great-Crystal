@@ -64,7 +64,6 @@
                                                     <option value="Bank"
                                                         {{ $invoice->payment_method == 'Bank' ? 'selected' : '' }}>Bank
                                                     </option>
-
                                                 </select>
                                                 @if ($errors->any())
                                                     <p style="color: red">
@@ -96,9 +95,9 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="accountnumber_id">Pay From <span
+                                                <label for="deposit_account_id">Pay From <span
                                                         style="color: red">*</span>:</label>
-                                                <select name="accountnumber_id" id="accountnumber_id"
+                                                <select name="deposit_account_id" id="deposit_account_id"
                                                     class="form-control select2">
                                                     @foreach ($accountNumbers as $accountNumber)
                                                         <option value="{{ $accountNumber->id }}">
@@ -113,7 +112,7 @@
                                                     </button>
                                                 </div>
                                                 @if ($errors->any())
-                                                    <p style="color: red">{{ $errors->first('accountnumber_id') }}</p>
+                                                    <p style="color: red">{{ $errors->first('deposit_account_id') }}</p>
                                                 @endif
                                             </div>
                                         </div>                                
@@ -121,8 +120,6 @@
                                         <div class="col-md-12 mb-3">
                                             <label for="upload_image">Upload Image :</label>
                                             <div class="image-upload-wrap" id="image-upload-wrap">
-
-
                                                 <input type="file" name="image_proof" class="file-upload-input"
                                                     onchange="readURL(this, '');" accept="image/*">
 
@@ -169,14 +166,14 @@
                                             </div>
                                             <div class="modal-body">
                                                 <form
-                                                    action="{{ route('invoice-supplier.account.store', ['invoice_id' => $invoice->id]) }}"
+                                                    action="{{ route('invoice-supplier-uploadproof.account.store', ['invoice_id' => $invoice->id]) }}"
                                                     id="addAccountForm" method="POST">
                                                     @csrf
                                                     <div class="form-group">
                                                         <label for="account_no">Account Number<span
                                                                 style="color: red">*</span> :</label>
                                                         <input type="text" class="form-control" id="account_no"
-                                                            name="account_no" placeholder="Enter Account Number"
+                                                            name="account_no" placeholder="xxx.xxx"
                                                             value="{{ old('account_no') }}" required>
                                                         @error('account_no')
                                                             <p style="color: red;">{{ $message }}</p>

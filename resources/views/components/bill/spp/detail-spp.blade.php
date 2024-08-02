@@ -142,7 +142,7 @@
                                         <p class="mb-0">Payment Method</p>
                                     </div>
                                     <div class="col-sm-6">
-                                        <select name="accountnumber_id" class="form-control select2">
+                                        <select name="deposit_account_id" class="form-control select2">
                                             @foreach ($accountNumbers as $accountNumber)
                                                 <option value="{{ $accountNumber->id }}"
                                                     @if ($accountNumber->id == $selectedAccountId) selected @endif>
@@ -157,7 +157,7 @@
                                             </button>
                                         </div>
                                         @if ($errors->any())
-                                            <p style="color: red">{{ $errors->first('accountnumber_id') }}</p>
+                                            <p style="color: red">{{ $errors->first('deposit_account_id') }}</p>
                                         @endif
                                     </div>
                                     <div class="col mt-1">

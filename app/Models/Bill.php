@@ -48,12 +48,12 @@ class Bill extends Model
 
          // Set default transfer_account_id if not set
          if (is_null($model->transfer_account_id)) {
-            $model->transfer_account_id = 22; // Default id for Piutang Monthly Fee
+            $model->transfer_account_id = 110; // Default id for Piutang Monthly Fee
          }
 
          // Set default deposit_account_id if not set
          if (is_null($model->deposit_account_id)) {
-            $model->deposit_account_id = 110; // Default id for Monthly Fee
+            $model->deposit_account_id = 22; // Default id for Monthly Fee
          }
          
       });

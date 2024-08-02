@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\SupplierData;
 use App\Models\Transaction_transfer;
 use App\Models\TransactionSendSupplier;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -606,7 +607,7 @@ class AccountingController extends Controller
             ];
 
             // Query data berdasarkan parameter pencarian yang diberikan
-            $query = Transaction_send::with(['transferAccount', 'depositAccount']);
+            $query = Transaction_send::with(['transferAccount', 'depositAccount', 'supplier']);
 
             if ($request->filled('search')) {
                 $searchTerm = '%' . $request->search . '%';
@@ -650,7 +651,7 @@ class AccountingController extends Controller
 
     public function createTransactionSend()
     {
-        $suppliers = TransactionSendSupplier::all();
+        $suppliers = SupplierData::all();
         $accountCategory = Accountcategory::all();
         $accountNumbers = AccountNumber::all(); // Ambil semua data dari tabel accountnumbers
 
@@ -671,7 +672,7 @@ class AccountingController extends Controller
                 'date' => 'required|date_format:d/m/Y',
                 'description' => 'required',
                 'no_transaction' => 'required',
-                'transaction_send_supplier_id' => 'required'
+                // 'transaction_send_supplier_id' => 'required'
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
@@ -684,7 +685,7 @@ class AccountingController extends Controller
                 'date' => $date,
                 'description' => $request->description,
                 'no_transaction' => $request->no_transaction,
-                'transaction_send_supplier_id' => $request->transaction_send_supplier_id,
+                'supplier_id' => $request->supplier_id,
             ]);
 
             // Update the amount in transfer account (allowing it to go negative)

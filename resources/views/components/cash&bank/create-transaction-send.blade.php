@@ -30,14 +30,13 @@
                                                 <p style="color: red">{{ $errors->first('no_transaction') }}</p>
                                             @endif
                                         </div>
-                                        <div class="col-md-6">
-                                            <label>Supplier : <span style="color: red">*</span></label>
+                                        {{-- <div class="col-md-6">
+                                            <label>Supplier : </span></label>
                                             <select name="transaction_send_supplier_id" class="form-control select2"
                                                 id="supplierSelect">
                                                 <option value="" selected disabled>Select a Supplier</option>
                                                 @foreach ($suppliers as $supplier)
-                                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} -
-                                                        {{ $supplier->supplier_role }}
+                                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -50,6 +49,26 @@
                                                 @if ($errors->has('supplier_name'))
                                                     <span class="text-danger">{{ $errors->first('supplier_name') }}</span>
                                                 @endif
+                                            </div>
+                                        </div> --}}
+
+                                        <div class="col-md-6">
+                                            <label for="supplier_id">Supplier Name<span style="color: red">*</span>
+                                                :</label>
+                                            <select name="supplier_id" id="supplier_id" class="form-control select2">
+                                                @foreach ($suppliers as $supplier)
+                                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('supplier_id')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn text-primary" data-toggle="modal"
+                                                    data-target="#importModal">
+                                                    + Add Supplier
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

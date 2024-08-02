@@ -892,6 +892,17 @@ class JournalController extends Controller
                     'description' => $invoice->description,
                     'created_at' => $invoice->created_at
                 ];
+
+                $transactionDetails[] = [
+                    'no_transaction' => $invoice->no_invoice ?? 'N/A',
+                    'account_number' => $depositAccount->account_no,
+                    'account_name' => $depositAccount->name,
+                    'debit' => $invoice->amount > 0 ? $invoice->amount : 0,
+                    'credit' => 0,
+                    'date' => $invoice->date,
+                    'description' => $invoice->description,
+                    'created_at' => $invoice->created_at
+                ];
             }
         }
 
@@ -1051,13 +1062,25 @@ class JournalController extends Controller
             $transaction = InvoiceSupplier::find($id);
 
             if ($transaction) {
-                $accountnumber = $transaction->accountnumber;
+                // $accountnumber = $transaction->accountnumber;
+                $transferAccount = $transaction->transferAccount;
+                $depositAccount = $transaction->depositAccount;
 
                 $transactionDetails = [
                     [
-                        'no_transaction' => $transaction->no_invoice,
-                        'account_number' => $accountnumber->account_no,
-                        'account_name' => $accountnumber->name,
+                        'no_transaction' => $transaction->no_invoice ?? 'N/A',
+                        'account_number' => $transferAccount->account_no,
+                        'account_name' => $transferAccount->name,
+                        'debit' => 0,
+                        'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+                        'date' => $transaction->date,
+                        'description' => $transaction->description,
+                        'created_at' => $transaction->created_at
+                    ],
+                    [
+                        'no_transaction' => $transaction->no_invoice ?? 'N/A',
+                        'account_number' => $depositAccount->account_no,
+                        'account_name' => $depositAccount->name,
                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
                         'credit' => 0,
                         'date' => $transaction->date,
@@ -1119,6 +1142,184 @@ class JournalController extends Controller
 
 
     // print pdf satu per satu 
+    // public function generatePdfJournalDetail($id, $type)
+    // {
+    //     session()->flash('page', (object)[
+    //         'page' => 'Journal',
+    //         'child' => 'Journal Details'
+    //     ]);
+
+    //     try {
+    //         // Variabel untuk menyimpan data detail transaksi
+    //         $transactionDetails = [];
+
+    //         // Sesuaikan pengecekan berdasarkan tipe transaksi
+    //         if ($type === 'transaction_transfer') {
+    //             $transaction = Transaction_transfer::find($id);
+
+    //             if ($transaction) {
+    //                 // Mengambil data transfer account
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 // Mengambil data deposit account
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails = [
+    //                     [
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         } elseif ($type === 'transaction_send') {
+    //             $transaction = Transaction_send::find($id);
+
+    //             if ($transaction) {
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails = [
+    //                     [
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         } elseif ($type === 'transaction_receive') {
+    //             $transaction = Transaction_receive::find($id);
+
+    //             if ($transaction) {
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails = [
+    //                     [
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         } elseif ($type === 'invoice_supplier') {
+    //             $transaction = InvoiceSupplier::find($id);
+
+    //             if ($transaction) {
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails = [
+    //                     [
+    //                         'no_transaction' => $transaction->no_invoice ?? 'N/A',
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0 ,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'no_transaction' => $transaction->no_invoice ?? 'N/A',
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->date,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         } elseif ($type === 'bill') {
+    //             $transaction = Bill::find($id);
+
+    //             if ($transaction) {
+    //                 $transferAccount = $transaction->transferAccount;
+    //                 $depositAccount = $transaction->depositAccount;
+
+    //                 $transactionDetails = [
+    //                     [
+    //                         'no_transaction' => $transaction->number_invoice ?? 'N/A',
+    //                         'account_number' => $transferAccount->account_no,
+    //                         'account_name' => $transferAccount->name,
+    //                         'debit' => 0,
+    //                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'date' => $transaction->deadline_invoice,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ],
+    //                     [
+    //                         'no_transaction' => $transaction->number_invoice ?? 'N/A',
+    //                         'account_number' => $depositAccount->account_no,
+    //                         'account_name' => $depositAccount->name,
+    //                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
+    //                         'credit' => 0,
+    //                         'date' => $transaction->deadline_invoice,
+    //                         'description' => $transaction->description,
+    //                         'created_at' => $transaction->created_at
+    //                     ]
+    //                 ];
+    //             }
+    //         } else {
+    //             // Jika tipe transaksi tidak valid, kembalikan ke halaman index dengan pesan error
+    //             return redirect()->route('journal.index')->with('error', 'Invalid transaction type.');
+    //         }
+
+    //         $nameFormatPdf = Carbon::now()->format('YmdHis') . mt_rand(1000, 9999) . '_journal_detail.pdf';
+
+    //         $pdf = app('dompdf.wrapper');
+    //         $pdf->loadView('components.journal.detail-pdf', [
+    //             'transaction' => $transaction,
+    //             'transactionDetails' => $transactionDetails,
+    //             'type' => $type,
+    //         ])->setPaper('a4', 'landscape');
+
+    //         return $pdf->stream($nameFormatPdf);
+    //     } catch (Exception $e) {
+    //         return abort(500, 'Failed to fetch transaction details.');
+    //     }
+    // }
+
     public function generatePdfJournalDetail($id, $type)
     {
         session()->flash('page', (object)[
@@ -1129,6 +1330,7 @@ class JournalController extends Controller
         try {
             // Variabel untuk menyimpan data detail transaksi
             $transactionDetails = [];
+            $transaction = null;
 
             // Sesuaikan pengecekan berdasarkan tipe transaksi
             if ($type === 'transaction_transfer') {
@@ -1142,6 +1344,7 @@ class JournalController extends Controller
 
                     $transactionDetails = [
                         [
+                            'no_transaction' => $transaction->no_transaction ?? 'N/A',
                             'account_number' => $transferAccount->account_no,
                             'account_name' => $transferAccount->name,
                             'debit' => 0,
@@ -1151,6 +1354,7 @@ class JournalController extends Controller
                             'created_at' => $transaction->created_at
                         ],
                         [
+                            'no_transaction' => $transaction->no_transaction ?? 'N/A',
                             'account_number' => $depositAccount->account_no,
                             'account_name' => $depositAccount->name,
                             'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
@@ -1170,6 +1374,7 @@ class JournalController extends Controller
 
                     $transactionDetails = [
                         [
+                            'no_transaction' => $transaction->no_transaction ?? 'N/A',
                             'account_number' => $transferAccount->account_no,
                             'account_name' => $transferAccount->name,
                             'debit' => 0,
@@ -1179,6 +1384,7 @@ class JournalController extends Controller
                             'created_at' => $transaction->created_at
                         ],
                         [
+                            'no_transaction' => $transaction->no_transaction ?? 'N/A',
                             'account_number' => $depositAccount->account_no,
                             'account_name' => $depositAccount->name,
                             'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
@@ -1198,6 +1404,7 @@ class JournalController extends Controller
 
                     $transactionDetails = [
                         [
+                            'no_transaction' => $transaction->no_transaction ?? 'N/A',
                             'account_number' => $transferAccount->account_no,
                             'account_name' => $transferAccount->name,
                             'debit' => 0,
@@ -1207,6 +1414,7 @@ class JournalController extends Controller
                             'created_at' => $transaction->created_at
                         ],
                         [
+                            'no_transaction' => $transaction->no_transaction ?? 'N/A',
                             'account_number' => $depositAccount->account_no,
                             'account_name' => $depositAccount->name,
                             'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
@@ -1226,15 +1434,17 @@ class JournalController extends Controller
 
                     $transactionDetails = [
                         [
+                            'no_transaction' => $transaction->no_invoice ?? 'N/A',
                             'account_number' => $transferAccount->account_no,
                             'account_name' => $transferAccount->name,
-                            'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
-                            'credit' => 0,
+                            'debit' => 0,
+                            'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
                             'date' => $transaction->date,
                             'description' => $transaction->description,
                             'created_at' => $transaction->created_at
                         ],
                         [
+                            'no_transaction' => $transaction->no_invoice ?? 'N/A',
                             'account_number' => $depositAccount->account_no,
                             'account_name' => $depositAccount->name,
                             'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
@@ -1259,7 +1469,7 @@ class JournalController extends Controller
                             'account_name' => $transferAccount->name,
                             'debit' => 0,
                             'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
-                            'date' => $transaction->date,
+                            'date' => $transaction->deadline_invoice,
                             'description' => $transaction->description,
                             'created_at' => $transaction->created_at
                         ],
@@ -1269,7 +1479,7 @@ class JournalController extends Controller
                             'account_name' => $depositAccount->name,
                             'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
                             'credit' => 0,
-                            'date' => $transaction->date,
+                            'date' => $transaction->deadline_invoice,
                             'description' => $transaction->description,
                             'created_at' => $transaction->created_at
                         ]

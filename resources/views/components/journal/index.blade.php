@@ -20,12 +20,11 @@
                                     Transaction Send</option>
                                 <option value="invoice_supplier" {{ $form->type === 'invoice_supplier' ? 'selected' : '' }}>
                                     Invoice Supplier</option>
-                                <option value="bill" {{ $form->type === 'bill' ? 'selected' : '' }}>
-                                    Bill</option>
+                                <option value="bill" {{ $form->type === 'bill' ? 'selected' : '' }}>Bill</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label>Sort By </label>
+                            <label>Sort By</label>
                             <select name="sort" class="form-control" id="sort-select">
                                 <option value="">Default</option>
                                 <option value="date"
@@ -73,96 +72,99 @@
                     <input type="hidden" name="search" value="{{ $form->search }}">
                     <input type="hidden" name="sort" value="{{ $form->sort }}">
                     <input type="hidden" name="order" value="{{ $form->order }}">
-                    <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-filter "
-                            style="margin-right: 4px"></i>Filter
-                    </button>
+                    <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-filter"
+                            style="margin-right: 4px"></i>Filter</button>
                 </form>
             </div>
 
             <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importModal">
                 <i class="fas fa-file-import" style="margin-right: 4px"></i>Import
             </button>
-        </div>
 
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <div class="card card-dark mt-3">
-                    <div class="card-header">
-                        <h3 class="card-title">Report Journal</h3>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table table-striped projects">
-                            <thead>
-                                <tr class="">
-                                    <th>#</th>
-                                    <th>No Transaction</th>
-                                    <th>Transfer Account</th>
-                                    <th>Deposit Account</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Created At</th>
-                                    <th class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            {{-- <tbody>
-                                @foreach ($allData as $item)
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="card card-dark mt-3">
+                        <div class="card-header">
+                            <h3 class="card-title">Report Journal</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped projects">
+                                <thead>
                                     <tr>
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $item->no_transaction }}</td>
-                                        <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}
-                                        </td>
-                                        <td>{{ $item->transfer_account_no }} - {{ $item->deposit_account_name }}
-                                        </td>
-                                        <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
-                                        <td class="text-center">
-                                            <div class="btn-group">
+                                        <th>#</th>
+                                        <th>No Transaction</th>
+                                        <th>Debit Account</th>
+                                        <th>Kredit Account</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Created At</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $typesOrder = [
+                                            'transaction_transfer' => 1,
+                                            'transaction_send' => 2,
+                                            'transaction_receive' => 3,
+                                            'bill' => 4,
+                                            'invoice_supplier' => 5,
+                                        ];
+                                        $currentType = null;
+                                    @endphp
+                                    @foreach ($allData->sort(function ($a, $b) use ($typesOrder) {
+            return $typesOrder[$a->type] <=> $typesOrder[$b->type];
+        }) as $item)
+                                        @if ($currentType !== $item->type)
+                                            @if ($currentType !== null)
+                                                <tr>
+                                                    <td colspan="8" class="py-2"></td>
+                                                </tr>
+                                            @endif
+                                            <tr class="table-info">
+                                                <td colspan="8"><strong>{{ ucfirst($item->type) }}</strong></td>
+                                            </tr>
+                                            @php
+                                                $currentType = $item->type;
+                                            @endphp
+                                        @endif
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->no_transaction }}</td>
+                                            <td>{{ $item->deposit_account_no }} - {{ $item->deposit_account_name }}</td>
+                                            <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
+                                            <td>{{ number_format($item->amount, 2) }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
+                                            <td class="text-center">
                                                 <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
                                                     class="btn btn-primary btn-sm"><i class="fas fa-folder"></i>
                                                     View</a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody> --}}
 
-                            <tbody>
-                                @foreach ($allData as $item)
-                                    <tr>
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $item->no_transaction }}</td>
-                                        <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
-                                        <td>{{ $item->deposit_account_no }} - {{ $item->deposit_account_name }}</td>
-                                        <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
-                                        <td class="text-center">
-                                            <div class="btn-group">
-                                                <a href="{{ route('journal.detail', ['id' => $item->id, 'type' => $item->type]) }}"
-                                                    class="btn btn-primary btn-sm"><i class="fas fa-folder"></i> View</a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                                                <div class="btn-group">
+                                                </div>
 
-                        </table>
-                        <div class="d-flex justify-content-between mt-4 px-3">
-                            <div class="mb-3">
-                                Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of
-                                {{ $allData->total() }} results
-                            </div>
-                            <div>
-                                {{ $allData->links('pagination::bootstrap-4') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-between mt-4 px-3">
+                                <div class="mb-3">
+                                    Showing {{ $allData->firstItem() }} to {{ $allData->lastItem() }} of
+                                    {{ $allData->total() }} results
+                                </div>
+                                <div>
+                                    {{ $allData->links('pagination::bootstrap-4') }}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
     </section>
+
 
     {{-- Modal --}}
     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"

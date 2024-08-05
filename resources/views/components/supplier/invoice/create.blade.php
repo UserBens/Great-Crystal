@@ -78,55 +78,21 @@
                                                 <p style="color: red">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                    </div>
+                                    </div>                                    
 
-                                    {{-- <div class="form-group row">
+                                    <div class="form-group row">                                       
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="transfer_account_id">Credit <span
-                                                        style="color: red">*</span>:</label>
-                                                <select name="transfer_account_id" id="transfer_account_id"
-                                                    class="form-control select2">
-                                                    @foreach ($accountNumbers as $accountNumber)
-                                                        <option value="{{ $accountNumber->id }}">
-                                                            {{ $accountNumber->account_no }} -
-                                                            {{ $accountNumber->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <div class="input-group-append">
-                                                    <button type="button" class="btn text-primary" data-toggle="modal"
-                                                        data-target="#addAccountModal">
-                                                        + Add Account
-                                                    </button>
-                                                </div>
-                                                @if ($errors->any())
-                                                    <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
-                                                @endif
-                                            </div>
+                                            <label>Debit : <span style="color: red">*</span></label>
+                                            <select name="deposit_account_id" id="deposit_account_id"
+                                                class="form-control select2">
+                                                @foreach ($accountNumbers as $accountNumber)
+                                                    <option value="{{ $accountNumber->id }}">
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="transfer_account_id">Debit <span
-                                                        style="color: red">*</span>:</label>
-                                                <select name="transfer_account_id" id="transfer_account_id"
-                                                    class="form-control select2">
-                                                    @foreach ($accountNumbers as $accountNumber)
-                                                        <option value="{{ $accountNumber->id }}">
-                                                            {{ $accountNumber->account_no }} -
-                                                            {{ $accountNumber->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                               
-                                                @if ($errors->any())
-                                                    <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                    </div> --}}
-
-                                    <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Kredit : <span style="color: red">*</span></label>
                                             <select name="transfer_account_id" id="transfer_account_id"
@@ -144,19 +110,6 @@
                                                 </button>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-6">
-                                            <label>Debit : <span style="color: red">*</span></label>
-                                            <select name="deposit_account_id" id="deposit_account_id"
-                                                class="form-control select2">
-                                                @foreach ($accountNumbers as $accountNumber)
-                                                    <option value="{{ $accountNumber->id }}">
-                                                        {{ $accountNumber->account_no }} -
-                                                        {{ $accountNumber->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
                                     </div>
 
                                     <div class="form-group row">

@@ -358,7 +358,7 @@ class NotificationPaymentSuccess extends Controller
          info('Payment success notification sent successfully.');
 
          // Beri respons sukses
-         return response()->json(['message' => 'Email successfully sent']);
+         return response()->json(['message' => 'Email Payment Confirmed successfully sent']);
       } catch (\Exception $err) {
          // Rollback transaksi jika terjadi kesalahan
          DB::rollBack();

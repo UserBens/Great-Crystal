@@ -56,6 +56,7 @@ class InvoiceSupplierSeeder extends Seeder
                 'description' => 'Description for invoice ' . $i,
                 'payment_method' => 'Cash', // Added to match the new column 'payment_method'
                 'transfer_account_id' => $accountIds->random(), // Randomly select one transfer account ID
+                'deposit_account_id' => $accountIds->random(), // Randomly select one transfer account ID
                 'image_invoice' => 'images/invoice_' . $i . '.jpg',
                 'image_proof' => 'images/proof_' . $i . '.jpg',
                 'created_at' => now(),

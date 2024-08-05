@@ -180,7 +180,7 @@ class BillController extends Controller
                   $query->with('grade')->get();
                }])
                   ->orderBy('updated_at', 'desc')
-                  ->paginate(15);
+                  ->paginate(25);
             }
          }
 

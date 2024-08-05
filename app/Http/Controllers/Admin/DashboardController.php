@@ -371,11 +371,11 @@ class DashboardController extends Controller
             $teacherData = Teacher::where('is_active', true)->orderBy('id', 'desc')->take(6)->get();
             $studentData = Student::where('is_active', true)->orderBy('id', 'desc')->take(6)->get();
 
-
             // Mengambil jumlah data transaksi
             $transactionSend = Transaction_send::count();
             $transactionReceive = Transaction_receive::count();
             $transactionTransfer = Transaction_transfer::count();
+            $invoiceData = InvoiceSupplier::count();
 
             // start code pie chart
             // Data untuk diagram
@@ -408,7 +408,7 @@ class DashboardController extends Controller
                 ];
             }
             // end code pie chart
-            
+
 
             // start code area chart 
             // Data untuk chart
@@ -478,7 +478,10 @@ class DashboardController extends Controller
             }
             // end code area chart
 
-            // // Data line chart untuk transaksi bulanan
+
+
+
+            // Data line chart untuk transaksi bulanan
             $rows = Transaction_send::selectRaw('MAX(date) AS date, COUNT(*) AS total')
                 ->groupByRaw('YEAR(date), MONTH(date)')
                 ->get();
@@ -540,9 +543,9 @@ class DashboardController extends Controller
                 ->get();
 
             // Fetch monthly expenses (Total expenditures)
-            $expenseRows = Expenditure::selectRaw('MONTH(spent_at) AS month, SUM(amount_spent) AS total')
-                ->whereYear('spent_at', $currentYear)
-                ->groupByRaw('MONTH(spent_at)')
+            $expenseRows = InvoiceSupplier::selectRaw('MONTH(created_at) AS month, SUM(amount) AS total')
+                ->whereYear('created_at', $currentYear)
+                ->groupByRaw('MONTH(created_at)')
                 ->get();
 
             // Initialize arrays for income and expenses
@@ -584,6 +587,10 @@ class DashboardController extends Controller
             array_multisort(array_map('strtotime', $incomeData['categories']), $incomeData['categories']);
             array_multisort(array_map('strtotime', $expenseData['categories']), $expenseData['categories']);
 
+            
+
+
+            // Tampilan untuk Invoice supplier
             $invoiceSuppliers = InvoiceSupplier::all();
 
             $invoiceSuppliersChart = InvoiceSupplier::selectRaw('payment_status, COUNT(*) as total')
@@ -624,6 +631,7 @@ class DashboardController extends Controller
                 'expenseData' => $expenseData,
                 'invoiceSuppliers' => $invoiceSuppliers,
                 'invoiceSuppliersChart' => $invoiceSuppliersChart,
+                'invoiceData' => $invoiceData,
 
             ];
 

@@ -25,6 +25,7 @@
             $cardTeacher = 'col';
             $cardBill = 'col';
             $cardPastDue = 'col';
+            $cardInvoiceSupplier = 'col';
             $listStudent = 'd-none';
             $listTeacher = '';
             $listBill = '';
@@ -41,7 +42,7 @@
                         <div class="small-box bg-success">
                             <div class="inner">
                                 <h3>{{ $data->transactionReceive }}</h3>
-                                <p>Total Transaction Receive</p>
+                                <p>Total Receive Transaction</p>
                             </div>
                             <div class="icon">
                                 <i class="fa-solid fa-hand-holding-dollar"></i>
@@ -57,7 +58,7 @@
                         <div class="small-box bg-warning">
                             <div class="inner">
                                 <h3>{{ $data->transactionSend }}</h3>
-                                <p>Total Transaction Send</p>
+                                <p>Total Send Transaction</p>
                             </div>
                             <div class="icon">
                                 <i class="fa-solid fa-money-bill-trend-up"></i>
@@ -73,12 +74,28 @@
                         <div class="small-box bg-info">
                             <div class="inner">
                                 <h3>{{ $data->transactionTransfer }}</h3>
-                                <p>Total Transaction Transfer</p>
+                                <p>Total Transfer Transaction</p>
                             </div>
                             <div class="icon">
                                 <i class="fa-solid fa-money-bill-transfer"></i>
                             </div>
                             <a href="{{ route('transaction-transfer.index') }}" class="small-box-footer">
+                                More info <i class="fas fa-arrow-circle-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="{{ $cardInvoiceSupplier }}">
+                        <!-- small box -->
+                        <div class="small-box bg-orange">
+                            <div class="inner">
+                                <h3>{{ $data->invoiceData }}</h3>
+                                <p>Total Invoice Supplier</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa-solid fa-file-invoice"></i>
+                            </div>
+                            <a href="{{ route('invoice-supplier.index') }}" class="small-box-footer">
                                 More info <i class="fas fa-arrow-circle-right"></i>
                             </a>
                         </div>
@@ -89,7 +106,7 @@
     </section>
 
     <div class="row">
-        <section class="col-lg-7 connectedSortable">
+        <section class="col-lg-12 connectedSortable">
             @if ($user == 'accounting')
                 <div class="{{ $listBill }} card">
                     <div class="card-header">
@@ -129,7 +146,7 @@
                                                         Deadline Invoice -
                                                     </span>
                                                     <span class="{{ $isPaid ? 'text-black' : 'text-danger' }}">
-                                                        {{ $invoiceSupplier->supplier_name }}
+                                                        {{ $invoiceSupplier->supplier->name }}
                                                         ({{ $invoiceSupplier->no_invoice }})
                                                     </span>
                                                     @if (!$isPaid)
@@ -164,15 +181,15 @@
             @endif
         </section>
 
-        <section class="col-lg-5 connectedSortable">
+        <section class="col-lg-12 connectedSortable">
             @if ($user == 'accounting')
                 <div class="col-md-12">
                     <div class="card mb-3">
                         <div class="card-header">
-                            Income Chart
+                            Area Chart
                         </div>
                         <div class="card-body">
-                            <div id="income_chart"></div>
+                            <div id="area_chart"></div>
                         </div>
                     </div>
                 </div>
@@ -182,9 +199,25 @@
 
     <div class="row">
         @if ($user == 'accounting')
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Income Chart
+                    </div>
+                    <div class="card-body">
+                        <div id="income_chart"></div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+
+
+    <div class="row">
+        @if ($user == 'accounting')
             <section class="col-lg-6 connectedSortable">
                 <div class="card mb-3\">
-                    <div class="card-header">
+                <div class="card-header">
                     Pie Chart
                 </div>
                 <div class="card-body">
@@ -202,23 +235,52 @@
                     </div>
                 </div>
             </section>
-
-
-            <div class="col-md-12">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        Area Chart
-                    </div>
-                    <div class="card-body">
-                        <div id="area_chart"></div>
-                    </div>
-                </div>
-            </div>
         @endif
     </div>
 
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Highcharts.chart('income_chart', {
+            //     chart: {
+            //         type: 'column'
+            //     },
+            //     title: {
+            //         text: 'Monthly Income vs Expenses'
+            //     },
+            //     xAxis: {
+            //         categories: @json(array_values($data->incomeData['categories'])),
+            //         crosshair: true
+            //     },
+            //     yAxis: {
+            //         title: {
+            //             text: 'Amount'
+            //         }
+            //     },
+            //     tooltip: {
+            //         headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            //         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            //             '<td style="padding:0"><b>{point.y:.2f}</b></td></tr>',
+            //         footerFormat: '</table>',
+            //         shared: true,
+            //         useHTML: true
+            //     },
+            //     plotOptions: {
+            //         column: {
+            //             pointPadding: 0.2,
+            //             borderWidth: 0
+            //         }
+            //     },
+            //     series: [{
+            //         name: 'Income',
+            //         data: @json(array_values($data->incomeData['data']))
+            //     }, {
+            //         name: 'Expenses',
+            //         data: @json(array_values($data->expenseData['data']))
+            //     }]
+            // });
+
             Highcharts.chart('income_chart', {
                 chart: {
                     type: 'column'
@@ -238,10 +300,19 @@
                 tooltip: {
                     headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                     pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y:.2f}</b></td></tr>',
+                        '<td style="padding:0"><b>Rp. {point.y:,.0f}</b></td></tr>',
                     footerFormat: '</table>',
                     shared: true,
-                    useHTML: true
+                    useHTML: true,
+                    formatter: function() {
+                        var point = this.points[0];
+                        var formattedAmount = Highcharts.numberFormat(point.y, 0, ',', '.');
+                        return '<span style="font-size:10px">' + point.key + '</span><table>' +
+                            '<tr><td style="color:' + point.series.color + ';padding:0">' + point.series
+                            .name + ': </td>' +
+                            '<td style="padding:0"><b>Rp. ' + formattedAmount + '</b></td></tr>' +
+                            '</table>';
+                    }
                 },
                 plotOptions: {
                     column: {
@@ -257,6 +328,7 @@
                     data: @json(array_values($data->expenseData['data']))
                 }]
             });
+
 
             Highcharts.chart('pie_chart', {
                 chart: {

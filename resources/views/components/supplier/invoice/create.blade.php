@@ -30,6 +30,7 @@
                                                 <p style="color: red">{{ $message }}</p>
                                             @enderror
                                         </div>
+
                                         <div class="col-md-6">
                                             <label for="supplier_id">Supplier Name<span style="color: red">*</span>
                                                 :</label>
@@ -49,7 +50,6 @@
                                                 </button>
                                             </div>
                                         </div>
-
                                     </div>
 
                                     <div class="form-group row">
@@ -69,26 +69,45 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="transfer_account_id">Debt <span
-                                                        style="color: red">*</span>:</label>
-                                                <select name="transfer_account_id" id="transfer_account_id"
-                                                    class="form-control select2">
-                                                    @foreach ($accountNumbers as $accountNumber)
-                                                        <option value="{{ $accountNumber->id }}">
-                                                            {{ $accountNumber->account_no }} -
-                                                            {{ $accountNumber->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <div class="input-group-append">
-                                                    <button type="button" class="btn text-primary" data-toggle="modal"
-                                                        data-target="#addAccountModal">
-                                                        + Add Account
-                                                    </button>
-                                                </div>
-                                                @if ($errors->any())
-                                                    <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
-                                                @endif
+                                            <label for="nota">Nota<span style="color: red">*</span> :</label>
+                                            <div class="input-group">
+                                                <input name="nota" type="text" class="form-control" id="nota"
+                                                    placeholder="Enter Nota" autocomplete="off" value="{{ old('nota') }}">
+                                            </div>
+                                            @error('nota')
+                                                <p style="color: red">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>                                    
+
+                                    <div class="form-group row">                                       
+                                        <div class="col-md-6">
+                                            <label>Debit : <span style="color: red">*</span></label>
+                                            <select name="deposit_account_id" id="deposit_account_id"
+                                                class="form-control select2">
+                                                @foreach ($accountNumbers as $accountNumber)
+                                                    <option value="{{ $accountNumber->id }}">
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label>Kredit : <span style="color: red">*</span></label>
+                                            <select name="transfer_account_id" id="transfer_account_id"
+                                                class="form-control select2">
+                                                @foreach ($accountNumbers as $accountNumber)
+                                                    <option value="{{ $accountNumber->id }}">
+                                                        {{ $accountNumber->account_no }} -
+                                                        {{ $accountNumber->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn text-primary" data-toggle="modal"
+                                                    data-target="#addAccountModal">
+                                                    + Add Account
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -106,7 +125,8 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="deadline_invoice">Deadline Invoice<span style="color: red">*</span>
+                                            <label for="deadline_invoice">Deadline Invoice<span
+                                                    style="color: red">*</span>
                                                 :</label>
                                             <input type="date" name="deadline_invoice" class="form-control"
                                                 value="{{ old('deadline_invoice') }}"
@@ -124,7 +144,8 @@
                                             <label for="pph">PPH :</label>
                                             <div class="input-group">
                                                 <input name="pph" type="text" class="form-control" id="pph"
-                                                    placeholder="Enter PPH" autocomplete="off" value="{{ old('pph') }}">
+                                                    placeholder="Enter PPH" autocomplete="off"
+                                                    value="{{ old('pph') }}">
                                             </div>
                                         </div>
 
@@ -138,21 +159,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <label for="nota">Nota<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
 
-                                                <input name="nota" type="text" class="form-control" id="nota"
-                                                    placeholder="Enter Nota" autocomplete="off"
-                                                    value="{{ old('nota') }}">
-                                            </div>
-
-                                            @error('nota')
-                                                <p style="color: red">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-12">
@@ -207,8 +214,8 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{ route('invoice-supplier-createinvoice.account.store') }}" id="addAccountForm"
-                                            method="POST">
+                                        <form action="{{ route('invoice-supplier-createinvoice.account.store') }}"
+                                            id="addAccountForm" method="POST">
                                             @csrf
                                             <div class="form-group">
                                                 <label for="account_no">Account Number<span style="color: red">*</span>
@@ -532,7 +539,10 @@
                 });
             });
 
-            $('.select2').select2();
+            // Inisialisasi Select2 pada elemen select
+            $(document).ready(function() {
+                $('.select2').select2();
+            });
         });
 
         // Menonaktifkan aksi default dari tombol "Upload Proof Image"

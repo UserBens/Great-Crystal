@@ -78,7 +78,7 @@
                                 <th>Account Number</th>
                                 <th>Supplier</th>
                                 <th>Amount</th>
-                                <th>Date</th>
+                                <th>Date</th>                                
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -93,18 +93,14 @@
                                             {{ $item->transferAccount->name }}
                                         @endif
                                     </td>
-
                                     <td>
-                                        @if ($item->transactionSendSupplier)
-                                            {{ $item->transactionSendSupplier->supplier_name }}
+                                        @if ($item->supplier)
+                                            {{ $item->supplier->name }}
                                         @endif
-                                    </td>
-                                    {{-- <td>{{ $item->depositAccount->account_no }} -
-                                        {{ $item->depositAccount->name }}</td> --}}
-
+                                    </td>                                  
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
-                                    
+
                                     <td>
                                         <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
                                             data-id="{{ $item->id }}">

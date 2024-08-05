@@ -125,6 +125,151 @@ class JournalController extends Controller
     //     return view('components.journal.index', compact('allData', 'form', 'selectedItems'));
     // }
 
+    // old code
+    // public function indexJournal(Request $request)
+    // {
+    //     session()->flash('preloader', true);
+    //     session()->flash('page', (object) [
+    //         'page' => 'Journal',
+    //         'child' => 'database Journal',
+    //     ]);
+
+    //     $selectedItems = $request->id ?? [];
+
+    //     $form = (object) [
+    //         'sort' => $request->sort ?? 'date', // Default sort by date
+    //         'order' => $request->order ?? 'desc', // Default descending
+    //         'status' => $request->status ?? null,
+    //         'search' => $request->search ?? null,
+    //         'type' => $request->type ?? null,
+    //         'start_date' => $request->start_date ?? null,
+    //         'end_date' => $request->end_date ?? null,
+    //     ];
+
+    //     $transactionTransfers = DB::table('transaction_transfers')
+    //         ->select(
+    //             'transaction_transfers.id',
+    //             'transaction_transfers.no_transaction',
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'transaction_transfers.amount',
+    //             'transaction_transfers.date',
+    //             'transaction_transfers.created_at',
+    //             DB::raw('"transaction_transfer" as type')
+    //         )
+    //         ->join('accountnumbers as accountnumbers_transfer', 'transaction_transfers.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->join('accountnumbers as accountnumbers_deposit', 'transaction_transfers.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $transactionSends = DB::table('transaction_sends')
+    //         ->select(
+    //             'transaction_sends.id',
+    //             'transaction_sends.no_transaction',
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'transaction_sends.amount',
+    //             'transaction_sends.date',
+    //             'transaction_sends.created_at',
+    //             DB::raw('"transaction_send" as type')
+    //         )
+    //         ->join('accountnumbers as accountnumbers_transfer', 'transaction_sends.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->join('accountnumbers as accountnumbers_deposit', 'transaction_sends.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $transactionReceives = DB::table('transaction_receives')
+    //         ->select(
+    //             'transaction_receives.id',
+    //             'transaction_receives.no_transaction',
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'transaction_receives.amount',
+    //             'transaction_receives.date',
+    //             'transaction_receives.created_at',
+    //             DB::raw('"transaction_receive" as type')
+    //         )
+    //         ->join('accountnumbers as accountnumbers_transfer', 'transaction_receives.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->join('accountnumbers as accountnumbers_deposit', 'transaction_receives.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $invoiceSuppliers = DB::table('invoice_suppliers')
+    //         ->select(
+    //             'invoice_suppliers.id',
+    //             'invoice_suppliers.no_invoice as no_transaction',
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'invoice_suppliers.amount',
+    //             'invoice_suppliers.date',
+    //             'invoice_suppliers.created_at',
+    //             DB::raw('"invoice_supplier" as type')
+    //         )
+    //         ->leftJoin('accountnumbers as accountnumbers_transfer', 'invoice_suppliers.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->leftJoin('accountnumbers as accountnumbers_deposit', 'invoice_suppliers.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $bills = DB::table('bills')
+    //         ->select(
+    //             'bills.id',
+    //             'bills.number_invoice as no_transaction', // Pastikan number_invoice disertakan
+    //             'accountnumbers_transfer.name as transfer_account_name',
+    //             'accountnumbers_transfer.account_no as transfer_account_no',
+    //             'accountnumbers_deposit.name as deposit_account_name',
+    //             'accountnumbers_deposit.account_no as deposit_account_no',
+    //             'bills.amount',
+    //             'bills.deadline_invoice as date',
+    //             'bills.created_at',
+    //             DB::raw('"bill" as type')
+    //         )
+    //         ->leftJoin('accountnumbers as accountnumbers_transfer', 'bills.transfer_account_id', '=', 'accountnumbers_transfer.id')
+    //         ->leftJoin('accountnumbers as accountnumbers_deposit', 'bills.deposit_account_id', '=', 'accountnumbers_deposit.id');
+
+    //     $unionQuery = $transactionTransfers
+    //         ->unionAll($transactionSends)
+    //         ->unionAll($transactionReceives)
+    //         ->unionAll($invoiceSuppliers)
+    //         ->unionAll($bills); // Include bills in the union
+
+    //     $query = DB::table(DB::raw("({$unionQuery->toSql()}) as sub"))
+    //         ->mergeBindings($unionQuery);
+
+    //     Log::info('Data sebelum filter tanggal:', $query->get()->toArray());
+
+    //     if ($form->start_date && $form->end_date) {
+    //         $start_date = Carbon::createFromFormat('Y-m-d', $form->start_date)->startOfDay();
+    //         $end_date = Carbon::createFromFormat('Y-m-d', $form->end_date)->endOfDay();
+
+    //         $query->whereBetween('date', [$start_date, $end_date]);
+    //     }
+
+    //     Log::info('Data setelah filter tanggal:', $query->get()->toArray());
+
+    //     if ($form->type) {
+    //         $query->where('type', $form->type);
+    //     }
+
+    //     if ($form->search) {
+    //         $query->where(function ($query) use ($form) {
+    //             $query->where('no_transaction', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('transfer_account_name', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('deposit_account_name', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('transfer_account_no', 'like', '%' . $form->search . '%')
+    //                 ->orWhere('deposit_account_no', 'like', '%' . $form->search . '%');
+    //         });
+    //     }
+
+    //     if ($form->sort) {
+    //         $query->orderBy($form->sort, $form->order);
+    //     }
+
+    //     $allData = $query->paginate(10);
+
+    //     return view('components.journal.index', compact('allData', 'form', 'selectedItems'));
+    // }
+
+    // code from gpt
     public function indexJournal(Request $request)
     {
         session()->flash('preloader', true);
@@ -133,11 +278,9 @@ class JournalController extends Controller
             'child' => 'database Journal',
         ]);
 
-        $selectedItems = $request->id ?? [];
-
         $form = (object) [
-            'sort' => $request->sort ?? 'date', // Default sort by date
-            'order' => $request->order ?? 'desc', // Default descending
+            'sort' => $request->sort ?? 'date',
+            'order' => $request->order ?? 'desc',
             'status' => $request->status ?? null,
             'search' => $request->search ?? null,
             'type' => $request->type ?? null,
@@ -212,7 +355,7 @@ class JournalController extends Controller
         $bills = DB::table('bills')
             ->select(
                 'bills.id',
-                'bills.number_invoice as no_transaction', // Pastikan number_invoice disertakan
+                'bills.number_invoice as no_transaction',
                 'accountnumbers_transfer.name as transfer_account_name',
                 'accountnumbers_transfer.account_no as transfer_account_no',
                 'accountnumbers_deposit.name as deposit_account_name',
@@ -229,12 +372,10 @@ class JournalController extends Controller
             ->unionAll($transactionSends)
             ->unionAll($transactionReceives)
             ->unionAll($invoiceSuppliers)
-            ->unionAll($bills); // Include bills in the union
+            ->unionAll($bills);
 
         $query = DB::table(DB::raw("({$unionQuery->toSql()}) as sub"))
             ->mergeBindings($unionQuery);
-
-        Log::info('Data sebelum filter tanggal:', $query->get()->toArray());
 
         if ($form->start_date && $form->end_date) {
             $start_date = Carbon::createFromFormat('Y-m-d', $form->start_date)->startOfDay();
@@ -242,8 +383,6 @@ class JournalController extends Controller
 
             $query->whereBetween('date', [$start_date, $end_date]);
         }
-
-        Log::info('Data setelah filter tanggal:', $query->get()->toArray());
 
         if ($form->type) {
             $query->where('type', $form->type);
@@ -261,12 +400,15 @@ class JournalController extends Controller
 
         if ($form->sort) {
             $query->orderBy($form->sort, $form->order);
+        } else {
+            $query->orderBy('date', 'desc');
         }
 
         $allData = $query->paginate(25);
 
-        return view('components.journal.index', compact('allData', 'form', 'selectedItems'));
+        return view('components.journal.index', compact('allData', 'form'));
     }
+
 
 
     // public function showFilterJournalDetail(Request $request)
@@ -1079,8 +1221,8 @@ class JournalController extends Controller
                     ],
                     [
                         'no_transaction' => $transaction->no_invoice ?? 'N/A',
-                        'account_number' => $depositAccount->account_no,
-                        'account_name' => $depositAccount->name,
+                        'account_number' => $depositAccount->account_no ?? "NULL",
+                        'account_name' => $depositAccount->name ?? "NULL",
                         'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
                         'credit' => 0,
                         'date' => $transaction->date,

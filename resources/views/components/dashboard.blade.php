@@ -238,49 +238,8 @@
         @endif
     </div>
 
-
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Highcharts.chart('income_chart', {
-            //     chart: {
-            //         type: 'column'
-            //     },
-            //     title: {
-            //         text: 'Monthly Income vs Expenses'
-            //     },
-            //     xAxis: {
-            //         categories: @json(array_values($data->incomeData['categories'])),
-            //         crosshair: true
-            //     },
-            //     yAxis: {
-            //         title: {
-            //             text: 'Amount'
-            //         }
-            //     },
-            //     tooltip: {
-            //         headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            //         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            //             '<td style="padding:0"><b>{point.y:.2f}</b></td></tr>',
-            //         footerFormat: '</table>',
-            //         shared: true,
-            //         useHTML: true
-            //     },
-            //     plotOptions: {
-            //         column: {
-            //             pointPadding: 0.2,
-            //             borderWidth: 0
-            //         }
-            //     },
-            //     series: [{
-            //         name: 'Income',
-            //         data: @json(array_values($data->incomeData['data']))
-            //     }, {
-            //         name: 'Expenses',
-            //         data: @json(array_values($data->expenseData['data']))
-            //     }]
-            // });
-
             Highcharts.chart('income_chart', {
                 chart: {
                     type: 'column'
@@ -305,13 +264,15 @@
                     shared: true,
                     useHTML: true,
                     formatter: function() {
-                        var point = this.points[0];
-                        var formattedAmount = Highcharts.numberFormat(point.y, 0, ',', '.');
-                        return '<span style="font-size:10px">' + point.key + '</span><table>' +
-                            '<tr><td style="color:' + point.series.color + ';padding:0">' + point.series
-                            .name + ': </td>' +
-                            '<td style="padding:0"><b>Rp. ' + formattedAmount + '</b></td></tr>' +
-                            '</table>';
+                        var s = '<span style="font-size:10px">' + this.x + '</span><table>';
+                        this.points.forEach(function(point) {
+                            s += '<tr><td style="color:' + point.series.color + ';padding:0">' +
+                                point.series.name + ': </td>' +
+                                '<td style="padding:0"><b>Rp. ' + Highcharts.numberFormat(point
+                                    .y, 0, ',', '.') + '</b></td></tr>';
+                        });
+                        s += '</table>';
+                        return s;
                     }
                 },
                 plotOptions: {

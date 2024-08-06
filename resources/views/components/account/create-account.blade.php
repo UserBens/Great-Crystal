@@ -13,6 +13,18 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group row">
+
+                                        <div class="col-md-6">
+                                            <label for="account_no">Account Number<span style="color: red">*</span>
+                                                :</label>
+                                            <input name="account_no" type="text" class="form-control" id="account_no"
+                                                placeholder="xxx.xxx" value="{{ old('account_no') }}" autocomplete="off"
+                                                required>
+                                            @if ($errors->any())
+                                                <p style="color: red">{{ $errors->first('account_no') }}</p>
+                                            @endif
+                                        </div>
+
                                         <div class="col-md-6">
                                             <label for="name">Name<span style="color: red">*</span> :</label>
                                             <input name="name" type="text" class="form-control" id="name"
@@ -22,20 +34,13 @@
                                                 <p style="color: red">{{ $errors->first('name') }}</p>
                                             @endif
                                         </div>
-                                        <div class="col-md-6">
-                                            <label for="account_no">Account Number<span style="color: red">*</span>
-                                                :</label>
-                                            <input name="account_no" type="text" class="form-control" id="account_no"
-                                                placeholder="Enter Account Number" value="{{ old('account_no') }}"
-                                                autocomplete="off" required>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('account_no') }}</p>
-                                            @endif
-                                        </div>
+
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-md-6 mt-3">
-                                            <label>Category : <span style="color: red"></span></label>
+                                            <label>Category <span style="color: red">*</span> :</label>
+                                            {{-- <label for="amount">Amount<span style="color: red">*</span> :</label> --}}
+
                                             <div class="input-group">
                                                 <select name="account_category_id" class="form-control select2"
                                                     id="account_category_id">
@@ -54,7 +59,7 @@
                                             </button>
                                         </div>
 
-                                        <div class="col-md-6 mt-3">
+                                        {{-- <div class="col-md-6 mt-3">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -68,8 +73,8 @@
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
-                                        </div>
-                                    </div>                                   
+                                        </div> --}}
+                                    </div>
 
                                     <div class="form-group row">
                                         <div class="col-md-12">

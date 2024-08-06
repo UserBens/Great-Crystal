@@ -78,9 +78,9 @@
                                                 <p style="color: red">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                    </div>                                    
+                                    </div>
 
-                                    <div class="form-group row">                                       
+                                    <div class="form-group row">
                                         <div class="col-md-6">
                                             <label>Debit : <span style="color: red">*</span></label>
                                             <select name="deposit_account_id" id="deposit_account_id"
@@ -125,8 +125,7 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="deadline_invoice">Deadline Invoice<span
-                                                    style="color: red">*</span>
+                                            <label for="deadline_invoice">Deadline Invoice<span style="color: red">*</span>
                                                 :</label>
                                             <input type="date" name="deadline_invoice" class="form-control"
                                                 value="{{ old('deadline_invoice') }}"
@@ -158,8 +157,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-
 
                                     <div class="form-group row">
                                         <div class="col-md-12">
@@ -315,8 +312,7 @@
 
                                                 <div class="form-group row">
                                                     <div class="col-md-6">
-                                                        <label for="email">Email<span style="color: red">*</span>
-                                                            :</label>
+                                                        <label for="email">Email :</label>
                                                         <div class="input-group">
                                                             <input name="email" type="text" class="form-control"
                                                                 id="email" placeholder="example@gmail.com"

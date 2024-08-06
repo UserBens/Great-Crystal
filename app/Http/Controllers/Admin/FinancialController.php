@@ -40,7 +40,7 @@ class FinancialController extends Controller
         session()->flash('preloader', true);
         session()->flash('page', (object)[
             'page' => 'Financial',
-            'child' => 'database expenditure',
+            'child' => 'database expense',
         ]);
 
         // $bills = Bill::where('paidOf', true)->get()->all();

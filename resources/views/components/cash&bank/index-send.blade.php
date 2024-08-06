@@ -76,7 +76,7 @@
                             <tr>
                                 <th style="width: 3%">#</th>
                                 <th>Account Number</th>
-                                <th>Supplier</th>
+                                <th>Recipient</th>
                                 <th>Amount</th>
                                 <th>Date</th>                                
                                 <th>Actions</th>
@@ -93,11 +93,12 @@
                                             {{ $item->transferAccount->name }}
                                         @endif
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         @if ($item->supplier)
                                             {{ $item->supplier->name }}
                                         @endif
-                                    </td>                                  
+                                    </td> --}}
+                                    <td>{{ $item->recipient_name }}</td>
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
 

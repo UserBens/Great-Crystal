@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('deposit_account_id');
             $table->foreign('deposit_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('no_transaction')->unique();
-            $table->unsignedBigInteger('student_id'); 
+            $table->unsignedBigInteger('student_id')->nullable(); 
             $table->foreign('student_id')->references('id')->on('students')->cascadeOnDelete()->cascadeOnUpdate(); 
             $table->bigInteger('amount');
             $table->dateTime('date')->default(now());

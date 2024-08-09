@@ -79,7 +79,7 @@
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>
-                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="10"
+                                            <textarea autocomplete="off" name="description" class="form-control" id="description" cols="30" rows="5"
                                                 placeholder="Enter description">{{ old('description') }}</textarea>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('description') }}</p>

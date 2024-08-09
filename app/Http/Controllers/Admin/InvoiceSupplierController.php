@@ -370,7 +370,7 @@ class InvoiceSupplierController extends Controller
                 // 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
-                'deposit_account_id' => 'required',
+                'transfer_account_id' => 'required',
                 // 'accountnumber_id' => 'required',
             ]);
 
@@ -386,7 +386,7 @@ class InvoiceSupplierController extends Controller
                     'payment_status' => $request->payment_status,
                     'payment_method' => $request->payment_method,
                     'description' => $request->description,
-                    'deposit_account_id' => $request->deposit_account_id,
+                    'transfer_account_id' => $request->transfer_account_id,
                     // 'deposit_account_id' => $request->deposit_account_id,
                 ]);
 

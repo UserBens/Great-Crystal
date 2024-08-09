@@ -306,7 +306,7 @@
                     colorByPoint: true,
                     data: @json($data->pieData)
                 }]
-            });
+            });        
 
             Highcharts.chart('basic_bar', {
                 chart: {
@@ -323,12 +323,19 @@
                         description: 'Payment Status'
                     }
                 },
-                yAxis: {
+                yAxis: [{
                     min: 0,
                     title: {
                         text: 'Total Invoices'
-                    }
-                },
+                    },
+                    opposite: false
+                }, {
+                    min: 0,
+                    title: {
+                        text: 'Total Amount'
+                    },
+                    opposite: true
+                }],
                 plotOptions: {
                     column: {
                         pointPadding: 0.2,
@@ -337,7 +344,19 @@
                 },
                 series: [{
                     name: 'Invoices',
-                    data: @json($data->invoiceSuppliersChart->pluck('y'))
+                    data: @json($data->invoiceSuppliersChart->pluck('count')),
+                    tooltip: {
+                        valueSuffix: ' invoices'
+                    },
+                    yAxis: 0
+                }, {
+                    name: 'Amount',
+                    data: @json($data->invoiceSuppliersChart->pluck('amount')),
+                    tooltip: {
+                        valuePrefix: 'Rp. ',
+                        valueSuffix: ''
+                    },
+                    yAxis: 1
                 }]
             });
 

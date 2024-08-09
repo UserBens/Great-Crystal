@@ -167,7 +167,7 @@
                                     </div>
 
                                     <div class="col-md-12 mt-3">
-                                        <label for="upload_image">Upload Image :</label>
+                                        <label for="upload_image">Upload Image <span style="color: red">*</span> :</label>
                                         <div class="image-upload-wrap" id="image-upload-wrap">
                                             <input type="file" name="image_invoice" class="file-upload-input"
                                                 onchange="readURL(this, '');" accept="image/*">

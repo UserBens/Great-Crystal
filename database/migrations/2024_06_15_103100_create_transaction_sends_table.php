@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('no_transaction')->unique();
             $table->bigInteger('amount');
             $table->dateTime('date')->default(now());
-            $table->dateTime('deadline_invoice')->default(now());
             $table->string('description')->nullable();
             $table->timestamps();
         });

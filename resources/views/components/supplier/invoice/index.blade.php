@@ -157,10 +157,6 @@
                                                                             class="form-control" id="supplier_name"
                                                                             value="{{ $item->supplier->name }}" readonly>
                                                                     </div>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('name') }}</p>
-                                                                    @endif
                                                                 </div>
 
                                                                 <div class="col-md-6 mt-3">
@@ -170,101 +166,47 @@
                                                                             class="form-control" id="nota"
                                                                             value="{{ $item->nota }}" readonly>
                                                                     </div>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('nota') }}</p>
-                                                                    @endif
                                                                 </div>
 
                                                                 <div class="col-md-6 mt-3">
                                                                     <label for="description">Description :</label>
                                                                     <textarea autocomplete="off" name="description" class="form-control" id="description"
                                                                         placeholder="Enter description" readonly>{{ $item->description }}</textarea>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('description') }}</p>
-                                                                    @endif
                                                                 </div>
 
                                                                 <div class="col-md-6 mt-3">
-                                                                    <label for="payment_method">Payment Method
-                                                                        :</label>
-                                                                    <select name="payment_method" class="form-control"
-                                                                        id="payment_method" disabled>
-                                                                        <option value="Cash"
-                                                                            {{ $item->payment_method == 'Cash' ? 'selected' : '' }}>
-                                                                            Kas</option>
-                                                                        <option value="Bank"
-                                                                            {{ $item->payment_method == 'Bank' ? 'selected' : '' }}>
-                                                                            Bank</option>
-                                                                    </select>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('payment_method') }}
-                                                                        </p>
-                                                                    @endif
-                                                                </div>
-
-                                                                <div class="col-md-6 mt-3">
-                                                                    <label for="payment_status">Payment Status
-                                                                        :</label>
-                                                                    <select name="payment_status" class="form-control"
-                                                                        id="payment_status" disabled>
-                                                                        <option value="Not Yet"
-                                                                            {{ $item->payment_status == 'Not Yet' ? 'selected' : '' }}>
-                                                                            Not Yet</option>
-                                                                        <option value="Paid"
-                                                                            {{ $item->payment_status == 'Paid' ? 'selected' : '' }}>
-                                                                            Paid</option>
-                                                                    </select>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('payment_status') }}
-                                                                        </p>
-                                                                    @endif
-                                                                </div>
-
-                                                                <div class="col-md-6 mt-3">
-                                                                    <label for="deposit_account_id">Debit
-                                                                        From :</label>
-                                                                    <select name="deposit_account_id"
-                                                                        id="deposit_account_id" class="form-control "
+                                                                    <label for="payment_method">Payment Method :</label>
+                                                                    <input type="text" name="payment_method"
+                                                                        class="form-control" id="payment_method"
+                                                                        value="{{ $item->payment_method == 'Cash' ? 'Kas' : 'Bank' }}"
                                                                         disabled>
-                                                                        @if ($item->depositAccount)
-                                                                            <option
-                                                                                value="{{ $item->depositAccount->id }}">
-                                                                                {{ $item->depositAccount->account_no }}
-                                                                                - {{ $item->depositAccount->name }}
-                                                                            </option>
-                                                                        @endif
-                                                                    </select>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('deposit_account_id') }}
-                                                                        </p>
-                                                                    @endif
                                                                 </div>
 
                                                                 <div class="col-md-6 mt-3">
-                                                                    <label for="transfer_account_id">Pay
-                                                                        From :</label>
-                                                                    <select name="transfer_account_id"
-                                                                        id="transfer_account_id" class="form-control "
+                                                                    <label for="payment_status">Payment Status :</label>
+                                                                    <input type="text" name="payment_status"
+                                                                        class="form-control" id="payment_status"
+                                                                        value="{{ $item->payment_status == 'Not Yet' ? 'Not Yet' : 'Paid' }}"
                                                                         disabled>
-                                                                        @if ($item->transferAccount)
-                                                                            <option
-                                                                                value="{{ $item->transferAccount->id }}">
-                                                                                {{ $item->transferAccount->account_no }}
-                                                                                - {{ $item->transferAccount->name }}
-                                                                            </option>
-                                                                        @endif
-                                                                    </select>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('transfer_account_id') }}
-                                                                        </p>
-                                                                    @endif
                                                                 </div>
+
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="deposit_account_id">Debit From :</label>
+                                                                    <input type="text" name="deposit_account_id"
+                                                                        id="deposit_account_id" class="form-control"
+                                                                        value="@if ($item->depositAccount) {{ $item->depositAccount->account_no }} - {{ $item->depositAccount->name }} @endif"
+                                                                        disabled>
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="transfer_account_id">Debit From :</label>
+                                                                    <input type="text" name="transfer_account_id"
+                                                                        id="transfer_account_id" class="form-control"
+                                                                        value="@if ($item->transferAccount) {{ $item->transferAccount->account_no }} - {{ $item->transferAccount->name }} @endif"
+                                                                        disabled>
+                                                                </div>
+
 
                                                                 <div class="col-md-12 mt-3">
                                                                     <label for="upload_image">Upload Image Proof :</label>

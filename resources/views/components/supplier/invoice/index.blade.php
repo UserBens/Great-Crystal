@@ -225,28 +225,7 @@
                                                                 </div>
 
                                                                 <div class="col-md-6 mt-3">
-                                                                    <label for="transfer_account_id">Debt
-                                                                        From :</label>
-                                                                    <select name="transfer_account_id"
-                                                                        id="transfer_account_id" class="form-control "
-                                                                        disabled>
-                                                                        @if ($item->transferAccount)
-                                                                            <option
-                                                                                value="{{ $item->transferAccount->id }}">
-                                                                                {{ $item->transferAccount->account_no }}
-                                                                                - {{ $item->transferAccount->name }}
-                                                                            </option>
-                                                                        @endif
-                                                                    </select>
-                                                                    @if ($errors->any())
-                                                                        <p style="color: red">
-                                                                            {{ $errors->first('transfer_account_id') }}
-                                                                        </p>
-                                                                    @endif
-                                                                </div>
-
-                                                                <div class="col-md-6 mt-3">
-                                                                    <label for="deposit_account_id">Pay
+                                                                    <label for="deposit_account_id">Debit
                                                                         From :</label>
                                                                     <select name="deposit_account_id"
                                                                         id="deposit_account_id" class="form-control "
@@ -262,6 +241,27 @@
                                                                     @if ($errors->any())
                                                                         <p style="color: red">
                                                                             {{ $errors->first('deposit_account_id') }}
+                                                                        </p>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-3">
+                                                                    <label for="transfer_account_id">Pay
+                                                                        From :</label>
+                                                                    <select name="transfer_account_id"
+                                                                        id="transfer_account_id" class="form-control "
+                                                                        disabled>
+                                                                        @if ($item->transferAccount)
+                                                                            <option
+                                                                                value="{{ $item->transferAccount->id }}">
+                                                                                {{ $item->transferAccount->account_no }}
+                                                                                - {{ $item->transferAccount->name }}
+                                                                            </option>
+                                                                        @endif
+                                                                    </select>
+                                                                    @if ($errors->any())
+                                                                        <p style="color: red">
+                                                                            {{ $errors->first('transfer_account_id') }}
                                                                         </p>
                                                                     @endif
                                                                 </div>

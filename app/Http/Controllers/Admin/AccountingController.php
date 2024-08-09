@@ -186,7 +186,7 @@ class AccountingController extends Controller
                 'name' => 'required',
                 'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                'description' => 'required',
+                // 'description' => 'required',
                 // 'account_no' => 'required',
                 // 'amount' => 'required|numeric',
                 // 'beginning_balance' => 'required|numeric',
@@ -261,8 +261,8 @@ class AccountingController extends Controller
             'name' => 'required',
             'account_no' => 'required',
             'account_category_id' => 'required',
-            'amount' => 'required|numeric',
-            'description' => 'required',
+            // 'amount' => 'required|numeric',
+            // 'description' => 'required',
             // 'beginning_balance' => 'required|numeric',
         ]);
 
@@ -295,35 +295,9 @@ class AccountingController extends Controller
         }
     }
 
-    // public function calculateAll(Request $request)
-    // {
-    //     try {
-    //         // Ambil semua account numbers
-    //         $accounts = Accountnumber::all();
-
-    //         // Loop untuk menghitung ending balance untuk setiap account
-    //         foreach ($accounts as $account) {
-    //             $ending_balance = $account->calculateEndingBalance();
-    //             $account->update(['ending_balance' => $ending_balance]);
-
-    //             // Tentukan tipe debit atau kredit berdasarkan ending balance
-    //             $position = $account->getBalanceType(); // Fungsi getBalanceType dari model Accountnumber
-
-    //             // Update kolom position dengan nilai debit atau kredit
-    //             $account->update(['position' => $position]);
-    //         }
-
-    //         // Redirect dengan pesan sukses
-    //         return redirect()->route('account.index')->with('success', 'Ending balances calculation successful for all accounts.');
-    //     } catch (\Exception $ex) {
-    //         return redirect()->route('account.index')->with('error', 'Failed to calculate ending balances.');
-    //     }
-    // }
-
 
 
     // milik transfer transaction
-
     public function indexTransfer(Request $request)
     {
         session()->flash('preloader', true);
@@ -496,19 +470,6 @@ class AccountingController extends Controller
         }
     }
 
-    // public function deleteTransactionTransfer($id)
-    // {
-    //     try {
-    //         $transactionTransfer = Transaction_transfer::findOrFail($id);
-
-    //         $transactionTransfer->delete();
-
-    //         return response()->json(['message' => 'Transaction Transfer deleted successfully.']);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => 'Failed to delete Transaction Transfer.']);
-    //     }
-    // }
-
 
     public function deleteTransactionTransfer($id)
     {
@@ -669,14 +630,14 @@ class AccountingController extends Controller
                 'transfer_account_id' => 'required',
                 'deposit_account_id' => 'required',
                 'amount' => 'required|numeric',
-                'date' => 'required|date_format:d/m/Y',
-                'description' => 'required',
+                'date' => 'required',
                 'no_transaction' => 'required',
+                // 'description' => 'required',
                 // 'transaction_send_supplier_id' => 'required'
             ]);
 
-            $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
-            $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
+            $date = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y-m-d');
+            $month = Carbon::createFromFormat('Y-m-d', $request->date)->startOfMonth()->format('Y-m-d');
 
             Transaction_send::create([
                 'transfer_account_id' => $request->transfer_account_id,
@@ -685,7 +646,7 @@ class AccountingController extends Controller
                 'date' => $date,
                 'description' => $request->description,
                 'no_transaction' => $request->no_transaction,
-                'supplier_id' => $request->supplier_id,
+                'recipient_name' => $request->recipient_name,
             ]);
 
             // Update the amount in transfer account (allowing it to go negative)
@@ -729,17 +690,36 @@ class AccountingController extends Controller
     public function storeSupplierTransactionSend(Request $request)
     {
         $request->validate([
-            'supplier_name' => 'required|string|max:255|unique:transaction_send_suppliers,supplier_name',
-            'supplier_role' => 'required|string|max:255',
+            'name' => 'required',
+            'no_telp' => 'required',
+            // 'email' => 'required',
+            // 'address' => 'required',
+            // 'city' => 'required',
+            // 'province' => 'required',
+            // 'accountnumber' => 'required',
+            // 'accountnumber_holders_name' => 'required',
+            // 'bank_name' => 'required',
         ]);
 
-        $supplier = new TransactionSendSupplier();
-        $supplier->supplier_name = $request->supplier_name;
-        $supplier->supplier_role = $request->supplier_role;
-        $supplier->save();
+        try {
+            SupplierData::create([
+                'name' => $request->name,
+                'no_telp' => $request->no_telp,
+                'email' => $request->email,
+                'address' => $request->address,
+                'city' => $request->city,
+                'province' => $request->province,
+                'post_code' => $request->post_code,
+                'accountnumber' => $request->accountnumber,
+                'accountnumber_holders_name' => $request->accountnumber_holders_name,
+                'bank_name' => $request->bank_name,
+                'description' => $request->description,
+            ]);
 
-        // return redirect('create-account.create');
-        return redirect()->route('transaction-send.create');
+            return redirect()->route('transaction-send.create')->with('success', 'Supplier Data Created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create Supplier Data: ' . $e->getMessage()]);
+        }
     }
 
     public function storeAccountTransactionSend(Request $request)
@@ -750,10 +730,7 @@ class AccountingController extends Controller
                 'name' => 'required',
                 'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'description' => 'required',
-                // 'account_no' => 'required',
-                // 'amount' => 'required|numeric',
-                // 'beginning_balance' => 'required|numeric',
+
             ]);
 
             Accountnumber::create([
@@ -762,9 +739,7 @@ class AccountingController extends Controller
                 'account_category_id' => $request->account_category_id,
                 'amount' => $request->amount,
                 'description' => $request->description,
-                // 'beginning_balance' => $request->beginning_balance,
-                // 'ending_balance' => $request->ending_balance,
-                // 'transactions_total' => 0, // Set transactions_total default ke 0
+
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
@@ -938,11 +913,11 @@ class AccountingController extends Controller
             $request->validate([
                 'transfer_account_id' => 'required',
                 'deposit_account_id' => 'required',
-                'student_id' => 'required|exists:students,id',
                 'amount' => 'required|numeric',
                 'date' => 'required|date_format:d/m/Y',
-                'description' => 'required',
                 'no_transaction' => 'required',
+                // 'description' => 'required',
+                // 'student_id' => 'required|exists:students,id',
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
@@ -1006,10 +981,7 @@ class AccountingController extends Controller
                 'name' => 'required',
                 'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
                 'account_category_id' => 'required',
-                // 'description' => 'required',
-                // 'account_no' => 'required',
-                // 'amount' => 'required|numeric',
-                // 'beginning_balance' => 'required|numeric',
+
             ]);
 
             Accountnumber::create([
@@ -1018,9 +990,7 @@ class AccountingController extends Controller
                 'account_category_id' => $request->account_category_id,
                 'amount' => $request->amount,
                 'description' => $request->description,
-                // 'beginning_balance' => $request->beginning_balance,
-                // 'ending_balance' => $request->ending_balance,
-                // 'transactions_total' => 0, // Set transactions_total default ke 0
+
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses

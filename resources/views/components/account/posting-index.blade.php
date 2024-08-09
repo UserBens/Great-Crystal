@@ -54,10 +54,10 @@
             </div>
         @else
             <div class="btn-group mt-2">
-                <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3"
+                {{-- <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3"
                     style="margin-right: 8px">
                     <i class="fa-solid fa-plus"></i> Create Account
-                </a>
+                </a> --}}
             </div>
             <div class="card card-dark mt-4">
                 <div class="card-header">

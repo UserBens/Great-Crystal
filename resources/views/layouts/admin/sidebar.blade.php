@@ -272,9 +272,9 @@
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('expenditure.index') }}"
-                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'database expenditure' ? 'active' : '') : '' }}">
+                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'database expense' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Expenditure</p>
+                                    <p>Expense</p>
                                 </a>
                             </li>
                         </ul>

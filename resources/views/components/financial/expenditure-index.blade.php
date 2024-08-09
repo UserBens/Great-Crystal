@@ -7,10 +7,10 @@
                 <div class="col-12">
                     <div class="card card-dark mt-5">
                         <div class="card-header">
-                            <h3 class="card-title">Invoice Suppliers</h3>
+                            <h3 class="card-title">List Expense</h3>
                         </div>
                         <div class="card-body">
-                            <h4 class="p-3 m-0">Total Expenditure : Rp {{ number_format($totalAmountInvoiceSupplier, 0, ',', '.') }}</h4>
+                            <h4 class="p-3 m-0">Total Expense : Rp {{ number_format($totalAmountInvoiceSupplier, 0, ',', '.') }}</h4>
 
                             <div class="table-responsive">
                                 <table class="table projects">

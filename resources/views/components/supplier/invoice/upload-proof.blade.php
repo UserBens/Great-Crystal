@@ -95,9 +95,9 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="deposit_account_id">Pay From <span
+                                                <label for="transfer_account_id">Pay From <span
                                                         style="color: red">*</span>:</label>
-                                                <select name="deposit_account_id" id="deposit_account_id"
+                                                <select name="transfer_account_id" id="transfer_account_id"
                                                     class="form-control select2">
                                                     @foreach ($accountNumbers as $accountNumber)
                                                         <option value="{{ $accountNumber->id }}">
@@ -112,13 +112,14 @@
                                                     </button>
                                                 </div>
                                                 @if ($errors->any())
-                                                    <p style="color: red">{{ $errors->first('deposit_account_id') }}</p>
+                                                    <p style="color: red">{{ $errors->first('transfer_account_id') }}</p>
                                                 @endif
                                             </div>
-                                        </div>                                
+                                        </div>
 
                                         <div class="col-md-12 mb-3">
-                                            <label for="upload_image">Upload Image :</label>
+                                            <label for="upload_image">Upload Image <span style="color: red">*</span>
+                                                :</label>
                                             <div class="image-upload-wrap" id="image-upload-wrap">
                                                 <input type="file" name="image_proof" class="file-upload-input"
                                                     onchange="readURL(this, '');" accept="image/*">
@@ -142,7 +143,7 @@
                                                             style="margin-bottom: 1em;"></i>
                                                         <br> Remove
                                                         <span class="image-title">Image</span>
-                                                    </button>                                                   
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -151,7 +152,7 @@
                                         <input id="submitButton" type="submit"
                                             class="btn btn-success center col-12 mt-3">
                                     </div>
-                                </form>                    
+                                </form>
 
                                 <div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog"
                                     aria-labelledby="addAccountModalLabel" aria-hidden="true">
@@ -210,7 +211,7 @@
 
                                                     <div class="form-group">
                                                         <label for="description">Description :</label>
-                                                        <textarea class="form-control" id="description" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>                                                     
+                                                        <textarea class="form-control" id="description" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"

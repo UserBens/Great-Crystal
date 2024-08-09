@@ -31,7 +31,7 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label>Student Name : <span style="color: red">*</span></label>
+                                            <label>Student Name :</label>
                                             <select name="student_id" class="form-control select2" id="studentSelect">
                                                 <option value="" selected disabled>Select a Student</option>
                                                 @foreach ($students as $student)

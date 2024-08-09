@@ -32,7 +32,7 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="transfer_account_id">Transfer From</label>
+                                            <label for="transfer_account_id">Transfer From <span style="color: red">*</span>  :</label>
                                             <select name="transfer_account_id" id="transfer_account_id"
                                                 class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
@@ -54,7 +54,7 @@
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="deposit_account_id">To</label>
+                                            <label for="deposit_account_id">Deposit To <span style="color: red">*</span> :</label>
                                             <select name="deposit_account_id" id="deposit_account_id"
                                                 class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)

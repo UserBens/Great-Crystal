@@ -17,7 +17,7 @@ class TransactionSendSeeder extends Seeder
             [
                 'transfer_account_id' => 1,
                 'deposit_account_id' => 2,
-                'supplier_id' => 1,
+                'recipient_name' => 'supri',
                 'no_transaction' => 'SX001',
                 'amount' => 2000000,
                 'date' => $this->randomDate(),
@@ -29,7 +29,7 @@ class TransactionSendSeeder extends Seeder
             [
                 'transfer_account_id' => 2,
                 'deposit_account_id' => 3,
-                'supplier_id' => 2,
+                'recipient_name' => 'ngatno',
                 'no_transaction' => 'SX002',
                 'amount' => 2000000,
                 'date' => $this->randomDate(),
@@ -41,7 +41,7 @@ class TransactionSendSeeder extends Seeder
             [
                 'transfer_account_id' => 3,
                 'deposit_account_id' => 1,
-                'supplier_id' => 3,
+                'recipient_name' => 'greg',
                 'no_transaction' => 'SX003',
                 'amount' => 2000000,
                 'date' => $this->randomDate(),
@@ -53,7 +53,7 @@ class TransactionSendSeeder extends Seeder
             [
                 'transfer_account_id' => 3,
                 'deposit_account_id' => 1,
-                'supplier_id' => 4,
+                'recipient_name' => 'nwokolo',
                 'no_transaction' => 'SX004',
                 'amount' => 2000000,
                 'date' => $this->randomDate(),

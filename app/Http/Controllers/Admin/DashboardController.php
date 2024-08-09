@@ -587,19 +587,17 @@ class DashboardController extends Controller
             array_multisort(array_map('strtotime', $incomeData['categories']), $incomeData['categories']);
             array_multisort(array_map('strtotime', $expenseData['categories']), $expenseData['categories']);
 
-            
-
-
             // Tampilan untuk Invoice supplier
             $invoiceSuppliers = InvoiceSupplier::all();
 
-            $invoiceSuppliersChart = InvoiceSupplier::selectRaw('payment_status, COUNT(*) as total')
+            $invoiceSuppliersChart = InvoiceSupplier::selectRaw('payment_status, COUNT(*) as total, SUM(amount) as amount')
                 ->groupBy('payment_status')
                 ->get()
                 ->map(function ($item) {
                     return [
                         'name' => $item->payment_status,
-                        'y' => (int) $item->total
+                        'count' => (int) $item->total,
+                        'amount' => (float) $item->amount
                     ];
                 });
 

@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row d-flex justify-content-center">
                 <!-- left column -->
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <!-- general form elements -->
                     <div>
                         <form id="accountForm" method="POST" action="{{ route('account.update', $accountNumbers->id) }}"
@@ -18,7 +18,6 @@
                                 <!-- /.card-header -->
                                 <!-- form start -->
                                 <div class="card-body">
-
                                     <div class="form-group row">
                                         <div class="col-md-6">
                                             <label for="name">Name<span style="color: red">*</span> :</label>
@@ -45,7 +44,7 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <div class="col-md-6 mt-3">
+                                        {{-- <div class="col-md-6 mt-3">
                                             <label for="amount">Amount<span style="color: red">*</span> :</label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -58,11 +57,11 @@
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
-                                        </div>
+                                        </div> --}}
 
                                         <div class="col-md-6 mt-3">
                                             <label>Category : <span style="color: red"></span></label>
-                                            <select name="account_category_id" class="form-control">
+                                            <select name="account_category_id" class="form-control select2">
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
                                                         {{ $category->id == $accountNumbers->account_category_id ? 'selected' : '' }}>
@@ -71,42 +70,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
-
-                                    {{-- <div class="form-group row">
-                                        <div class="col-md-6 mt-3">
-                                            <label for="beginning_balance">Beginning Balance<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input name="beginning_balance" type="text" class="form-control" id="beginning_balance"
-                                                    placeholder="Enter Beginning Balance" autocomplete="off"
-                                                    value="{{ $accountNumbers->beginning_balance }}" required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('beginning_balance') }}</p>
-                                            @endif
-                                        </div>
-                                        
-                                        <div class="col-md-6 mt-3">
-                                            <label for="ending_balance">Ending Balance<span style="color: red">*</span> :</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp.</span>
-                                                </div>
-                                                <input name="ending_balance" type="text" class="form-control" id="ending_balance"
-                                                    placeholder="Enter Ending Balance" autocomplete="off"
-                                                    value="{{ $accountNumbers->ending_balance }}" required>
-                                            </div>
-                                            @if ($errors->any())
-                                                <p style="color: red">{{ $errors->first('ending_balance') }}</p>
-                                            @endif
-                                        </div>
-
-                                        
-                                    </div> --}}
-
+                                    </div>                                   
                                     <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="description">Description :</label>

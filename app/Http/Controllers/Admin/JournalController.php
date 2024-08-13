@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Transaction_receive;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\AccountnumberChanges;
 use App\Models\Bill;
 use App\Models\InvoiceSupplier;
 use App\Models\Transaction_transfer;
@@ -358,15 +359,17 @@ class JournalController extends Controller
                 'bills.number_invoice as no_transaction',
                 'accountnumbers_transfer.name as transfer_account_name',
                 'accountnumbers_transfer.account_no as transfer_account_no',
-                'accountnumbers_deposit.name as deposit_account_name',
-                'accountnumbers_deposit.account_no as deposit_account_no',
+                DB::raw('COALESCE(accountnumbers_new_deposit.name, accountnumbers_deposit.name) as deposit_account_name'),
+                DB::raw('COALESCE(accountnumbers_new_deposit.account_no, accountnumbers_deposit.account_no) as deposit_account_no'),
                 'bills.amount',
                 'bills.deadline_invoice as date',
                 'bills.created_at',
                 DB::raw('"bill" as type')
             )
             ->leftJoin('accountnumbers as accountnumbers_transfer', 'bills.transfer_account_id', '=', 'accountnumbers_transfer.id')
-            ->leftJoin('accountnumbers as accountnumbers_deposit', 'bills.deposit_account_id', '=', 'accountnumbers_deposit.id');
+            ->leftJoin('accountnumbers as accountnumbers_deposit', 'bills.deposit_account_id', '=', 'accountnumbers_deposit.id')
+            ->leftJoin('accountnumbers as accountnumbers_new_deposit', 'bills.new_deposit_account_id', '=', 'accountnumbers_new_deposit.id');
+
 
         $unionQuery = $transactionTransfers
             ->unionAll($transactionSends)
@@ -1201,7 +1204,9 @@ class JournalController extends Controller
                 ];
             }
         } elseif ($type === 'invoice_supplier') {
-            $transaction = InvoiceSupplier::find($id);
+            // $transaction = InvoiceSupplier::find($id);
+
+            $transaction = InvoiceSupplier::with(['transferAccount', 'depositAccount', 'oldAccount', 'newAccount'])->find($id);
 
             if ($transaction) {
                 // $accountnumber = $transaction->accountnumber;
@@ -1217,7 +1222,9 @@ class JournalController extends Controller
                         'credit' => $transaction->amount > 0 ? $transaction->amount : 0,
                         'date' => $transaction->date,
                         'description' => $transaction->description,
-                        'created_at' => $transaction->created_at
+                        'created_at' => $transaction->created_at,
+                        'old_account_number' => $transaction->oldAccount->account_no ?? 'N/A',
+                        'new_account_number' => $transaction->newAccount->account_no ?? 'N/A'
                     ],
                     [
                         'no_transaction' => $transaction->no_invoice ?? 'N/A',
@@ -1232,7 +1239,9 @@ class JournalController extends Controller
                 ];
             }
         } elseif ($type === 'bill') { // Tambahkan pengecekan untuk tipe 'bill'
-            $transaction = Bill::find($id);
+            // $transaction = Bill::find($id);
+            $transaction = Bill::with(['transferAccount', 'depositAccount', 'newAccount'])->find($id);
+
             $transferAccount = $transaction->transferAccount;
             $depositAccount = $transaction->depositAccount;
 
@@ -1254,8 +1263,8 @@ class JournalController extends Controller
                     'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
                     'credit' => 0,
                     'date' => $transaction->date,
-                    'description' => $transaction->description,
-                    'created_at' => $transaction->created_at
+                    'description' => $transaction->description,                
+                    'created_at' => $transaction->created_at,
                 ]
             ];
         } else {

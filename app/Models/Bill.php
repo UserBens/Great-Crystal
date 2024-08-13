@@ -30,6 +30,7 @@ class Bill extends Model
       'number_invoice',
       'transfer_account_id', // tambahkan field ini jika belum ada
       'deposit_account_id',  // tambahkan field ini jika belum ada
+      'new_deposit_account_id',
    ];
 
 
@@ -55,7 +56,20 @@ class Bill extends Model
          if (is_null($model->deposit_account_id)) {
             $model->deposit_account_id = 22; // Default id for Monthly Fee
          }
-         
+
+         static::updating(function ($model) {
+            if ($model->isDirty('deposit_account_id')) {
+               $oldDepositAccountId = $model->getOriginal('deposit_account_id');
+               $newDepositAccountId = $model->deposit_account_id;
+
+               BillDepositAccountChange::create([
+                  'bill_id' => $model->id,
+                  'old_deposit_account_id' => $oldDepositAccountId,
+                  'new_deposit_account_id' => $newDepositAccountId,
+                  'changed_at' => now(),
+               ]);
+            }
+         });
       });
    }
 
@@ -81,12 +95,6 @@ class Bill extends Model
       return $this->hasMany(statusInvoiceMail::class, 'bill_id');
    }
 
-   // public function accountnumber()
-   // {
-   //    return $this->belongsTo(AccountNumber::class, 'accountnumber_id');
-   // }
-
-
    public function transferAccount()
    {
       return $this->belongsTo(AccountNumber::class, 'transfer_account_id');
@@ -95,5 +103,10 @@ class Bill extends Model
    public function depositAccount()
    {
       return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
+   }
+
+   public function newAccount()
+   {
+      return $this->belongsTo(AccountNumber::class, 'new_deposit_account_id');
    }
 }

@@ -14,11 +14,11 @@ class ImportTransactionController extends Controller
     public function importExcel(Request $request)
     {
         $request->validate([
-            'import_transaction' => 'required|mimes:xlsx'
+            'import_transaction_template' => 'required|mimes:xlsx'
         ]);
 
         try {
-            Excel::import(new JournalImport, $request->file('import_transaction'));
+            Excel::import(new JournalImport, $request->file('import_transaction_template'));
             return redirect()->back()->with('success', 'Transactions data imported successfully.');
         } catch (\Exception $exception) {
             return redirect()->back()->with('error', 'Failed to import transactions data. Error: ' . $exception->getMessage());
@@ -28,7 +28,7 @@ class ImportTransactionController extends Controller
     public function downloadTemplate()
     {
         try {
-            return response()->download(public_path('downloads/import_transaction.xlsx'));
+            return response()->download(public_path('downloads/import_transaction_template.xlsx'));
         } catch (\Exception $err) {
             return redirect()->back()->with('error', 'Failed to download template file.');
         }

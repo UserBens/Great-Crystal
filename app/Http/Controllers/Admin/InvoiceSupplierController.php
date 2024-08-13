@@ -12,6 +12,7 @@ use App\Models\InvoiceSupplier;
 use App\Models\Transaction_send;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\AccountnumberChanges;
 use App\Models\TransactionSendSupplier;
 use Illuminate\Support\Facades\File;
 
@@ -310,6 +311,7 @@ class InvoiceSupplierController extends Controller
         }
     }
 
+
     public function storeSupplierAtInvoice(Request $request)
     {
         $request->validate([
@@ -358,6 +360,108 @@ class InvoiceSupplierController extends Controller
         return view('components.supplier.invoice.upload-proof', compact('invoice', 'accountNumbers', 'accountCategory'));
     }
 
+    // public function uploadProofOfPayment(Request $request, $id)
+    // {
+    //     try {
+    //         // Ambil invoice berdasarkan ID
+    //         $invoice = InvoiceSupplier::findOrFail($id);
+
+    //         // Validasi data request
+    //         $request->validate([
+    //             'image_proof' => 'required',
+    //             // 'description' => 'required|string',
+    //             'payment_status' => 'required|in:Paid,Not Yet',
+    //             'payment_method' => 'required|in:Cash,Bank',
+    //             'transfer_account_id' => 'required',
+    //             // 'accountnumber_id' => 'required',
+    //         ]);
+
+    //         // Handle file upload
+    //         if ($request->hasFile('image_proof')) {
+    //             $image = $request->file('image_proof');
+    //             $imageName = time() . '.' . $image->getClientOriginalExtension();
+    //             $image->move(public_path('uploads'), $imageName);
+
+    //             // Update invoice supplier data
+    //             $invoice->update([
+    //                 'image_proof' => $imageName,
+    //                 'payment_status' => $request->payment_status,
+    //                 'payment_method' => $request->payment_method,
+    //                 'description' => $request->description,
+    //                 'transfer_account_id' => $request->transfer_account_id,
+    //                 // 'deposit_account_id' => $request->deposit_account_id,
+    //             ]);
+
+    //             // Debugging log
+    //             Log::info('Invoice updated: ', $invoice->toArray());
+
+    //             return redirect()->route('invoice-supplier.index')->with('success', 'Proof of payment uploaded successfully.');
+    //         } else {
+    //             return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
+    //         }
+    //     } catch (\Exception $err) {
+    //         Log::error('Error uploading proof of payment: ' . $err->getMessage());
+    //         return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
+    //     }
+    // }
+
+    // public function uploadProofOfPayment(Request $request, $id)
+    // {
+    //     try {
+    //         // Ambil invoice berdasarkan ID
+    //         $invoice = InvoiceSupplier::findOrFail($id);
+
+    //         // Validasi data request
+    //         $request->validate([
+    //             'image_proof' => 'required',
+    //             'payment_status' => 'required|in:Paid,Not Yet',
+    //             'payment_method' => 'required|in:Cash,Bank',
+    //             'transfer_account_id' => 'required',
+    //         ]);
+
+    //         // Handle perubahan transfer_account_id
+    //         $oldTransferAccountId = $invoice->transfer_account_id;
+    //         $newTransferAccountId = $request->input('transfer_account_id');
+
+    //         if ($oldTransferAccountId != $newTransferAccountId) {
+    //             // Simpan riwayat perubahan
+    //             AccountnumberChanges::create([
+    //                 'invoice_supplier_id' => $invoice->id,
+    //                 'old_transfer_account_id' => $oldTransferAccountId,
+    //                 'new_transfer_account_id' => $newTransferAccountId,
+    //             ]);
+    //         }
+
+    //         // Handle file upload
+    //         if ($request->hasFile('image_proof')) {
+    //             $image = $request->file('image_proof');
+    //             $imageName = time() . '.' . $image->getClientOriginalExtension();
+    //             $image->move(public_path('uploads'), $imageName);
+
+    //             // Update invoice supplier data
+    //             $invoice->update([
+    //                 'image_proof' => $imageName,
+    //                 'payment_status' => $request->payment_status,
+    //                 'payment_method' => $request->payment_method,
+    //                 'description' => $request->description,
+    //                 'transfer_account_id' => $newTransferAccountId, // Menggunakan nilai transfer_account_id baru
+    //             ]);
+
+    //             // Debugging log
+    //             Log::info('Invoice updated: ', $invoice->toArray());
+
+    //             return redirect()->route('invoice-supplier.index')->with('success', 'Proof of payment uploaded successfully.');
+    //         } else {
+    //             return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
+    //         }
+    //     } catch (\Exception $err) {
+    //         Log::error('Error uploading proof of payment: ' . $err->getMessage());
+    //         return back()->withErrors(['error' => 'Failed to upload proof of payment. Please try again.']);
+    //     }
+    // }
+
+
+    // update history coa
     public function uploadProofOfPayment(Request $request, $id)
     {
         try {
@@ -367,12 +471,22 @@ class InvoiceSupplierController extends Controller
             // Validasi data request
             $request->validate([
                 'image_proof' => 'required',
-                // 'description' => 'required|string',
                 'payment_status' => 'required|in:Paid,Not Yet',
                 'payment_method' => 'required|in:Cash,Bank',
                 'transfer_account_id' => 'required',
-                // 'accountnumber_id' => 'required',
             ]);
+
+            // Handle perubahan transfer_account_id
+            $oldTransferAccountId = $invoice->transfer_account_id;
+            $newTransferAccountId = $request->input('transfer_account_id');
+
+            if ($oldTransferAccountId != $newTransferAccountId) {
+                // Simpan riwayat perubahan pada invoice supplier
+                $invoice->update([
+                    'old_transfer_account_id' => $oldTransferAccountId,
+                    'new_transfer_account_id' => $newTransferAccountId,
+                ]);
+            }
 
             // Handle file upload
             if ($request->hasFile('image_proof')) {
@@ -386,8 +500,7 @@ class InvoiceSupplierController extends Controller
                     'payment_status' => $request->payment_status,
                     'payment_method' => $request->payment_method,
                     'description' => $request->description,
-                    'transfer_account_id' => $request->transfer_account_id,
-                    // 'deposit_account_id' => $request->deposit_account_id,
+                    'transfer_account_id' => $newTransferAccountId, // Menggunakan nilai transfer_account_id baru
                 ]);
 
                 // Debugging log
@@ -466,7 +579,7 @@ class InvoiceSupplierController extends Controller
     }
 
 
-   
+
 
     public function destroyInvoiceSupplier($id)
     {

@@ -186,7 +186,7 @@
                             </button>
 
                             <div class="image-upload-wrap">
-                                <input type="file" name="import_transaction" class="file-upload-input"
+                                <input type="file" name="import_transaction_template" class="file-upload-input"
                                     onchange="readURL(this);"
                                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
 
@@ -230,6 +230,12 @@
             console.log("terklik");
             window.location.href = 'journal/journal/templates/import';
         });
+
+        // $("body").on("click", "#download-template", function(event) {
+        //     event.preventDefault();
+        //     let timestamp = new Date().getTime(); // Dapatkan timestamp saat ini
+        //     window.location.href = 'journal/journal/templates/import?t=' + timestamp;
+        // });
 
         function readURL(input) {
             if (input.files && input.files[0]) {

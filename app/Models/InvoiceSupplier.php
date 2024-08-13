@@ -26,4 +26,15 @@ class InvoiceSupplier extends Model
         return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
     }
 
+    // Relasi untuk old_transfer_account_id
+    public function oldAccount()
+    {
+        return $this->belongsTo(AccountNumber::class, 'old_transfer_account_id');
+    }
+
+    // Relasi untuk new_transfer_account_id
+    public function newAccount()
+    {
+        return $this->belongsTo(AccountNumber::class, 'new_transfer_account_id');
+    }
 }

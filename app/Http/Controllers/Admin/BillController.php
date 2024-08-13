@@ -354,7 +354,9 @@ class BillController extends Controller
             'student' => function ($query) {
 
                $query->with('grade')->get();
-            }, 'bill_collection', 'bill_installments'
+            },
+            'bill_collection',
+            'bill_installments'
          ])->where('id', $id)->first();
 
          $selectedAccountId = $data->deposit_account_id; // Sesuaikan dengan nama kolom yang benar di model Bill
@@ -373,6 +375,40 @@ class BillController extends Controller
       }
    }
 
+   // public function chooseaccountnumber(Request $request)
+   // {
+   //    try {
+   //       // Validasi input
+   //       $request->validate([
+   //          'id' => 'required|integer',
+   //          'deposit_account_id' => 'required|integer'
+   //       ]);
+
+   //       // Temukan bill berdasarkan ID
+   //       $bill = Bill::find($request->id);
+   //       if ($bill) {
+   //          // Update accountnumber_id dan simpan
+   //          $bill->deposit_account_id = $request->deposit_account_id;
+   //          $bill->save();
+
+   //          // Log info
+   //          Log::info('Bill Updated', ['id' => $bill->id, 'deposit_account_id' => $bill->deposit_account_id]);
+
+   //          // Redirect ke halaman yang sesuai dengan pesan sukses
+   //          return redirect()->back()->with('success', 'Choose Account number successfully!');
+   //       }
+
+   //       // Jika tidak ditemukan, tampilkan pesan error
+   //       return redirect()->back()->withErrors(['error' => 'Bill not found.']);
+   //    } catch (\Exception $e) {
+   //       // Log error
+   //       Log::error('Error updating account number: ' . $e->getMessage());
+
+   //       // Redirect dengan pesan error
+   //       return redirect()->back()->withErrors(['error' => 'Failed to update account number. Please try again.']);
+   //    }
+   // }
+
    public function chooseaccountnumber(Request $request)
    {
       try {
@@ -385,8 +421,9 @@ class BillController extends Controller
          // Temukan bill berdasarkan ID
          $bill = Bill::find($request->id);
          if ($bill) {
-            // Update accountnumber_id dan simpan
-            $bill->deposit_account_id = $request->deposit_account_id;
+            // Update deposit_account_id dan simpan
+            // $bill->deposit_account_id = $request->deposit_account_id;
+            $bill->new_deposit_account_id = $request->deposit_account_id; // Update new_deposit_account_id
             $bill->save();
 
             // Log info
@@ -406,6 +443,8 @@ class BillController extends Controller
          return redirect()->back()->withErrors(['error' => 'Failed to update account number. Please try again.']);
       }
    }
+
+
 
    public function storeAccount(Request $request)
    {

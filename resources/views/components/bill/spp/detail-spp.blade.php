@@ -143,9 +143,16 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <select name="deposit_account_id" class="form-control select2">
-                                            @foreach ($accountNumbers as $accountNumber)
+                                            {{-- @foreach ($accountNumbers as $accountNumber)
                                                 <option value="{{ $accountNumber->id }}"
                                                     @if ($accountNumber->id == $selectedAccountId) selected @endif>
+                                                    {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
+                                                </option>
+                                            @endforeach --}}
+
+                                            @foreach ($accountNumbers as $accountNumber)
+                                                <option value="{{ $accountNumber->id }}"
+                                                    @if ($accountNumber->id == $data->new_deposit_account_id) selected @endif>
                                                     {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
                                                 </option>
                                             @endforeach
@@ -178,57 +185,58 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <form action="{{ route('bills-create-accountnumber') }}"
-                                            id="addAccountForm" method="POST">
+                                            <form action="{{ route('bills-create-accountnumber') }}" id="addAccountForm"
+                                                method="POST">
 
-                                            @csrf
-                                            <div class="form-group">
-                                                <label for="account_no">Account Number<span style="color: red">*</span>
-                                                    :</label>
-                                                <input type="text" class="form-control" id="account_no"
-                                                    name="account_no" placeholder="xxx.xxx"
-                                                    value="{{ old('account_no') }}" required>
-                                                @error('account_no')
-                                                    <p style="color: red;">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="name">Account Name<span style="color: red">*</span>
-                                                    :</label>
-                                                <input type="text" class="form-control" id="name" name="name"
-                                                    placeholder="Enter Account Name" value="{{ old('name') }}"
-                                                    required>
-                                                @error('name')
-                                                    <p style="color: red;">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Category<span style="color: red">*</span> :</label>
-                                                <div class="input-group">
-                                                    <select name="account_category_id" class="form-control select2"
-                                                        id="account_category_id" style="width: 100%">
-                                                        @foreach ($accountCategory as $category)
-                                                            <option value="{{ $category->id }}"
-                                                                {{ old('account_category_id') == $category->id ? 'selected' : '' }}>
-                                                                {{ $category->category_name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                                @csrf
+                                                <div class="form-group">
+                                                    <label for="account_no">Account Number<span
+                                                            style="color: red">*</span>
+                                                        :</label>
+                                                    <input type="text" class="form-control" id="account_no"
+                                                        name="account_no" placeholder="xxx.xxx"
+                                                        value="{{ old('account_no') }}" required>
+                                                    @error('account_no')
+                                                        <p style="color: red;">{{ $message }}</p>
+                                                    @enderror
                                                 </div>
-                                                @error('account_category_id')
-                                                    <p style="color: red;">{{ $message }}</p>
-                                                @enderror
-                                            </div>
+                                                <div class="form-group">
+                                                    <label for="name">Account Name<span style="color: red">*</span>
+                                                        :</label>
+                                                    <input type="text" class="form-control" id="name"
+                                                        name="name" placeholder="Enter Account Name"
+                                                        value="{{ old('name') }}" required>
+                                                    @error('name')
+                                                        <p style="color: red;">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Category<span style="color: red">*</span> :</label>
+                                                    <div class="input-group">
+                                                        <select name="account_category_id" class="form-control select2"
+                                                            id="account_category_id" style="width: 100%">
+                                                            @foreach ($accountCategory as $category)
+                                                                <option value="{{ $category->id }}"
+                                                                    {{ old('account_category_id') == $category->id ? 'selected' : '' }}>
+                                                                    {{ $category->category_name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    @error('account_category_id')
+                                                        <p style="color: red;">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
 
-                                            <div class="form-group">
-                                                <label for="description">Description :</label>
-                                                <textarea class="form-control" id="description" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Save</button>
-                                            </div>
+                                                <div class="form-group">
+                                                    <label for="description">Description :</label>
+                                                    <textarea class="form-control" id="description" name="description" placeholder="Enter Description">{{ old('description') }}</textarea>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Save</button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>

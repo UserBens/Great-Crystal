@@ -28,6 +28,10 @@ return new class extends Migration
             $table->foreign('transfer_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->unsignedBigInteger('deposit_account_id')->nullable();
             $table->foreign('deposit_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->unsignedBigInteger('old_transfer_account_id')->nullable();
+            $table->foreign('old_transfer_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->unsignedBigInteger('new_transfer_account_id')->nullable();
+            $table->foreign('new_transfer_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('description')->nullable();
             $table->string('image_invoice')->nullable();
             $table->string('image_proof')->nullable();

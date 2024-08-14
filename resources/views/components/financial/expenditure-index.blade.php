@@ -29,8 +29,9 @@
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $item->no_invoice }}</td>
                                                 <td>{{ $item->supplier->name }}</td>
-                                                <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
-                                                <td>{{ $item->date }}</td>
+                                                <td>Rp {{ number_format($item->amount, 0, ',', '.') }}</td>                                                
+                                                <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>

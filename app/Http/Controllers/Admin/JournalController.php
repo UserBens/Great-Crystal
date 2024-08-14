@@ -1110,7 +1110,6 @@ class JournalController extends Controller
     {
         $selectedItems = $request->id ?? [];
 
-        // try {
         // Variabel untuk menyimpan data detail transaksi
         $transactionDetails = [];
 
@@ -1204,12 +1203,9 @@ class JournalController extends Controller
                 ];
             }
         } elseif ($type === 'invoice_supplier') {
-            // $transaction = InvoiceSupplier::find($id);
-
             $transaction = InvoiceSupplier::with(['transferAccount', 'depositAccount', 'oldAccount', 'newAccount'])->find($id);
 
             if ($transaction) {
-                // $accountnumber = $transaction->accountnumber;
                 $transferAccount = $transaction->transferAccount;
                 $depositAccount = $transaction->depositAccount;
 
@@ -1238,8 +1234,7 @@ class JournalController extends Controller
                     ]
                 ];
             }
-        } elseif ($type === 'bill') { // Tambahkan pengecekan untuk tipe 'bill'
-            // $transaction = Bill::find($id);
+        } elseif ($type === 'bill') {
             $transaction = Bill::with(['transferAccount', 'depositAccount', 'newAccount'])->find($id);
 
             $transferAccount = $transaction->transferAccount;
@@ -1263,7 +1258,7 @@ class JournalController extends Controller
                     'debit' => $transaction->amount > 0 ? $transaction->amount : 0,
                     'credit' => 0,
                     'date' => $transaction->date,
-                    'description' => $transaction->description,                
+                    'description' => $transaction->description,
                     'created_at' => $transaction->created_at,
                 ]
             ];
@@ -1285,10 +1280,6 @@ class JournalController extends Controller
             // Jika data tidak ditemukan, kembalikan ke halaman index dengan pesan error
             return redirect()->route('journal.index')->with('error', 'Transaction details not found.');
         }
-        // } catch (Exception $e) {
-        //     // Tangani kesalahan dengan mengembalikan ke halaman index dengan pesan error
-        //     // return redirect()->route('journal.index')->with('error', 'Failed to fetch transaction details.');
-        // }
     }
 
 

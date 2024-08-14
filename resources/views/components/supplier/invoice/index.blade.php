@@ -200,7 +200,7 @@
                                                                 </div>
 
                                                                 <div class="col-md-6 mt-3">
-                                                                    <label for="transfer_account_id">Debit From :</label>
+                                                                    <label for="transfer_account_id">Kredit From :</label>
                                                                     <input type="text" name="transfer_account_id"
                                                                         id="transfer_account_id" class="form-control"
                                                                         value="@if ($item->transferAccount) {{ $item->transferAccount->account_no }} - {{ $item->transferAccount->name }} @endif"

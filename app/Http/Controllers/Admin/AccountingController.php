@@ -373,11 +373,15 @@ class AccountingController extends Controller
                 'transfer_account_id' => 'required',
                 'deposit_account_id' => 'required',
                 'amount' => 'required|numeric',
-                'date' => 'required|date_format:d/m/Y',
+                'date' => 'required',
             ]);
 
-            $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
-            $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
+            // $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+            $date = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y-m-d');
+
+            // $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
+            $month = Carbon::createFromFormat('Y-m-d', $request->date)->startOfMonth()->format('Y-m-d');
+
 
             // Create the transaction record
             $transaction = Transaction_transfer::create([
@@ -897,12 +901,16 @@ class AccountingController extends Controller
                 'transfer_account_id' => 'required',
                 'deposit_account_id' => 'required',
                 'amount' => 'required|numeric',
-                'date' => 'required|date_format:d/m/Y',
+                'date' => 'required',
                 'no_transaction' => 'required',                
             ]);
 
-            $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
-            $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
+            // $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+            $date = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y-m-d');
+            // $month = Carbon::createFromFormat('d/m/Y', $request->date)->startOfMonth()->format('Y-m-d');
+
+            $month = Carbon::createFromFormat('Y-m-d', $request->date)->startOfMonth()->format('Y-m-d');
+
 
 
             Transaction_receive::create([

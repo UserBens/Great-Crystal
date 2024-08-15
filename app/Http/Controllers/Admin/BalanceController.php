@@ -108,7 +108,7 @@ class BalanceController extends Controller
                 $query->orderBy('id', 'asc'); // Urutkan berdasarkan id
             }
 
-            $data = $query->paginate(5);
+            $data = $query->paginate(25);
             $categories = Accountcategory::all();
 
             return view('components.account.balance-index')
@@ -215,7 +215,7 @@ class BalanceController extends Controller
                 $query->orderBy('id', 'asc'); // Urutkan berdasarkan id
             }
 
-            $data = $query->paginate(5);
+            $data = $query->paginate(25);
             $categories = Accountcategory::all();
 
             return view('components.account.posting-index')

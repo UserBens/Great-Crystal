@@ -32,7 +32,8 @@
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="transfer_account_id">Transfer From <span style="color: red">*</span>  :</label>
+                                            <label for="transfer_account_id">Transfer From <span style="color: red">*</span>
+                                                :</label>
                                             <select name="transfer_account_id" id="transfer_account_id"
                                                 class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
@@ -54,7 +55,8 @@
 
                                     <div class="form-group row">
                                         <div class="col-md-6">
-                                            <label for="deposit_account_id">Deposit To <span style="color: red">*</span> :</label>
+                                            <label for="deposit_account_id">Deposit To <span style="color: red">*</span>
+                                                :</label>
                                             <select name="deposit_account_id" id="deposit_account_id"
                                                 class="form-control select2">
                                                 @foreach ($accountNumbers as $accountNumber)
@@ -82,19 +84,11 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group row">
+                                    <div class="form-group row">                                      
                                         <div class="col-md-6">
                                             <label>Date <span style="color: red">*</span></label>
-                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input name="date" type="text" class="form-control "
-                                                    placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
-                                                    data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"
-                                                    data-mask required />
-                                                <div class="input-group-append" data-target="#reservationdate"
-                                                    data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
+                                            <input type="date" name="date" class="form-control"
+                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('date') }}</p>
                                             @endif

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('debit');           
             $table->bigInteger('credit');           
             $table->date('month');
+            $table->boolean('posted')->default(false); // Menambahkan kolom posted
             $table->timestamps();           
         });
     }

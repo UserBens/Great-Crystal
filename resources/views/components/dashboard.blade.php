@@ -183,14 +183,12 @@
 
         <section class="col-lg-12 connectedSortable">
             @if ($user == 'accounting')
-                <div class="col-md-12">
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            Area Chart
-                        </div>
-                        <div class="card-body">
-                            <div id="area_chart"></div>
-                        </div>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Area Chart
+                    </div>
+                    <div class="card-body">
+                        <div id="area_chart"></div>
                     </div>
                 </div>
             @endif
@@ -240,6 +238,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
             Highcharts.chart('income_chart', {
                 chart: {
                     type: 'column'
@@ -254,6 +253,11 @@
                 yAxis: {
                     title: {
                         text: 'Amount'
+                    },
+                    labels: {
+                        formatter: function() {
+                            return 'Rp. ' + Highcharts.numberFormat(this.value, 0, ',', '.');
+                        }
                     }
                 },
                 tooltip: {
@@ -291,6 +295,7 @@
             });
 
 
+
             Highcharts.chart('pie_chart', {
                 chart: {
                     type: 'pie'
@@ -306,7 +311,8 @@
                     colorByPoint: true,
                     data: @json($data->pieData)
                 }]
-            });        
+            });
+
 
             Highcharts.chart('basic_bar', {
                 chart: {
@@ -328,13 +334,18 @@
                     title: {
                         text: 'Total Invoices'
                     },
-                    opposite: false
+
                 }, {
                     min: 0,
                     title: {
                         text: 'Total Amount'
                     },
-                    opposite: true
+                    opposite: true,
+                    labels: {
+                        formatter: function() {
+                            return 'Rp. ' + Highcharts.numberFormat(this.value, 0, ',', '.');
+                        }
+                    }
                 }],
                 plotOptions: {
                     column: {
@@ -353,12 +364,16 @@
                     name: 'Amount',
                     data: @json($data->invoiceSuppliersChart->pluck('amount')),
                     tooltip: {
-                        valuePrefix: 'Rp. ',
-                        valueSuffix: ''
+                        pointFormatter: function() {
+                            return `<span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>Rp. ${Highcharts.numberFormat(this.y, 0, ',', '.')}</b><br/>`;
+                        }
                     },
                     yAxis: 1
                 }]
             });
+
+
+
 
             Highcharts.chart('area_chart', {
                 chart: {
@@ -379,12 +394,21 @@
                     },
                     labels: {
                         formatter: function() {
-                            return Highcharts.numberFormat(this.value, 0, ',', '.');
+                            // Format angka dengan titik sebagai pemisah ribuan
+                            return 'Rp. ' + this.value.toLocaleString('id-ID', {
+                                minimumFractionDigits: 0
+                            });
                         }
                     }
                 },
                 tooltip: {
-                    pointFormat: '{series.name}: <b>{point.y:,.0f}</b><br/>Amount'
+                    pointFormatter: function() {
+                        // Format tooltip dengan jumlah sesuai format yang diinginkan
+                        return '<span style="color:' + this.color + '">\u25CF</span> ' + this.series
+                            .name + ': <b>Rp. ' + this.y.toLocaleString('id-ID', {
+                                minimumFractionDigits: 0
+                            }) + '</b><br/>';
+                    }
                 },
                 plotOptions: {
                     area: {

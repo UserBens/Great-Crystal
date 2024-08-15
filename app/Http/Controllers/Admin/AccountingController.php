@@ -185,11 +185,7 @@ class AccountingController extends Controller
             $request->validate([
                 'name' => 'required',
                 'account_no' => ['required', 'regex:/^\d{3}\.\d{3}$/'], // Validasi format 3 angka di depan dan 3 angka di belakang
-                'account_category_id' => 'required',
-                // 'description' => 'required',
-                // 'account_no' => 'required',
-                // 'amount' => 'required|numeric',
-                // 'beginning_balance' => 'required|numeric',
+                'account_category_id' => 'required',              
             ]);
 
             Accountnumber::create([
@@ -197,10 +193,7 @@ class AccountingController extends Controller
                 'account_no' => $request->account_no,
                 'account_category_id' => $request->account_category_id,
                 'amount' => $request->amount,
-                'description' => $request->description,
-                // 'beginning_balance' => $request->beginning_balance,
-                // 'ending_balance' => $request->ending_balance,
-                // 'transactions_total' => 0, // Set transactions_total default ke 0
+                'description' => $request->description,                
             ]);
 
             // Redirect ke halaman indeks pengeluaran dengan pesan sukses
@@ -376,12 +369,11 @@ class AccountingController extends Controller
     {
         try {
             $request->validate([
+                'no_transaction' => 'required',
                 'transfer_account_id' => 'required',
                 'deposit_account_id' => 'required',
                 'amount' => 'required|numeric',
                 'date' => 'required|date_format:d/m/Y',
-                'description' => 'required',
-                'no_transaction' => 'required',
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
@@ -631,9 +623,7 @@ class AccountingController extends Controller
                 'deposit_account_id' => 'required',
                 'amount' => 'required|numeric',
                 'date' => 'required',
-                'no_transaction' => 'required',
-                // 'description' => 'required',
-                // 'transaction_send_supplier_id' => 'required'
+                'no_transaction' => 'required',              
             ]);
 
             $date = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y-m-d');
@@ -691,14 +681,7 @@ class AccountingController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'no_telp' => 'required',
-            // 'email' => 'required',
-            // 'address' => 'required',
-            // 'city' => 'required',
-            // 'province' => 'required',
-            // 'accountnumber' => 'required',
-            // 'accountnumber_holders_name' => 'required',
-            // 'bank_name' => 'required',
+            'no_telp' => 'required',            
         ]);
 
         try {
@@ -915,9 +898,7 @@ class AccountingController extends Controller
                 'deposit_account_id' => 'required',
                 'amount' => 'required|numeric',
                 'date' => 'required|date_format:d/m/Y',
-                'no_transaction' => 'required',
-                // 'description' => 'required',
-                // 'student_id' => 'required|exists:students,id',
+                'no_transaction' => 'required',                
             ]);
 
             $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');

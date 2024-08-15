@@ -91,24 +91,17 @@
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('amount') }}</p>
                                             @endif
-                                        </div>
+                                        </div>                                       
 
                                         <div class="col-md-6">
                                             <label>Date <span style="color: red">*</span></label>
-                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input name="date" type="text" class="form-control "
-                                                    placeholder="{{ date('d/m/Y') }}" data-target="#reservationdate"
-                                                    data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy"
-                                                    data-mask required />
-                                                <div class="input-group-append" data-target="#reservationdate"
-                                                    data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
+                                            <input type="date" name="date" class="form-control"
+                                                data-inputmask-inputformat="dd/mm/yyyy" data-mask>
                                             @if ($errors->any())
                                                 <p style="color: red">{{ $errors->first('date') }}</p>
                                             @endif
                                         </div>
+
                                     </div>
 
                                     <div class="form-group row">
@@ -247,8 +240,6 @@
             // Submit formulir
             document.getElementById("transferForm").submit();
         }
-
-
 
         // Inisialisasi Select2 pada elemen select
         $(document).ready(function() {

@@ -31,9 +31,14 @@ return new class extends Migration
             $table->unsignedBigInteger('transfer_account_id')->nullable();
             $table->foreign('transfer_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->unsignedBigInteger('deposit_account_id')->nullable();
-            $table->foreign('deposit_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();        
+            $table->foreign('deposit_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
             $table->unsignedBigInteger('new_deposit_account_id')->nullable();
             $table->foreign('new_deposit_account_id')->references('id')->on('accountnumbers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->text('description')->nullable()->default(null);
+            $table->datetime('paid_date')->nullable()->default(null);
+            $table->bigInteger('charge')->default(0);
+            $table->string('created_by')->default('accounting');
+            $table->string('number_invoice')->unique();
             $table->timestamps();
         });
     }

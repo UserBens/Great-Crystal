@@ -133,7 +133,7 @@
                                             <td>{{ $item->no_transaction }}</td>
                                             <td>{{ $item->deposit_account_no }} - {{ $item->deposit_account_name }}</td>
                                             <td>{{ $item->transfer_account_no }} - {{ $item->transfer_account_name }}</td>
-                                            <td>{{ number_format($item->amount, 2) }}</td>
+                                            <td>{{ 'Rp. ' . number_format($item->amount, 0, ',', '.') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
                                             <td class="text-center">

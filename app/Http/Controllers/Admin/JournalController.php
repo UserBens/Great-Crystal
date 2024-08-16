@@ -774,8 +774,8 @@ class JournalController extends Controller
                 $transactionDetails[] = [
                     [
                         'no_transaction' => $bill->number_invoice ?? 'N/A',
-                        'account_number' => $transferAccount->account_no,
-                        'account_name' => $transferAccount->name,
+                        'account_number' => $transferAccount->account_no ?? 'N/A',
+                        'account_name' => $transferAccount->name ?? 'N/A',
                         'debit' => 0,
                         'credit' => $bill->amount > 0 ? $bill->amount : 0,
                         'date' => $bill->date,
@@ -784,8 +784,8 @@ class JournalController extends Controller
                     ],
                     [
                         'no_transaction' => $bill->number_invoice ?? 'N/A',
-                        'account_number' => $depositAccount->account_no,
-                        'account_name' => $depositAccount->name,
+                        'account_number' => $depositAccount->account_no ?? 'N/A',
+                        'account_name' => $depositAccount->name ?? 'N/A',
                         'debit' => $bill->amount > 0 ? $bill->amount : 0,
                         'credit' => 0,
                         'date' => $bill->date,

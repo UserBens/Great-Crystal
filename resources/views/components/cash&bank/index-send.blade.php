@@ -74,7 +74,8 @@
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
-                                <th style="width: 3%">#</th>
+                                <th>#</th>
+                                <th>No. Transaction</th>
                                 <th>Account Number</th>
                                 <th>Recipient</th>
                                 <th>Amount</th>
@@ -87,17 +88,17 @@
                             @foreach ($data as $item)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $item->no_transaction }}</td>
                                     <td>
                                         @if ($item->transferAccount)
                                             {{ $item->transferAccount->account_no }} -
-                                            {{ $item->transferAccount->name }}
+                                            {{ $item->transferAccount->name }} (Kredit)
+                                        @endif <br>
+                                        @if ($item->depositAccount)
+                                            {{ $item->depositAccount->account_no }} -
+                                            {{ $item->depositAccount->name }} (Debit)
                                         @endif
-                                    </td>
-                                    {{-- <td>
-                                        @if ($item->supplier)
-                                            {{ $item->supplier->name }}
-                                        @endif
-                                    </td> --}}
+                                    </td>                                   
                                     <td>{{ $item->recipient_name }}</td>
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>

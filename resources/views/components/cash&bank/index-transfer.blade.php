@@ -74,10 +74,10 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>No. Transaction</th>
                                 <th>Account Number</th>
                                 <th>Amount</th>
                                 <th>Date</th>
-                                {{-- <th>Type</th> --}}
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -86,14 +86,17 @@
                             @foreach ($data as $item)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $item->no_transaction }}</td>
                                     <td>
                                         @if ($item->transferAccount)
                                             {{ $item->transferAccount->account_no }} -
-                                            {{ $item->transferAccount->name }}
+                                            {{ $item->transferAccount->name }} (Kredit)
+                                        @endif <br>
+                                        @if ($item->depositAccount)
+                                            {{ $item->depositAccount->account_no }} -
+                                            {{ $item->depositAccount->name }} (Debit)
                                         @endif
-                                    </td>
-                                    {{-- <td>{{ $item->depositAccount->account_no }} -
-                                            {{ $item->depositAccount->name }}</td> --}}
+                                    </td>                                   
 
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>

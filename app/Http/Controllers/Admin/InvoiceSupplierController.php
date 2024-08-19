@@ -476,7 +476,7 @@ class InvoiceSupplierController extends Controller
             }
 
             // Memuat data dengan pagination
-            $data = $query->paginate(15);
+            $data = $query->paginate(25);
 
             // Menampilkan view dengan data dan form
             return view('components.supplier.data.index', compact('data', 'form'));

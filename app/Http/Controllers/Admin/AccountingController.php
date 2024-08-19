@@ -343,7 +343,7 @@ class AccountingController extends Controller
             }
 
             // Memuat data dengan pagination
-            $data = $query->paginate(10);
+            $data = $query->paginate(25);
 
             // Menampilkan view dengan data dan form
             return view('components.cash&bank.index-transfer', compact('data', 'form'));
@@ -596,7 +596,7 @@ class AccountingController extends Controller
             }
 
             // Memuat data dengan pagination
-            $data = $query->paginate(10);
+            $data = $query->paginate(25);
 
             // Menampilkan view dengan data dan form
             return view('components.cash&bank.index-send', compact('data', 'form'));
@@ -871,7 +871,7 @@ class AccountingController extends Controller
             }
 
             // Memuat data dengan pagination
-            $data = $query->paginate(10);
+            $data = $query->paginate(25);
 
             // Menampilkan view dengan data dan form
             return view('components.cash&bank.index-receive', compact('data', 'form'));

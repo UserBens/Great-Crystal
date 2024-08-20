@@ -12,6 +12,7 @@
                         <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)</option>
                         <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
                     </select>
+                    <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
                 </div>
                 <div class="col-md-4">
                     <label for="date">Date</label>
@@ -97,16 +98,16 @@
                                             class="btn btn-sm btn-warning"><i class="fas fa-pen"
                                                 style="margin-right: 4px"></i>Edit</a>
 
-                                            <button type="button" class="btn btn-sm delete-btn btn-danger"
-                                                data-id="{{ $item->id }}">
-                                                <i class="fas fa-trash mr-1"></i>Delete
-                                            </button>
+                                        <button type="button" class="btn btn-sm delete-btn btn-danger"
+                                            data-id="{{ $item->id }}">
+                                            <i class="fas fa-trash mr-1"></i>Delete
+                                        </button>
 
-                                            {{-- <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
+                                        {{-- <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
                                                 data-target="#importModal" data-id="{{ $item->id }}">
                                                 <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
                                             </button> --}}
-                                            
+
                                     </td>
 
                                 </tr>
@@ -197,63 +198,25 @@
             });
 
         });
-    </script>
-
-    {{-- SweetAlert
-    @if (session('success'))
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script>
-            swal({
-                title: "Success!",
-                text: "{{ session('success') }}",
-                icon: "success",
-                button: "OK",
-            });
-        </script>
-    @endif --}}
+    </script>   
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelector("body").addEventListener("click", function(event) {
-                if (event.target.id === "download-template") {
-                    event.preventDefault();
-                    console.log("terklik");
-                    window.location.href = 'journal/journal/templates/import';
-                }
-            });
+        document.getElementById('sort-select').addEventListener('change', function() {
+            let order = this.options[this.selectedIndex].getAttribute('data-order');
+            document.getElementById('sort-order').value = order;
+            this.form.submit();
+        });
+    </script>
 
-            function readURL(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.querySelector(".image-upload-wrap").style.display = 'none';
-                        document.querySelector(".file-upload-image").src = e.target.result;
-                        document.querySelector(".file-upload-content").style.display = 'block';
-                        document.querySelector(".image-title").innerHTML = input.files[0].name;
-                    };
-                    reader.readAsDataURL(input.files[0]);
-                } else {
-                    removeUpload();
-                }
-            }
+    <script>
+        document.getElementById('status-select').addEventListener('change', function() {
+            this.form.submit();
+        });
 
-            window.readURL = readURL; // Ensure readURL is globally available
-
-            function removeUpload() {
-                document.querySelector(".file-upload-input").value = '';
-                document.querySelector(".file-upload-content").style.display = 'none';
-                document.querySelector(".image-upload-wrap").style.display = 'block';
-            }
-
-            window.removeUpload = removeUpload; // Ensure removeUpload is globally available
-
-            document.querySelector(".image-upload-wrap").addEventListener("dragover", function() {
-                document.querySelector(".image-upload-wrap").classList.add("image-dropping");
-            });
-
-            document.querySelector(".image-upload-wrap").addEventListener("dragleave", function() {
-                document.querySelector(".image-upload-wrap").classList.remove("image-dropping");
-            });
+        document.getElementById('sort-select').addEventListener('change', function() {
+            let order = this.options[this.selectedIndex].getAttribute('data-order');
+            document.getElementById('sort-order').value = order;
+            this.form.submit();
         });
     </script>
 @endsection

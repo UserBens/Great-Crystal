@@ -119,6 +119,11 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
    Route::prefix('/reports')->group(function () {
       Route::get('/', [Report::class, 'index']);
       Route::post('/exports', [Report::class, 'export']);
+      Route::get('/student-bills', [StudentController::class, 'viewsExportStudentBills']);
+      Route::get('/grade-bills/{grade_id}', [StudentController::class, 'viewGradeBills'])->name('reports.grade-bills'); // Added name here
+      Route::get('/student-bill-detail/{student_id}', [StudentController::class, 'viewStudentBillDetail'])->name('reports.student-bill-detail');
+      Route::get('/student-bill-detail/{student_id}/export', [StudentController::class, 'exportStudentBillDetail'])
+         ->name('reports.student-bill-detail.export');
    });
 });
 

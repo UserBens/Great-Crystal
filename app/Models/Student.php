@@ -76,4 +76,9 @@ class Student extends Model
    {
       return $this->hasMany(Payment_grade::class, 'grade_id', 'grade_id');
    }
+
+   public function material_fee()
+   {
+      return $this->hasOne(Payment_materialfee::class, 'student_id');
+   }
 }

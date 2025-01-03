@@ -3,45 +3,6 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="container-fluid">
         <h2 class="text-center display-4 mb-3">Studen Bills</h2>
-        <form action="{{ route('invoice-supplier.index') }}" method="GET" class="mb-3">
-            <div class="row">
-                <div class="col-md-3">
-                    <label for="status">Payment Status</label>
-                    <select name="status" class="form-control" id="status-select">
-                        <option value="">-- All Status --</option>
-                        <option value="Paid" {{ $form->status === 'Paid' ? 'selected' : '' }}>Paid</option>
-                        <option value="Not Yet" {{ $form->status === 'Not Yet' ? 'selected' : '' }}>Not Yet</option>
-                    </select>
-                    <input type="hidden" name="order" id="sort-order" value="{{ $form->order }}">
-                </div>
-
-                <div class="col-md-3">
-                    <label for="sort">Sort By</label>
-                    <select name="sort" class="form-control" id="sort-select">
-                        <option value="">Default</option>
-                        <option value="oldest" {{ $form->sort === 'oldest' ? 'selected' : '' }}>Date (Oldest First)</option>
-                        <option value="newest" {{ $form->sort === 'newest' ? 'selected' : '' }}>Date (Newest First)</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <label for="date">Date</label>
-                    <input type="date" name="date" class="form-control" value="{{ $form->date ?? '' }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="date">Search Data</label>
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search..."
-                            value="{{ $form->search ?? '' }}">
-                        <div class="input-group-append">
-                            <button type="submit" class="btn btn-secondary">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
 
         <!-- Conditional rendering based on data availability -->
         @if (sizeof($data) == 0 && ($form->type || $form->sort || $form->order || $form->status || $form->search))

@@ -19,19 +19,19 @@ class Kernel extends ConsoleKernel
         $email_logging = env("EMAIL_CRON_LOGGING", "benedictusradyan@gmail.com");
 
         // create bill notification
-       
+
         $schedule->command('spp:cron')->monthlyOn(1, '06:35')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
-       
+
         // $schedule->command('capital-fee:cron')->dailyAt('14:52')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
         $schedule->command('capital-fee:cron')->dailyAt('14:05')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
-       
+
         $schedule->command('book:cron')->dailyAt('10:19')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
         // $schedule->command('book:cron')->dailyAt('13:53')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
-       
+
         $schedule->command('uniform:cron')->dailyAt('15:06')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
-       
+
         $schedule->command('paket:cron')->dailyAt('15:21')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
-       
+
         $schedule->command('change-paket:cron')->dailyAt('08:00')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
         // $schedule->command('other:cron')->dailyAt('15:20')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
         $schedule->command('other:cron')->dailyAt('08:42')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
@@ -44,7 +44,9 @@ class Kernel extends ConsoleKernel
 
         // send email payment success eveyday
         $schedule->command('payment:cron')->dailyAt('05:15')->timezone('Asia/Jakarta')->emailOutputOnFailure($email_logging);
-        
+
+        // material fee
+        $schedule->command('material-fee:cron')->dailyAt('08:00');
     }
 
     /**
@@ -52,7 +54,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

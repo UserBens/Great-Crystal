@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <h2 class="text-center display-4 mb-3">Student Bill Detail</h2>
         <a href="{{ route('reports.student-bill-detail.export', ['student_id' => $student->id]) }}"
-            class="btn btn-primary btn-sm mr-2">
+            class="btn btn-primary btn-sm mb-3" target="_blank">
             <i class="fas fa-file-pdf"></i> Export PDF
         </a>
         <!-- Student Information Card -->
@@ -43,7 +43,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Bills List</h3>
                     <div class="card-tools">
-                      
+
                         <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                             <i class="fas fa-minus"></i>
                         </button>
@@ -53,7 +53,7 @@
                     <table class="table table-striped projects">
                         <thead>
                             <tr>
-                                <th style="width: 2%">#</th>
+                                <th style="width: 2%">Invoice Number</th>
                                 <th style="width: 15%">Bill Type</th>
                                 <th style="width: 20%">Amount</th>
                                 <th style="width: 24%">Due Date</th>
@@ -64,9 +64,14 @@
                         <tbody>
                             @foreach ($bills as $bill)
                                 <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $bill->number_invoice }}</td>
                                     <td>{{ $bill->type }}</td>
-                                    <td>Rp {{ number_format($bill->amount, 0, ',', '.') }}</td>
+
+                                    @if ($bill->type === 'Capital Fee')
+                                        <td>Rp {{ number_format($bill->amount_installment, 0, ',', '.') }}</td>
+                                    @else
+                                        <td>Rp {{ number_format($bill->amount, 0, ',', '.') }}</td>
+                                    @endif
 
                                     <td>{{ \Carbon\Carbon::parse($bill->deadline_invoice)->format('j F Y') }}</td>
                                     <td>

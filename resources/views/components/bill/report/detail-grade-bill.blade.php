@@ -98,7 +98,12 @@
                                         <a>{{ $bill->student->name }}</a>
                                     </td>
                                     <td>{{ $bill->type }}</td>
-                                    <td>Rp {{ number_format($bill->amount, 0, ',', '.') }}</td>
+                                    @if ($bill->type === 'Capital Fee')
+                                        <td>Rp {{ number_format($bill->amount_installment, 0, ',', '.') }}</td>
+                                    @else
+                                        <td>Rp {{ number_format($bill->amount, 0, ',', '.') }}</td>
+                                    @endif
+
                                     <td>
                                         @if ($bill->paidOf)
                                             <span class="badge badge-success">Paid</span>
@@ -118,7 +123,7 @@
                                         @endif
                                     </td>
                                     <td class="project-actions text-right">
-                                        <a class="btn btn-info btn-sm"
+                                        <a class="btn btn-primary btn-sm"
                                             href="{{ route('reports.student-bill-detail', $bill->student_id) }}">
                                             <i class="fas fa-eye"></i>
                                             View

@@ -186,6 +186,13 @@
                                     <p>Book</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="/admin/material-fee"
+                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'payment-materialfee' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Material Fee</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif

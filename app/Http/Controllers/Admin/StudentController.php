@@ -625,15 +625,24 @@ class StudentController extends Controller
          $bills = $query->paginate(25);
 
          // Calculate summary
-         $totalBills = $bills->sum('amount');
-         $paidBills = $query->where('paidOf', true)->sum('amount');
-         $unpaidBills = $query->where('paidOf', false)->sum('amount');
+         $totalBills = $bills->sum(function ($bill) {
+            return $bill->type === 'Capital Fee' ? $bill->amount_installment : $bill->amount;
+         });
+
+         $paidBills = $query->get()->where('paidOf', true)->sum(function ($bill) {
+            return $bill->type === 'Capital Fee' ? $bill->amount_installment : $bill->amount;
+         });
+
+         $unpaidBills = $query->get()->where('paidOf', false)->sum(function ($bill) {
+            return $bill->type === 'Capital Fee' ? $bill->amount_installment : $bill->amount;
+         });
 
          $summary = (object)[
             'total' => $totalBills,
             'paid' => $paidBills,
             'unpaid' => $unpaidBills
          ];
+
 
          return view('components.bill.report.student-bill-detail')
             ->with('bills', $bills)
@@ -696,8 +705,9 @@ class StudentController extends Controller
          // Generate filename
          $filename = 'student_bill_' . $student->name . '_' . date('Y-m-d') . '.pdf';
 
-         return $pdf->download($filename);
-         
+         // return $pdf->download($filename);
+         return $pdf->stream($filename); // Ganti download() menjadi stream()
+
       } catch (Exception $err) {
          return redirect()->back()->with('error', 'Failed to generate PDF: ' . $err->getMessage());
       }

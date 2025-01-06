@@ -227,7 +227,7 @@ class RegisterController extends Controller
 
             //fee register
 
-            'amount' => 'required|integer',
+            'amount' => 'integer',
             'dp' => 'nullable|integer',
             'installment' => 'nullable|integer',
             'sendEmail' => 'required|boolean',

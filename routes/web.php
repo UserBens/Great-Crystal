@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\{
    JournalController,
    PaymentBookController,
    PaymentGradeController,
+   PaymentMaterialFeeController,
    PaymentStudentController,
    RegisterController,
    StudentController,
@@ -119,6 +120,11 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
    Route::prefix('/reports')->group(function () {
       Route::get('/', [Report::class, 'index']);
       Route::post('/exports', [Report::class, 'export']);
+      Route::get('/student-bills', [StudentController::class, 'viewsExportStudentBills']);
+      Route::get('/grade-bills/{grade_id}', [StudentController::class, 'viewGradeBills'])->name('reports.grade-bills'); // Added name here
+      Route::get('/student-bill-detail/{student_id}', [StudentController::class, 'viewStudentBillDetail'])->name('reports.student-bill-detail');
+      Route::get('/student-bill-detail/{student_id}/export', [StudentController::class, 'exportStudentBillDetail'])
+         ->name('reports.student-bill-detail.export');
    });
 });
 
@@ -212,6 +218,25 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/{id}/add-books-action', [PaymentBookController::class, 'actionAddBook'])->name('action.add.book');
    });
 
+   // Route::prefix('material-fee')->group(function () {
+   //    Route::get('/', [PaymentMaterialFeeController::class, 'chooseTypeIndex'])->name('payment.materialfee.index');
+   //    Route::get('/create/{type}', [PaymentMaterialFeeController::class, 'listViewStudent'])->name('payment.materialfee.create');
+   //    Route::get('/material-fee/create/{student_id}/{type}', [PaymentMaterialFeeController::class, 'viewCreateForm'])->name('payment.materialfee.create-form');
+   //    Route::post('/material-fee/{student_id}/{type}', [PaymentMaterialFeeController::class, 'storePaymentMaterialFee'])
+   //       ->name('payment.materialfee.store');
+   // });
+
+   Route::prefix('material-fee')->group(function () {
+      Route::get('/', [PaymentMaterialFeeController::class, 'chooseTypeIndex'])->name('payment.materialfee.index');
+      Route::get('/listview/{type}', [PaymentMaterialFeeController::class, 'listViewStudent'])->name('payment.materialfee.create');
+      Route::get('/form/{type}', [PaymentMaterialFeeController::class, 'viewCreateForm'])
+         ->name('payment.materialfee.create-form');
+      Route::post('/form/{type}', [PaymentMaterialFeeController::class, 'storePaymentMaterialFee'])
+         ->name('payment.materialfee.store');
+
+      Route::get('/admin/payment-materialfee/detail/{student_id}', [PaymentMaterialFeeController::class, 'showStudentMaterialFees'])->name('payment.materialfee.detail');
+   });
+
    Route::prefix('/income')->group(function () {
       Route::get('/', [FinancialController::class, 'indexIncome'])->name('income.index');
    });
@@ -248,10 +273,6 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::delete('/transaction-receive/{id}', [AccountingController::class, 'deleteTransactionReceive'])->name('transaction-receive.destroy');
       Route::post('/create-account-receive/store', [AccountingController::class, 'storeAccountTransactionReceive'])->name('transaction-receive.account.store');
    });
-
-   // Route::prefix('/bank')->group(function () {
-   //    Route::get('/', [AccountingController::class, 'indexBank'])->name('bank.index');
-   // });
 
    Route::prefix('/journal')->group(function () {
       Route::get('/', [JournalController::class, 'indexJournal'])->name('journal.index');

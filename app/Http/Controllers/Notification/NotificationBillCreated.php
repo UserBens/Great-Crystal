@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
-
+use Illuminate\Support\Facades\Log;
 
 class NotificationBillCreated extends Controller
 {
@@ -57,7 +57,8 @@ class NotificationBillCreated extends Controller
          $billCreated = [];
 
          $data = Student::with([
-            'relationship', 'spp_student' => function ($query) {
+            'relationship',
+            'spp_student' => function ($query) {
                $query->where('type', 'SPP')->get();
             },
             'grade' => function ($query) {
@@ -226,7 +227,8 @@ class NotificationBillCreated extends Controller
          $billCreated = [];
 
          $data = Student::with([
-            'relationship', 'grade.payment_grade' => function ($query) {
+            'relationship',
+            'grade.payment_grade' => function ($query) {
                $query->where('type', 'Paket');
             }
          ])->where('is_active', true)->orderBy('id', 'asc')->get();
@@ -946,6 +948,58 @@ class NotificationBillCreated extends Controller
 
          info('Cron notification etc error at ' . now());
          return dd($err);
+      }
+   }
+
+   //material fee
+   public function materialFee()
+   {
+      try {
+         $students = Student::with(['bill' => function ($query) {
+            $query->where('type', 'Material Fee')
+               ->where('deadline_invoice', '=', Carbon::now()->addDays(9)->format('Y-m-d'))
+               ->where('paidOf', false);
+         }, 'relationship'])->get();
+
+         Log::info('Data fetched: ' . $students->count() . ' students found.');
+
+         foreach ($students as $student) {
+            foreach ($student->bill as $bill) {
+               $mailData = [
+                  'student' => $student,
+                  'bill' => [$bill],
+                  'past_due' => false,
+                  'charge' => false,
+                  'change' => false,
+                  'is_paid' => false,
+               ];
+
+               $subject = "Material Fee Notification for " . $student->name;
+
+               try {
+                  $emails = $student->relationship->pluck('email')->toArray();
+
+                  $pdf = app('dompdf.wrapper');
+                  $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $bill])
+                     ->setPaper('a4', 'portrait');
+
+                  foreach ($emails as $email) {
+                     Mail::to($email)->send(new FeeRegisMail($mailData, $subject, $pdf));
+                  }
+               } catch (\Exception $e) {
+                  Log::error('Failed to send email: ' . $e->getMessage());
+
+                  statusInvoiceMail::create([
+                     'status' => false,
+                     'bill_id' => $bill->id,
+                  ]);
+               }
+            }
+         }
+
+         Log::info('Material Fee Notification sent successfully.');
+      } catch (\Exception $e) {
+         Log::error('Material Fee Notification error: ' . $e->getMessage());
       }
    }
 }

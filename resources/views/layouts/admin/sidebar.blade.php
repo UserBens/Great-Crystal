@@ -186,6 +186,13 @@
                                     <p>Book</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="/admin/material-fee"
+                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'payment-materialfee' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Material Fee</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif
@@ -246,6 +253,15 @@
                                     class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'report bills' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Bills</p>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="/admin/reports/student-bills"
+                                    class="nav-link {{ session('page') && session('page')->child ? (session('page')->child == 'database student bills' ? 'active' : '') : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Student Bills</p>
                                 </a>
                             </li>
                         </ul>
@@ -357,7 +373,7 @@
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
-                        <ul class="nav nav-treeview">                            
+                        <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 <a href="{{ route('account.index') }}"
                                     class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Account Number' ? 'active' : '') : '' }}">
@@ -371,14 +387,14 @@
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Beginning Balance</p>
                                 </a>
-                            </li>                          
+                            </li>
                             <li class="nav-item">
                                 <a href="{{ route('balance-post.index') }}"
                                     class="nav-link {{ session('page') && session('page')->page ? (session('page')->child == 'Database Post Balance' ? 'active' : '') : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Posting Balance</p>
                                 </a>
-                            </li>                          
+                            </li>
 
                         </ul>
                     </li>

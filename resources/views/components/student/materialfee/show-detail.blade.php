@@ -8,7 +8,7 @@
                     <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item">Home</li>
-                            <li class="breadcrumb-item"><a href="{{ url('/admin/payment-materialfee') }}">Material Fee</a>
+                            <li class="breadcrumb-item"><a href="{{ route('payment.materialfee.create', ['type' => $type]) }}">Material Fee</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">Detail Material Fee</li>
                         </ol>
@@ -75,7 +75,7 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <p class="mb-0">Down Payment</p>
+                                        <p class="mb-0">Dp</p>
                                     </div>
                                     <div class="col-sm-8">
                                         <p class="text-muted mb-0">Rp {{ number_format($fee->dp, 0, ',', '.') }}</p>
@@ -142,7 +142,7 @@
                                         </tr>
                                         @if ($fee->dp > 0)
                                             <tr>
-                                                <td align="left" class="p-1">Down Payment:</td>
+                                                <td align="left" class="p-1">Dp :</td>
                                                 <td align="right" class="p-1">
                                                     -Rp {{ number_format($fee->dp, 0, ',', '.') }}
                                                 </td>

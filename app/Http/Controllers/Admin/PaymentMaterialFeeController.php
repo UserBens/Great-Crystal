@@ -243,6 +243,23 @@ class PaymentMaterialFeeController extends Controller
         }
     }
 
+    // public function showStudentMaterialFees($student_id)
+    // {
+    //     try {
+    //         // Get student data
+    //         $student = Student::with(['grade'])->findOrFail($student_id);
+
+    //         // Get all material fees for this student
+    //         $materialFees = Payment_materialfee::where('student_id', $student_id)
+    //             ->orderBy('type', 'asc')
+    //             ->get();
+
+    //         return view('components.student.materialfee.show-detail', compact('student', 'materialFees'));
+    //     } catch (Exception $err) {
+    //         return dd($err);
+    //     }
+    // }
+
     public function showStudentMaterialFees($student_id)
     {
         try {
@@ -254,7 +271,10 @@ class PaymentMaterialFeeController extends Controller
                 ->orderBy('type', 'asc')
                 ->get();
 
-            return view('components.student.materialfee.show-detail', compact('student', 'materialFees'));
+            // Definisikan $type jika diperlukan
+            $type = $materialFees->first()->type ?? null;
+
+            return view('components.student.materialfee.show-detail', compact('student', 'materialFees', 'type'));
         } catch (Exception $err) {
             return dd($err);
         }

@@ -228,10 +228,10 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
 
    Route::prefix('material-fee')->group(function () {
       Route::get('/', [PaymentMaterialFeeController::class, 'chooseTypeIndex'])->name('payment.materialfee.index');
-      Route::get('/create/{type}', [PaymentMaterialFeeController::class, 'listViewStudent'])->name('payment.materialfee.create');
-      Route::get('/material-fee/create/{type}', [PaymentMaterialFeeController::class, 'viewCreateForm'])
+      Route::get('/listview/{type}', [PaymentMaterialFeeController::class, 'listViewStudent'])->name('payment.materialfee.create');
+      Route::get('/form/{type}', [PaymentMaterialFeeController::class, 'viewCreateForm'])
          ->name('payment.materialfee.create-form');
-      Route::post('/material-fee/{type}', [PaymentMaterialFeeController::class, 'storePaymentMaterialFee'])
+      Route::post('/form/{type}', [PaymentMaterialFeeController::class, 'storePaymentMaterialFee'])
          ->name('payment.materialfee.store');
 
       Route::get('/admin/payment-materialfee/detail/{student_id}', [PaymentMaterialFeeController::class, 'showStudentMaterialFees'])->name('payment.materialfee.detail');

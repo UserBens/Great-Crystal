@@ -13,9 +13,7 @@
                     </nav>
                 </div>
             </div>
-
             <div class="row">
-
                 <div class="col-lg-8">
                     <div class="card mb-4">
                         <div class="card-body">
@@ -54,18 +52,14 @@
                                     <p class="mb-0">Subject</p>
                                 </div>
                                 <div class="col-sm-8">
-
                                     @php
-
                                         $subject = '-';
-
                                         if ($data->subject) {
                                             $subject = $data->installment
                                                 ? $data->type . ' installment ' . '( ' . $data->subject . ' )'
                                                 : 'Cash';
                                         }
                                     @endphp
-
                                     <p class="text-muted mb-0">{{ $subject }}</p>
                                 </div>
                             </div>
@@ -143,13 +137,6 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <select name="deposit_account_id" class="form-control select2">
-                                            {{-- @foreach ($accountNumbers as $accountNumber)
-                                                <option value="{{ $accountNumber->id }}"
-                                                    @if ($accountNumber->id == $selectedAccountId) selected @endif>
-                                                    {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
-                                                </option>
-                                            @endforeach --}}
-
                                             @foreach ($accountNumbers as $accountNumber)
                                                 <option value="{{ $accountNumber->id }}"
                                                     @if ($accountNumber->id == $data->new_deposit_account_id) selected @endif>
@@ -243,7 +230,6 @@
                                 </div>
                             </div>
 
-
                             <hr>
                             @if ($data->installment)
                                 <div class="row">
@@ -275,8 +261,6 @@
                                 <div class="tab-content p-0">
                                     <!-- Morris chart - Sales -->
                                     <div class="chart tab-pane active" id="revenue-chart" style="position: relative;">
-
-                                        {{-- <h1>New Bills</h1> --}}
                                         <div>
                                             <!-- /.card-header -->
                                             <div>
@@ -285,7 +269,6 @@
                                                     @php
                                                         $currentDate = date('y-m-d');
                                                     @endphp
-
                                                     @foreach ($data->bill_installments as $el)
                                                         <li>
                                                             <!-- drag handle -->
@@ -303,7 +286,6 @@
                                                             <span class="text">( {{ $el->type }} )
                                                                 {{ $el->student->name }}</span>
                                                             <!-- Emphasis label -->
-
 
                                                             @if ($el->paidOf)
                                                                 <small class="badge badge-success"><i
@@ -367,7 +349,6 @@
                                             <td align="right" class="p-1">
                                                 Rp. {{ number_format($el->amount, 0, ',', '.') }}
                                             </td>
-
                                         </tr>
                                     @endforeach
 
@@ -390,7 +371,6 @@
                                         <td align="right">
                                             Rp.{{ number_format($data->amount - $data->charge, 0, ',', '.') }}
                                         </td>
-
                                     </tr>
 
                                     @if ($data->dp)
@@ -401,7 +381,6 @@
                                             <td align="right">
                                                 -Rp.{{ number_format($data->dp, 0, ',', '.') }}
                                             </td>
-
                                         </tr>
                                     @endif
 
@@ -413,7 +392,6 @@
                                             <td align="right">
                                                 {{ $data->installment }}x
                                             </td>
-
                                         </tr>
                                     @endif
 
@@ -425,7 +403,6 @@
                                             <td align="right">
                                                 {{ $data->discount ? $data->discount : 0 }}%
                                             </td>
-
                                         </tr>
                                     @endif
                                     @if ($data->charge > 0)
@@ -436,7 +413,6 @@
                                             <td align="right">
                                                 + Rp. {{ number_format($data->charge, 0, ',', '.') }}
                                             </td>
-
                                         </tr>
                                     @endif
                                 @endif
@@ -520,7 +496,9 @@
                         @else
                             <a href="javascript:void(0)" id="update-status" data-id="{{ $data->id }}"
                                 data-name="{{ $data->student->name }}" data-subject="{{ $data->subject }}"
-                                class="btn btn-success w-100 mb-2">Paid success</a>
+                                data-bill-type="{{ $data->type }}" class="btn btn-success w-100 mb-2">
+                                Paid success
+                            </a>
                         @endif
                     @endif
                 </div>
@@ -531,8 +509,6 @@
     @includeIf('components.super.update-paid')
 
     @if (session('after_create'))
-        {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
-
         <script>
             var Toast = Swal.mixin({
                 toast: true,
@@ -578,26 +554,6 @@
         });
     </script>
 
-    {{-- <script>
-        $(document).ready(function() {
-            @if (session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: '{{ session('success') }}'
-                });
-            @endif
-
-            @if (session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: '{{ session('error') }}'
-                });
-            @endif
-        });
-    </script> --}}
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             @if (session('success'))
@@ -624,6 +580,4 @@
             @endif
         });
     </script>
-
-
 @endsection

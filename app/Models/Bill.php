@@ -109,4 +109,11 @@ class Bill extends Model
    {
       return $this->belongsTo(AccountNumber::class, 'new_deposit_account_id');
    }
+
+   const TYPE_MATERIAL_FEE = 'Material Fee';
+
+   public function isMaterialFee()
+   {
+      return $this->type === self::TYPE_MATERIAL_FEE;
+   }
 }

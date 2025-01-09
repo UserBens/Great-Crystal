@@ -1,15 +1,15 @@
 @extends('layouts.admin.master')
 @section('content')
-    <section style="background-color: #eee;">
+    <section>
         <div class="container py-5">
             <div class="row">
                 <div class="col">
-                    <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+                    <nav aria-label="breadcrumb" class="rounded-3 p-3 mb-4" style="background-color: #ffffff;">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item">Home</li>
                             <li class="breadcrumb-item"><a
                                     href="{{ route('payment.materialfee.create', ['type' => $type]) }}">Material Fee</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Create Material Fee Package</li>
+                            <li class="breadcrumb-item active" aria-current="page">Create Material Fee </li>
                         </ol>
                     </nav>
                 </div>
@@ -22,7 +22,7 @@
                         @csrf
                         <div class="card mb-4">
                             <div class="card-header bg-orange ">
-                                <h3 class="card-title text-white">Create Material Fee Package</h3>
+                                <h3 class="card-title text-white">Create Material Fee </h3>
                             </div>
                             <div class="card-body">
                                 <div class="row mb-3">

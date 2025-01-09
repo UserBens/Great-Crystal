@@ -363,6 +363,7 @@ $(document).ready(function () {
         const value = $(this).attr("data-id");
         const name = $(this).attr("data-name");
         const subject = $(this).attr("data-subject");
+        const billType = $(this).attr("data-bill-type"); // Add this line to get bill type
         let token = $("meta[name='csrf-token']").attr("content");
         Swal.fire({
             title:
@@ -398,6 +399,7 @@ $(document).ready(function () {
                     cache: false,
                     data: {
                         id: value,
+                        bill_type: billType, // Add this line to send bill type
                         _token: token,
                     },
                 })

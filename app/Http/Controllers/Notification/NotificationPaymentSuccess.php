@@ -128,171 +128,238 @@ class NotificationPaymentSuccess extends Controller
    }
 
 
-   public function successClicked($bill_id = 12)
+   // bisa dan digunakan
+   // public function successClicked($bill_id)
+   // {
+   //    DB::beginTransaction();
+   //    date_default_timezone_set('Asia/Jakarta');
+
+   //    Log::info('=== Starting Payment Success Process ===');
+   //    Log::info("Processing bill ID: {$bill_id}");
+
+   //    try {
+   //       $student = Student::with(['bill' => function ($query) use ($bill_id) {
+   //          $query->where('id', $bill_id);
+   //       }, 'relationship'])
+   //          ->whereHas('bill', function ($query) use ($bill_id) {
+   //             $query->where('id', $bill_id);
+   //          })
+   //          ->first();
+
+   //       if (!$student) {
+   //          Log::error("Student not found for bill ID: {$bill_id}");
+   //          throw new Exception("Student not found");
+   //       }
+
+   //       Log::info("Found student: {$student->name}");
+   //       Log::info("Number of bills: " . $student->bill->count());
+
+   //       foreach ($student->bill as $bill) {
+   //          // Memastikan tipe bill tidak kosong atau undefined
+   //          if (!empty($bill->type)) {
+   //             Log::info("Processing bill - Type: {$bill->type}, Amount: {$bill->amount}");
+
+   //             $mailData = [
+   //                'student' => $student,
+   //                'bill' => [$bill],
+   //             ];
+
+   //             $pdfBill = Bill::with(['student' => function ($query) {
+   //                $query->with('grade');
+   //             }, 'bill_collection', 'bill_installments'])
+   //                ->where('id', $bill->id)
+   //                ->first();
+
+   //             try {
+   //                $array_email = [];
+   //                foreach ($student->relationship as $idx => $parent) {
+   //                   if ($idx == 0) $mailData['name'] = $parent->name;
+   //                   array_push($array_email, $parent->email);
+   //                   Log::info("Added recipient email: {$parent->email}");
+   //                }
+
+   //                // Memastikan kita memiliki alamat email
+   //                if (empty($array_email)) {
+   //                   Log::error("No recipient emails found for student: {$student->name}");
+   //                   throw new Exception("No recipient emails found");
+   //                }
+
+   //                // Membuat PDF
+   //                $pdf = app('dompdf.wrapper');
+   //                $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])
+   //                   ->setPaper('a4', 'portrait');
+
+   //                Log::info("PDF generated successfully");
+
+   //                // Mengirim email secara sinkron
+   //                $emailSubject = "Pembayaran " . $bill->type . " " . $student->name . " Telah Dikonfirmasi!";
+   //                Mail::to($array_email)->send(new PaymentSuccessMail($mailData, $emailSubject, $pdf, null));
+   //                Log::info("Synchronous email sent successfully");
+
+   //                // Menyebarkan pekerjaan email secara asinkron
+   //                dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
+   //                Log::info("Async email job dispatched");
+   //             } catch (Exception $err) {
+   //                Log::error("Email sending failed: " . $err->getMessage());
+   //                Log::error($err->getTraceAsString());
+
+   //                statusInvoiceMail::create([
+   //                   'bill_id' => $pdfBill->id,
+   //                   'status' => false,
+   //                   'is_paid' => true,
+   //                ]);
+
+   //                throw $err;
+   //             }
+   //          } else {
+   //             Log::warning("Skipping bill with empty or undefined type.");
+   //          }
+   //       }
+
+
+   //       DB::commit();
+   //       Log::info('=== Payment Success Process Completed ===');
+   //       return response()->json(['success' => true]);
+   //    } catch (Exception $err) {
+   //       DB::rollBack();
+   //       Log::error("Process failed: " . $err->getMessage());
+   //       Log::error($err->getTraceAsString());
+
+   //       statusInvoiceMail::create([
+   //          'bill_id' => $bill_id,
+   //          'status' => false,
+   //          'is_paid' => true,
+   //       ]);
+
+   //       return response()->json(['success' => false, 'text' => $err->getMessage()]);
+   //    }
+   // }
+
+
+   public function successClicked($bill_id)
    {
       DB::beginTransaction();
       date_default_timezone_set('Asia/Jakarta');
-      info('payment clicked running 1 with id ' . $bill_id);
+
+      Log::info('=== Starting Payment Success Process ===');
+      Log::info("Processing bill ID: {$bill_id}");
+
       try {
-         //code...
-         $student = Student::with(['bill' => function ($query) use ($bill_id) {
-            $query->where('id', $bill_id);
-         }, 'relationship'])
+         $student = Student::with([
+            'bill' => function ($query) use ($bill_id) {
+               $query->where('id', $bill_id);
+            },
+            'relationship',
+            'material_fee' // Add material_fee relationship
+         ])
             ->whereHas('bill', function ($query) use ($bill_id) {
                $query->where('id', $bill_id);
             })
             ->first();
 
+         if (!$student) {
+            Log::error("Student not found for bill ID: {$bill_id}");
+            throw new Exception("Student not found");
+         }
 
-         // return $student;
+         Log::info("Found student: {$student->name}");
+         Log::info("Number of bills: " . $student->bill->count());
 
          foreach ($student->bill as $bill) {
-            # code...
-            $mailData = [
-               'student' => $student,
-               'bill' => [$bill],
-            ];
+            if (!empty($bill->type)) {
+               Log::info("Processing bill - Type: {$bill->type}, Amount: {$bill->amount}");
 
-            $pdfBill = Bill::with(['student' => function ($query) {
-               $query->with('grade');
-            }, 'bill_collection', 'bill_installments'])
-               ->where('id', $bill->id)
-               ->first();
+               // Get installment number for Material Fee
+               $installmentInfo = null;
+               if ($bill->type === 'Material Fee') {
+                  $existingBillsCount = Bill::where('student_id', $student->id)
+                     ->where('type', 'Material Fee')
+                     ->where('created_at', '<=', $bill->created_at)
+                     ->count();
 
-            try {
-               //code...
-               $array_email = [];
-               foreach ($student->relationship as $idx => $parent) {
+                  $installmentInfo = [
+                     'current' => $existingBillsCount,
+                     'total' => $student->material_fee ? $student->material_fee->installment : 0
+                  ];
+               }
 
+               $mailData = [
+                  'student' => $student,
+                  'bill' => [$bill],
+                  'installment_info' => $installmentInfo
+               ];
 
-                  if ($idx == 0) $mailData['name'] = $parent->name;
+               $pdfBill = Bill::with(['student' => function ($query) {
+                  $query->with(['grade', 'material_fee']);
+               }, 'bill_collection', 'bill_installments'])
+                  ->where('id', $bill->id)
+                  ->first();
 
-                  array_push($array_email, $parent->email);
-
-                  $pdf = app('dompdf.wrapper');
-                  $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
-
-                  $pdfReport = null;
-
-                  if ($pdfBill->installment) {
-
-                     $pdfReport = app('dompdf.wrapper');
-                     $pdfReport->loadView('components.emails.payment-success-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
+               try {
+                  $array_email = [];
+                  foreach ($student->relationship as $idx => $parent) {
+                     if ($idx == 0) $mailData['name'] = $parent->name;
+                     array_push($array_email, $parent->email);
+                     Log::info("Added recipient email: {$parent->email}");
                   }
 
-                  // Mail::to($parent->email)->send(new PaymentSuccessMail($mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
-                  // Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment for School Fee – " . date('F Y') . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
-                  Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Pembayaran Monthly Fee " . $student->name . " Telah Dikonfirmasi!", $pdf, $pdfReport));
-               }
-               // return view('emails.payment-success')->with('mailData', $mailData);
-               dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
-            } catch (Exception $err) {
+                  if (empty($array_email)) {
+                     Log::error("No recipient emails found for student: {$student->name}");
+                     throw new Exception("No recipient emails found");
+                  }
 
-               statusInvoiceMail::create([
-                  'bill_id' => $pdfBill->id,
-                  'status' => false,
-                  'is_paid' => true,
-               ]);
+                  $pdf = app('dompdf.wrapper');
+                  $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])
+                     ->setPaper('a4', 'portrait');
+
+                  Log::info("PDF generated successfully");
+
+                  // Customize email subject for Material Fee
+                  $emailSubject = $bill->type === 'Material Fee'
+                     ? "Pembayaran Material Fee " . $student->name . " - " .
+                     ($student->material_fee ? $student->material_fee->type : 'General') . " " .
+                     $installmentInfo['current'] . "/" . $installmentInfo['total']
+                     : "Pembayaran " . $bill->type . " " . $student->name . " Telah Dikonfirmasi!";
+
+                  Mail::to($array_email)->send(new PaymentSuccessMail($mailData, $emailSubject, $pdf, null));
+                  Log::info("Synchronous email sent successfully");
+
+                  dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
+                  Log::info("Async email job dispatched");
+               } catch (Exception $err) {
+                  Log::error("Email sending failed: " . $err->getMessage());
+                  Log::error($err->getTraceAsString());
+
+                  statusInvoiceMail::create([
+                     'bill_id' => $pdfBill->id,
+                     'status' => false,
+                     'is_paid' => true,
+                  ]);
+
+                  throw $err;
+               }
+            } else {
+               Log::warning("Skipping bill with empty or undefined type.");
             }
          }
 
          DB::commit();
+         Log::info('=== Payment Success Process Completed ===');
+         return response()->json(['success' => true]);
       } catch (Exception $err) {
-         info('Error at sent email payment success was clicked');
-         info('Errors : ' . $err->getMessage());
+         DB::rollBack();
+         Log::error("Process failed: " . $err->getMessage());
+         Log::error($err->getTraceAsString());
+
          statusInvoiceMail::create([
             'bill_id' => $bill_id,
             'status' => false,
             'is_paid' => true,
          ]);
+
+         return response()->json(['success' => false, 'text' => $err->getMessage()]);
       }
    }
-
-   // public function sendPaymentSuccessNotification($bill_id)
-   // {
-   //    try {
-   //       // Validasi apakah bill_id valid
-   //       if (!$bill_id) {
-   //          throw new \InvalidArgumentException("Invalid bill ID provided.");
-   //       }
-
-   //       // Mulai transaksi database
-   //       DB::beginTransaction();
-
-   //       // Ambil data siswa dengan tagihan yang sesuai
-   //       $student = Student::with(['bill' => function ($query) use ($bill_id) {
-   //          $query->where('id', $bill_id);
-   //       }, 'relationship'])->whereHas('bill', function ($query) use ($bill_id) {
-   //          $query->where('id', $bill_id);
-   //       })->first();
-
-   //       // Jika tidak ada siswa ditemukan untuk bill ID yang diberikan, lemparkan pengecualian
-   //       if (!$student) {
-   //          throw new \Exception("Student not found for the provided bill ID.");
-   //       }
-
-   //       // Siapkan data email dan PDF
-   //       foreach ($student->bill as $bill) {
-   //          $mailData = [
-   //             'student' => $student,
-   //             'bill' => [$bill],
-   //          ];
-
-   //          $pdfBill = Bill::with(['student' => function ($query) {
-   //             $query->with('grade');
-   //          }, 'bill_collection', 'bill_installments'])->where('id', $bill->id)->first();
-
-   //          $array_email = [];
-   //          foreach ($student->relationship as $idx => $parent) {
-   //             if ($idx == 0) {
-   //                $mailData['name'] = $parent->name;
-   //             }
-   //             array_push($array_email, $parent->email);
-   //          }
-
-   //          $pdf = app('dompdf.wrapper');
-   //          $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
-
-   //          $pdfReport = null;
-   //          if ($pdfBill->installment) {
-   //             $pdfReport = app('dompdf.wrapper');
-   //             $pdfReport->loadView('components.emails.payment-success-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
-   //          }
-
-   //          // Kirim email dan jadwalkan pekerjaan asinkron untuk mengirim pemberitahuan pembayaran
-   //          // Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
-   //          Mail::to($array_email)->send(new PaymentSuccessMail($mailData, "Payment for School Fee – " . date('F Y') . " " . $student->name . " has confirmed!", $pdf, $pdfReport));
-   //          dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
-   //       }
-
-   //       // Commit transaksi
-   //       DB::commit();
-
-   //       // Log keberhasilan pengiriman pemberitahuan pembayaran
-   //       info('Payment success notification sent successfully.');
-
-   //       // Beri respons sukses
-   //       return redirect('/admin/bills')->with('success', 'Email successfully sent');
-   //    } catch (\Exception $err) {
-   //       // Rollback transaksi jika terjadi kesalahan
-   //       DB::rollBack();
-
-   //       // Log kesalahan
-   //       info('Error sending payment success notification: ' . $err->getMessage());
-
-   //       // Buat entri email status invoice jika terjadi kesalahan
-   //       if (isset($pdfBill)) {
-   //          statusInvoiceMail::create([
-   //             'bill_id' => $pdfBill->id,
-   //             'status' => false,
-   //             'is_paid' => true,
-   //          ]);
-   //       }
-
-   //       // Beri respons dengan pesan kesalahan
-   //       return back()->with('error', 'Failed to send email: ' . $err->getMessage());
-   //    }
-   // }
 
    public function sendPaymentSuccessNotification($bill_id)
    {

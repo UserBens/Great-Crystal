@@ -2,7 +2,7 @@
 @section('content')
     <div class="container-fluid">
         <h2 class="text-center display-4">{{ ucwords(strtolower($type)) }} Student</h2>
-        <form class="my-3" action="/admin/payment-grades/create/{{ $type }}">
+        <form class="my-3" action="{{ route('payment.materialfee.create', ['type' => $type]) }}">
             <div class="row">
                 <div class="col-md-10 offset-md-1">
                     <div class="row">
@@ -36,7 +36,6 @@
                                 <select name="order" class="form-control">
                                     <option {{ $form->order === 'id' ? 'selected' : '' }} value="id">Register</option>
                                     <option {{ $form->order === 'name' ? 'selected' : '' }} value="name">Name</option>
-                                    <option {{ $form->order === 'grade_id' ? 'selected' : '' }} value="grade_id">Grade
                                     </option>
                                 </select>
                             </div>
@@ -74,8 +73,8 @@
                 <div class="col-sm-12 text-center">
                     <div class="mt-4 mb-5">
                         <a href="{{ route('payment.materialfee.create-form', ['type' => $type]) }}"
-                            class="btn btn-success btn-lg">
-                            <i class="fa-solid fa-plus"></i> Create New Payment Material Fee
+                            class="btn btn-success btn-sm">
+                            <i class="fa-solid fa-plus"></i> Create Material Fee
                         </a>
                     </div>
                     <h3>No payment records found!</h3>

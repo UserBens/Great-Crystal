@@ -1395,7 +1395,9 @@ class NotificationBillCreated extends Controller
                         ]
                      ];
 
-                     $subject = "Tagihan Material Fee " . $student->name . " - " . $currentInstallment . "/" . $materialFee->installment;
+                     // $subject = "Tagihan Material Fee " . $student->name . " - " . $currentInstallment . "/" . $materialFee->installment;
+
+                     $subject = "Tagihan Material Fee {$student->name} bulan ini sudah dibuat";
 
                      $pdf = app('dompdf.wrapper');
                      $pdf->loadView('components.student.materialfee.pdf', [

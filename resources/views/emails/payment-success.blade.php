@@ -359,29 +359,27 @@
                                                                                     @endphp
 
                                                                                     @foreach ($data as $item)
+                                                                                        @php
+                                                                                            if ($item->type === 'SPP') {
+                                                                                                $amount = $item->discount
+                                                                                                    ? $item->amount -
+                                                                                                        ($item->amount *
+                                                                                                            $item->discount) /
+                                                                                                            100
+                                                                                                    : $item->amount;
+                                                                                                $total += $amount;
+                                                                                            } else {
+                                                                                                $amount = $item->installment
+                                                                                                    ? $item->amount_installment
+                                                                                                    : $item->amount -
+                                                                                                        $item->dp;
+                                                                                                $total = $amount;
+                                                                                            }
+                                                                                        @endphp
+
                                                                                         <tr>
                                                                                             <td colspan="2"
                                                                                                 style="color: #525f7f; font-size: 15px; line-height: 24px; word-break: normal;">
-                                                                                                @php
-                                                                                                    if (
-                                                                                                        $item->type ===
-                                                                                                        'SPP'
-                                                                                                    ) {
-                                                                                                        $amount = $item->discount
-                                                                                                            ? $item->amount -
-                                                                                                                ($item->amount *
-                                                                                                                    $item->discount) /
-                                                                                                                    100
-                                                                                                            : $item->amount;
-                                                                                                        $total += $amount;
-                                                                                                    } else {
-                                                                                                        $amount = $item->installment
-                                                                                                            ? $item->amount_installment
-                                                                                                            : $item->amount -
-                                                                                                                $item->dp;
-                                                                                                        $total = $amount;
-                                                                                                    }
-                                                                                                @endphp
                                                                                                 <p style="margin: 0;">
                                                                                                     @if ($item->type === 'SPP')
                                                                                                         @php
@@ -395,15 +393,25 @@
                                                                                                         Monthly Fee –
                                                                                                         {{ $monthYear }}
                                                                                                     @else
-                                                                                                        @if ($item->type != 'Book' && $item->installment)
-                                                                                                            {{ $item->type . ' ' . $item->subject }}
+                                                                                                        @if ($item->type === 'Material Fee')
+                                                                                                            Material Fee
+                                                                                                            -
+                                                                                                            {{ $mailData['installment_info']['type'] ?? '' }}
+                                                                                                            @if (isset($mailData['installment_info']['current']) && isset($mailData['installment_info']['total']))
+                                                                                                                ({{ $mailData['installment_info']['current'] }}/{{ $mailData['installment_info']['total'] }})
+                                                                                                            @endif
                                                                                                         @else
-                                                                                                            {{ $mailData['bill'][0]->type == 'Book' ? $item->name : $item->type }}
+                                                                                                            @if ($item->type != 'Book' && $item->installment)
+                                                                                                                {{ $item->type . ' ' . $item->subject }}
+                                                                                                            @else
+                                                                                                                {{ $mailData['bill'][0]->type == 'Book' ? $item->name : $item->type }}
+                                                                                                            @endif
                                                                                                         @endif
                                                                                                     @endif
-
                                                                                                 </p>
                                                                                             </td>
+
+
                                                                                             <td align="right"
                                                                                                 valign="top"
                                                                                                 style="color: #525f7f; font-size: 15px; line-height: 24px; word-break: normal;">

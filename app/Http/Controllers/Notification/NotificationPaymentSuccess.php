@@ -128,7 +128,6 @@ class NotificationPaymentSuccess extends Controller
    }
 
 
-   // bisa dan digunakan
    // public function successClicked($bill_id)
    // {
    //    DB::beginTransaction();
@@ -138,9 +137,13 @@ class NotificationPaymentSuccess extends Controller
    //    Log::info("Processing bill ID: {$bill_id}");
 
    //    try {
-   //       $student = Student::with(['bill' => function ($query) use ($bill_id) {
-   //          $query->where('id', $bill_id);
-   //       }, 'relationship'])
+   //       $student = Student::with([
+   //          'bill' => function ($query) use ($bill_id) {
+   //             $query->where('id', $bill_id);
+   //          },
+   //          'relationship',
+   //          'material_fee'
+   //       ])
    //          ->whereHas('bill', function ($query) use ($bill_id) {
    //             $query->where('id', $bill_id);
    //          })
@@ -155,17 +158,31 @@ class NotificationPaymentSuccess extends Controller
    //       Log::info("Number of bills: " . $student->bill->count());
 
    //       foreach ($student->bill as $bill) {
-   //          // Memastikan tipe bill tidak kosong atau undefined
    //          if (!empty($bill->type)) {
    //             Log::info("Processing bill - Type: {$bill->type}, Amount: {$bill->amount}");
+
+   //             $installmentInfo = null;
+
+   //             if ($bill->type === 'Material Fee') {
+   //                $existingBillsCount = Bill::where('student_id', $student->id)
+   //                   ->where('type', 'Material Fee')
+   //                   ->where('id', '<=', $bill->id)
+   //                   ->count();
+
+   //                $installmentInfo = [
+   //                   'current' => $existingBillsCount,
+   //                   'total' => $student->material_fee ? $student->material_fee->installment : 0
+   //                ];
+   //             }
 
    //             $mailData = [
    //                'student' => $student,
    //                'bill' => [$bill],
+   //                'installment_info' => $installmentInfo
    //             ];
 
    //             $pdfBill = Bill::with(['student' => function ($query) {
-   //                $query->with('grade');
+   //                $query->with(['grade', 'material_fee']);
    //             }, 'bill_collection', 'bill_installments'])
    //                ->where('id', $bill->id)
    //                ->first();
@@ -178,26 +195,31 @@ class NotificationPaymentSuccess extends Controller
    //                   Log::info("Added recipient email: {$parent->email}");
    //                }
 
-   //                // Memastikan kita memiliki alamat email
    //                if (empty($array_email)) {
    //                   Log::error("No recipient emails found for student: {$student->name}");
    //                   throw new Exception("No recipient emails found");
    //                }
 
-   //                // Membuat PDF
    //                $pdf = app('dompdf.wrapper');
-   //                $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])
-   //                   ->setPaper('a4', 'portrait');
+   //                $pdf->loadView('components.student.materialfee.paid-pdf', [
+   //                   'data' => $pdfBill,
+   //                   'installment_info' => $installmentInfo
+   //                ])->setPaper('a4', 'portrait');
 
    //                Log::info("PDF generated successfully");
 
-   //                // Mengirim email secara sinkron
-   //                $emailSubject = "Pembayaran " . $bill->type . " " . $student->name . " Telah Dikonfirmasi!";
+   //                // $emailSubject = $bill->type === 'Material Fee' && $installmentInfo
+   //                //    ? "Pembayaran Material Fee - Installment {$installmentInfo['current']} dari {$installmentInfo['total']} ({$student->name})"
+   //                //    : "Pembayaran {$bill->type} {$student->name} Telah Dikonfirmasi!";
+
+   //                $emailSubject = $bill->type === 'Material Fee' && $installmentInfo
+   //                   ? "Pembayaran {$bill->type} {$student->name} Telah Dikonfirmasi!"
+   //                   : "Pembayaran Monthly Fee {$student->name} Telah Dikonfirmasi!";
+
    //                Mail::to($array_email)->send(new PaymentSuccessMail($mailData, $emailSubject, $pdf, null));
    //                Log::info("Synchronous email sent successfully");
 
-   //                // Menyebarkan pekerjaan email secara asinkron
-   //                dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
+   //                dispatch(new SendPaymentReceived($array_email, $mailData, "Payment {$bill->type} {$student->name} has confirmed!", $pdfBill));
    //                Log::info("Async email job dispatched");
    //             } catch (Exception $err) {
    //                Log::error("Email sending failed: " . $err->getMessage());
@@ -215,7 +237,6 @@ class NotificationPaymentSuccess extends Controller
    //             Log::warning("Skipping bill with empty or undefined type.");
    //          }
    //       }
-
 
    //       DB::commit();
    //       Log::info('=== Payment Success Process Completed ===');
@@ -250,7 +271,7 @@ class NotificationPaymentSuccess extends Controller
                $query->where('id', $bill_id);
             },
             'relationship',
-            'material_fee' // Add material_fee relationship
+            'material_fee'
          ])
             ->whereHas('bill', function ($query) use ($bill_id) {
                $query->where('id', $bill_id);
@@ -269,17 +290,27 @@ class NotificationPaymentSuccess extends Controller
             if (!empty($bill->type)) {
                Log::info("Processing bill - Type: {$bill->type}, Amount: {$bill->amount}");
 
-               // Get installment number for Material Fee
                $installmentInfo = null;
+
                if ($bill->type === 'Material Fee') {
                   $existingBillsCount = Bill::where('student_id', $student->id)
                      ->where('type', 'Material Fee')
-                     ->where('created_at', '<=', $bill->created_at)
+                     ->where('id', '<=', $bill->id)
                      ->count();
+
+                  // Get the material fee subject/type
+                  $materialFee = $student->material_fee;
+                  Log::info("Material Fee data:", [
+                     'material_fee' => $materialFee,
+                     'type' => $materialFee ? $materialFee->type : 'not found'
+                  ]);
+
+                  $materialFeeType = $materialFee ? $materialFee->type : '';
 
                   $installmentInfo = [
                      'current' => $existingBillsCount,
-                     'total' => $student->material_fee ? $student->material_fee->installment : 0
+                     'total' => $student->material_fee ? $student->material_fee->installment : 0,
+                     'type' => $materialFeeType // Add this line
                   ];
                }
 
@@ -309,22 +340,33 @@ class NotificationPaymentSuccess extends Controller
                   }
 
                   $pdf = app('dompdf.wrapper');
-                  $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])
-                     ->setPaper('a4', 'portrait');
+                  if ($bill->type === 'Material Fee') {
+                     // Load the Material Fee PDF view
+                     $pdf->loadView('components.student.materialfee.paid-pdf', [
+                        'data' => $pdfBill,
+                        'installment_info' => $installmentInfo
+                     ])->setPaper('a4', 'portrait');
+                  } else {
+                     // Load the standard Bill PDF view
+                     $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])
+                        ->setPaper('a4', 'portrait');
+                  }
+
 
                   Log::info("PDF generated successfully");
 
-                  // Customize email subject for Material Fee
-                  $emailSubject = $bill->type === 'Material Fee'
-                     ? "Pembayaran Material Fee " . $student->name . " - " .
-                     ($student->material_fee ? $student->material_fee->type : 'General') . " " .
-                     $installmentInfo['current'] . "/" . $installmentInfo['total']
-                     : "Pembayaran " . $bill->type . " " . $student->name . " Telah Dikonfirmasi!";
+                  // $emailSubject = $bill->type === 'Material Fee' && $installmentInfo
+                  //    ? "Pembayaran Material Fee - Installment {$installmentInfo['current']} dari {$installmentInfo['total']} ({$student->name})"
+                  //    : "Pembayaran {$bill->type} {$student->name} Telah Dikonfirmasi!";
+
+                  $emailSubject = $bill->type === 'Material Fee' && $installmentInfo
+                     ? "Pembayaran {$bill->type} {$student->name} Telah Dikonfirmasi!"
+                     : "Pembayaran Monthly Fee {$student->name} Telah Dikonfirmasi!";
 
                   Mail::to($array_email)->send(new PaymentSuccessMail($mailData, $emailSubject, $pdf, null));
                   Log::info("Synchronous email sent successfully");
 
-                  dispatch(new SendPaymentReceived($array_email, $mailData, "Payment " . $bill->type . " " . $student->name . " has confirmed!", $pdfBill));
+                  dispatch(new SendPaymentReceived($array_email, $mailData, "Payment {$bill->type} {$student->name} has confirmed!", $pdfBill));
                   Log::info("Async email job dispatched");
                } catch (Exception $err) {
                   Log::error("Email sending failed: " . $err->getMessage());
@@ -360,6 +402,9 @@ class NotificationPaymentSuccess extends Controller
          return response()->json(['success' => false, 'text' => $err->getMessage()]);
       }
    }
+
+
+
 
    public function sendPaymentSuccessNotification($bill_id)
    {

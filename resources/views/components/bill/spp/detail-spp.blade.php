@@ -246,6 +246,8 @@
                             @endif
                         </div>
                     </div>
+
+                    {{-- capital fee --}}
                     @if (sizeof($data->bill_installments) > 0)
                         <div class="card">
                             <div class="card-header">
@@ -330,6 +332,91 @@
                             class="btn btn-dark w-100 mb-2" id='report-pdf'><i class="fa-solid fa-file-pdf fa-bounce"
                                 style="color: white; margin-right:2px;"></i>Report PDF</a>
                     @endif
+
+                    {{-- material fee --}}
+                    @if ($data->type === 'Material Fee')
+                        @php
+                            $materialFee = App\Models\Payment_materialfee::where(
+                                'student_id',
+                                $data->student_id,
+                            )->first();
+                        @endphp
+
+                        @if ($materialFee && $materialFee->installment > 0)
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fa-solid fa-book mr-1"></i>
+                                        Material Fee Installments ({{ $data->student->name }})
+                                    </h3>
+                                    <div class="card-tools">
+                                        <span class="badge badge-info">
+                                            Installments: {{ $materialFee->installment }}x
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content p-0">
+                                        <div class="chart tab-pane active" id="material-fee-chart"
+                                            style="position: relative;">
+                                            <div>
+                                                <div>
+                                                    <ul class="todo-list" data-widget="todo-list">
+                                                        @php
+                                                            $currentDate = date('y-m-d');
+                                                        @endphp
+                                                        @foreach ($data->material_installments as $installment)
+                                                            <li>
+                                                                <span class="handle">
+                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                                </span>
+                                                                <div class="icheck-primary d-inline ml-2">
+                                                                    <span class="text-muted">[
+                                                                        {{ date('d F Y', strtotime($installment['deadline'])) }}
+                                                                        ]</span>
+                                                                </div>
+                                                                <span class="text">
+                                                                    Rp
+                                                                    {{ number_format($installment['amount'], 0, ',', '.') }}
+                                                                    (Installment {{ $installment['number'] }} of
+                                                                    {{ $materialFee->installment }})
+                                                                    @if ($materialFee->discount > 0)
+                                                                        <span class="badge badge-warning">Discount:
+                                                                            {{ $materialFee->discount }}%</span>
+                                                                    @endif
+                                                                </span>
+
+                                                                <!-- Status based on paidOf value -->
+                                                                @if ($data->paidOf === 1)
+                                                                    <small class="badge badge-success">PAID</small>
+                                                                @else
+                                                                    <small class="badge badge-secondary">NOT YET</small>
+                                                                @endif
+
+                                                                <div class="tools">
+                                                                    <a href="/admin/bills/detail-payment/{{ $data->id }}"
+                                                                        target="_blank">
+                                                                        <i class="fas fa-search"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a target="_blank" href="/admin/bills/material-installment-pdf/{{ $data->id }}"
+                                class="btn btn-dark w-100 mb-2" id='material-report-pdf'>
+                                <i class="fa-solid fa-file-pdf fa-bounce" style="color: white; margin-right:2px;"></i>
+                                Material Fee Report PDF
+                            </a>
+                        @endif
+                    @endif
+
                 </div>
 
                 <div class="col-lg-4 p-1">

@@ -3,7 +3,7 @@
 
 <head>
     <title>{{ $subject }}</title>
-    <style type="text/css">
+    {{-- <style type="text/css">
         #outlook a {
             padding: 0;
         }
@@ -70,7 +70,146 @@
             margin: 0 auto;
             background-color: transparent;
         }
+    </style> --}}
+
+    <style type="text/css">
+        @media only screen and (min-width: 620px) {
+            .u-row {
+                width: 600px !important;
+            }
+
+            .u-row .u-col {
+                vertical-align: top;
+            }
+
+            .u-row .u-col-100 {
+                width: 600px !important;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .u-row-container {
+                max-width: 100% !important;
+                padding-left: 0px !important;
+                padding-right: 0px !important;
+            }
+
+            .u-row .u-col {
+                min-width: 320px !important;
+                max-width: 100% !important;
+                display: block !important;
+            }
+
+            .u-row {
+                width: 100% !important;
+            }
+
+            .u-col {
+                width: 100% !important;
+            }
+
+            .u-col>div {
+                margin: 0 auto;
+            }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        table,
+        tr,
+        td {
+            vertical-align: top;
+            border-collapse: collapse;
+        }
+
+        p {
+            display: block;
+            margin: 2px;
+            font-size: 12px;
+        }
+
+        .ie-container table,
+        .mso-container table {
+            table-layout: fixed;
+        }
+
+        * {
+            line-height: inherit;
+        }
+
+        a[x-apple-data-detectors='true'] {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+
+        @media (min-width: 0px) {
+            .hide-default__display-table {
+                display: table !important;
+                mso-hide: unset !important;
+            }
+        }
+
+        @media (min-width: 481px) {
+            .hide-desktop {
+                max-height: 0px;
+                overflow: hidden;
+                display: none !important;
+            }
+        }
+
+        table,
+        td {
+            color: #000000;
+        }
+
+        #u_body a {
+            color: #1923b9;
+            text-decoration: underline;
+        }
+
+
+
+        /* new update */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: transparent;
+        }
+
+        .logo h3 {
+            color: rgb(255, 115, 0);
+            margin: 5px 0 0 0;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .logo h1 {
+            color: rgb(255, 115, 0);
+            margin: 0;
+            font-size: 32px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px 0;
+            background-color: transparent;
+        }
+
+        #outlook a {
+            padding: 0;
+        }
     </style>
+
 </head>
 
 <body>

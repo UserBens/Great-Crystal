@@ -15,6 +15,7 @@ use App\Models\Book_student;
 use App\Models\Grade;
 use App\Models\InstallmentPaket;
 use App\Models\Payment_grade;
+use App\Models\Payment_materialfee;
 use App\Models\statusInvoiceMail;
 use App\Models\Student;
 use App\Models\User;
@@ -335,45 +336,109 @@ class BillController extends Controller
       }
    }
 
+   // code awal
+   // public function detailPayment($id)
+   // {
+
+   //    session()->flash('page', (object)[
+   //       'page' => 'Bills',
+   //       'child' => 'database bills'
+   //    ]);
+
+
+   //    try {
+   //       //code...
+   //       $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
+   //       $accountCategory = Accountcategory::all();
+
+
+   //       $data = Bill::with([
+   //          'student' => function ($query) {
+
+   //             $query->with('grade')->get();
+   //          },
+   //          'bill_collection',
+   //          'bill_installments'
+   //       ])->where('id', $id)->first();
+
+   //       $selectedAccountId = $data->deposit_account_id; // Sesuaikan dengan nama kolom yang benar di model Bill
+
+
+   //       return view('components.bill.spp.detail-spp', [
+   //          'data' => $data,
+   //          'accountNumbers' => $accountNumbers,
+   //          'selectedAccountId' => $selectedAccountId,
+   //          'accountCategory' => $accountCategory
+
+   //       ]);
+   //    } catch (Exception $err) {
+   //       // return dd($err);
+   //       return abort(500);
+   //    }
+   // }
+
+
    public function detailPayment($id)
    {
-
       session()->flash('page', (object)[
          'page' => 'Bills',
          'child' => 'database bills'
       ]);
 
-
       try {
-         //code...
-         $accountNumbers = Accountnumber::all(); // Ambil semua data dari tabel accountnumbers
+         $accountNumbers = Accountnumber::all();
          $accountCategory = Accountcategory::all();
-
 
          $data = Bill::with([
             'student' => function ($query) {
-
                $query->with('grade')->get();
             },
             'bill_collection',
             'bill_installments'
          ])->where('id', $id)->first();
 
-         $selectedAccountId = $data->deposit_account_id; // Sesuaikan dengan nama kolom yang benar di model Bill
+         // Calculate material fee installments
+         if ($data->type === 'Material Fee') {
+            // Ambil data material fee untuk student ini
+            $materialFee = Payment_materialfee::where('student_id', $data->student_id)->first();
 
+            if ($materialFee && $materialFee->installment > 0) {
+               // Get the base installment amount from the amount_installment field
+               $installmentAmount = $materialFee->amount_installment > 0 ?
+                  $materialFee->amount_installment : ($materialFee->amount - $materialFee->dp) / $materialFee->installment;
+
+               $installments = [];
+
+               // Create array of installment details berdasarkan jumlah installment dari material fee
+               for ($i = 1; $i <= $materialFee->installment; $i++) {
+                  // Calculate the deadline for each installment (10th of each month)
+                  $deadlineMonth = date('Y-m', strtotime($data->deadline_invoice . ' +' . ($i - 1) . ' months'));
+                  $deadline = $deadlineMonth . '-10'; // Always set to the 10th of the month
+
+                  $installments[] = [
+                     'number' => $i,
+                     'amount' => $installmentAmount,
+                     'student_name' => $data->student->name,
+                     'deadline' => $deadline,
+                     'paidOf' => false
+                  ];
+               }
+               $data->material_installments = $installments;
+            }
+         }
 
          return view('components.bill.spp.detail-spp', [
             'data' => $data,
             'accountNumbers' => $accountNumbers,
-            'selectedAccountId' => $selectedAccountId,
+            'selectedAccountId' => $data->deposit_account_id,
             'accountCategory' => $accountCategory
-
          ]);
       } catch (Exception $err) {
-         // return dd($err);
          return abort(500);
       }
    }
+
+
 
    public function chooseaccountnumber(Request $request)
    {

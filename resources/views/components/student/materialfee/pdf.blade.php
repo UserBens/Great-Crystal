@@ -20,12 +20,10 @@
         .header2 {
             width: 100%;
             height: 5%;
-            /* border: 1px solid black; */
         }
 
         .header2 {
             position: relative;
-
         }
 
         .invoice {
@@ -40,22 +38,12 @@
             bottom: 0;
         }
 
-        .main_text {
-            font-family: 'Roboto', sans-serif;
-            font-size: 20px;
-        }
-
-        .child_text {
-            font-size: 20px;
-            font-weight:
-        }
-
-
-        .address {
-            font-size: 12px;
-            color: grey;
-            margin-bottom: 70px;
-            margin-top: 30px;
+        .installment-info {
+            text-align: center;
+            color: rgb(255, 115, 0);
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0;
         }
 
         .student {
@@ -69,9 +57,11 @@
             margin: 0;
         }
 
-        .date {
-            width: 100%;
-            bottom: 0;
+        .address {
+            font-size: 12px;
+            color: grey;
+            margin-bottom: 70px;
+            margin-top: 30px;
         }
 
         .date_container {
@@ -113,40 +103,50 @@
         .unpaid {
             color: rgb(145, 0, 0);
         }
+
+        .payment-info {
+            margin-top: 40px;
+            font-size: 11px;
+            color: rgb(95, 95, 95);
+            text-align: center;
+        }
+
+        .bank-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .bank-number {
+            color: rgb(255, 115, 0);
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
     <table class="header">
-
         <thead>
-            <th style="width: 50%;">
-            </th>
-            <th style="width: 20%;">
-            </th>
+            <th style="width: 50%;"></th>
+            <th style="width: 20%;"></th>
         </thead>
         <tbody>
             <td align="left" class="header1">
-                <h2 class="invoice">Invoice</h2>
+                <h2 class="invoice">Material Fee Invoice</h2>
             </td>
             <td align="center" class="header2">
-                <div>
-                </div>
+                <div></div>
             </td>
         </tbody>
-
     </table>
 
     <table class="header">
         <thead>
-            <th style="width: 50%;">
-            </th>
-            <th style="width: 50%;">
-            </th>
+            <th style="width: 50%;"></th>
+            <th style="width: 50%;"></th>
         </thead>
         <tbody>
-            <td align="left" class="header1">
-            </td>
+            <td align="left" class="header1"></td>
             <td align="center" class="header2">
                 <div class="logo">
                     <h1 style="margin: 0;">GREAT CRYSTAL</h1>
@@ -158,10 +158,8 @@
 
     <table style="width: 100%;">
         <thead>
-            <th>
-            </th>
-            <th style="width: 30%;">
-            </th>
+            <th></th>
+            <th style="width: 30%;"></th>
         </thead>
         <td>
             <div class="student">
@@ -171,7 +169,6 @@
                 <p>{{ $data->student->place_birth }}</p>
                 <p>{{ $data->student->nationality }}</p>
             </div>
-
         </td>
         <td class="date_container">
             <table class="date">
@@ -182,48 +179,33 @@
                 <tbody class="date_detail">
                     <tr>
                         <td align="right" style="padding: 0">
-
                             <p>Invoice no :</p>
-
                         </td>
                         <td align="right" style="padding: 0">
-
                             <p><b>{{ $data->number_invoice }}</b></p>
-
                         </td>
                     </tr>
                     <tr>
                         <td align="right" style="padding: 0">
-
                             <p>Date issue :</p>
-
                         </td>
                         <td align="right" style="padding: 0">
-
                             <p><b>{{ date('d/m/Y', strtotime($data->created_at)) }}</b></p>
-
                         </td>
                     </tr>
                     <tr>
                         <td align="right" style="padding: 0">
-
                             <p>Due date :</p>
-
                         </td>
                         <td align="right" style="padding: 0">
-
                             <p><b>{{ date('d/m/Y', strtotime($data->deadline_invoice)) }}</b></p>
-
                         </td>
                     </tr>
                     <tr>
                         <td align="right" style="padding: 0">
-
                             <p>Status :</p>
-
                         </td>
                         <td align="right" style="padding: 0">
-
                             @if ($data->paidOf)
                                 <p class="paid"><b>paid</b></p>
                             @else
@@ -244,32 +226,13 @@
             <th class="detail" align="left">{{ $data->type == 'Book' ? $data->subject : 'Description' }}</th>
             <th class="detail" align="left">Price</th>
         </thead>
-
         <tbody>
-            @if ($data->type == 'Book')
-
-                @foreach ($data->bill_collection as $el)
-                    <tr class="detail body_table">
-
-                        <td class="detail"><strong>{{ $el->name }}</strong></td>
-                        <td class="detail">Rp. {{ number_format($el->amount, 0, ',', '.') }}</td>
-                    </tr>
-                @endforeach
-            @elseif ($data->installment)
-                <tr class="detail body_table">
-
-                    <td class="detail"><strong>{{ $data->type }} installment ({{ $data->subject }})</strong></td>
-                    <td class="detail">Rp. {{ number_format($data->amount_installment - $data->charge, 0, ',', '.') }}
-                    </td>
-                </tr>
-            @else
-                <tr class="detail body_table">
-
-                    <td class="detail"><strong>{{ $data->type }}</strong></td>
-                    <td class="detail">Rp. {{ number_format($data->amount - $data->charge, 0, ',', '.') }}</td>
-                </tr>
-
-            @endif
+            <tr class="detail body_table">
+                <td class="detail">
+                    <strong>Material Fee - {{ $data->student->material_fee->type ?? 'Material Fee' }} ({{ $installment_info['current'] }}/{{ $installment_info['total'] }})</strong>
+                </td>
+                <td class="detail">Rp. {{ number_format($data->amount_installment - $data->charge, 0, ',', '.') }}</td>
+            </tr>
             <tr>
                 <td></td>
                 <td>
@@ -306,6 +269,7 @@
                         </thead>
                     </table>
 
+                    {{-- start garis tepi --}}
                     <table style="width:100%;">
                         <thead>
                             <tr>
@@ -313,7 +277,7 @@
                             </tr>
                         </thead>
                     </table>
-
+                    {{-- end garis tepi --}}
                     <table style="width:100%;">
                         <thead>
                             <tr>
@@ -331,10 +295,8 @@
                     </table>
                 </td>
             </tr>
-
         </tbody>
     </table>
-
 </body>
 
 </html>

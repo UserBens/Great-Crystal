@@ -118,7 +118,6 @@
 
 <body>
     <table class="header">
-
         <thead>
             <th style="width: 50%;">
             </th>
@@ -134,11 +133,9 @@
                 </div>
             </td>
         </tbody>
-
     </table>
 
     <table class="header">
-
         <thead>
             <th style="width: 50%;">
             </th>
@@ -155,14 +152,8 @@
                 </div>
             </td>
         </tbody>
-
     </table>
-
-
-
     {{-- Start table --}}
-
-
     <table style="width: 100%;">
         <thead>
             <th>
@@ -178,7 +169,6 @@
                 <p>{{ $data->student->place_birth }}</p>
                 <p>{{ $data->student->nationality }}</p>
             </div>
-
         </td>
         <td class="date_container">
             <table class="date">
@@ -201,9 +191,7 @@
                     </tr>
                     <tr>
                         <td align="right" style="padding: 0">
-
                             <p>Date issue :</p>
-
                         </td>
                         <td align="right" style="padding: 0">
 

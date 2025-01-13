@@ -142,14 +142,12 @@
                 <tbody>
                     <tr>
                         <td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;">
-
                             <div style="margin:0px auto;max-width:600px;">
                                 <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
                                     style="width:100%;">
                                     <tbody>
                                         <tr>
                                             <td style="direction:ltr;font-size:0px;padding:0px;text-align:center;">
-
                                                 <div class="mj-column-per-100 mj-outlook-group-fix"
                                                     style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
                                                     <table border="0" cellpadding="0" cellspacing="0"
@@ -204,8 +202,6 @@
                                                                 </td>
                                                             </tr>
                                                             <tr>
-
-
                                                                 <td align="left"
                                                                     style="font-size:0px;padding:10px 25px;word-break:break-word;">
 
@@ -259,8 +255,6 @@
                                                                         @endif
 
                                                                     @endif
-
-
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -318,16 +312,12 @@
                                                                                                     style="padding-bottom: 10px; color: #7e7e7e; font-size: 12px; line-height: 16px; font-weight: 700; text-transform: uppercase;">
                                                                                                     Biaya
                                                                                                 </th>
-
-
                                                                                             </tr>
                                                                                             @php
 
                                                                                                 $total = 0;
 
                                                                                             @endphp
-
-
                                                                                             @foreach ($mailData['bill'] as $item)
                                                                                                 <tr>
                                                                                                     <td colspan="2"

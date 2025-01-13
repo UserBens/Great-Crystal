@@ -13,9 +13,7 @@
                     </nav>
                 </div>
             </div>
-
             <div class="row">
-
                 <div class="col-lg-8">
                     <div class="card mb-4">
                         <div class="card-body">
@@ -54,18 +52,14 @@
                                     <p class="mb-0">Subject</p>
                                 </div>
                                 <div class="col-sm-8">
-
                                     @php
-
                                         $subject = '-';
-
                                         if ($data->subject) {
                                             $subject = $data->installment
                                                 ? $data->type . ' installment ' . '( ' . $data->subject . ' )'
                                                 : 'Cash';
                                         }
                                     @endphp
-
                                     <p class="text-muted mb-0">{{ $subject }}</p>
                                 </div>
                             </div>
@@ -143,13 +137,6 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <select name="deposit_account_id" class="form-control select2">
-                                            {{-- @foreach ($accountNumbers as $accountNumber)
-                                                <option value="{{ $accountNumber->id }}"
-                                                    @if ($accountNumber->id == $selectedAccountId) selected @endif>
-                                                    {{ $accountNumber->account_no }} - {{ $accountNumber->name }}
-                                                </option>
-                                            @endforeach --}}
-
                                             @foreach ($accountNumbers as $accountNumber)
                                                 <option value="{{ $accountNumber->id }}"
                                                     @if ($accountNumber->id == $data->new_deposit_account_id) selected @endif>
@@ -243,7 +230,6 @@
                                 </div>
                             </div>
 
-
                             <hr>
                             @if ($data->installment)
                                 <div class="row">
@@ -260,6 +246,8 @@
                             @endif
                         </div>
                     </div>
+
+                    {{-- capital fee --}}
                     @if (sizeof($data->bill_installments) > 0)
                         <div class="card">
                             <div class="card-header">
@@ -275,8 +263,6 @@
                                 <div class="tab-content p-0">
                                     <!-- Morris chart - Sales -->
                                     <div class="chart tab-pane active" id="revenue-chart" style="position: relative;">
-
-                                        {{-- <h1>New Bills</h1> --}}
                                         <div>
                                             <!-- /.card-header -->
                                             <div>
@@ -285,7 +271,6 @@
                                                     @php
                                                         $currentDate = date('y-m-d');
                                                     @endphp
-
                                                     @foreach ($data->bill_installments as $el)
                                                         <li>
                                                             <!-- drag handle -->
@@ -303,7 +288,6 @@
                                                             <span class="text">( {{ $el->type }} )
                                                                 {{ $el->student->name }}</span>
                                                             <!-- Emphasis label -->
-
 
                                                             @if ($el->paidOf)
                                                                 <small class="badge badge-success"><i
@@ -348,6 +332,91 @@
                             class="btn btn-dark w-100 mb-2" id='report-pdf'><i class="fa-solid fa-file-pdf fa-bounce"
                                 style="color: white; margin-right:2px;"></i>Report PDF</a>
                     @endif
+
+                    {{-- material fee --}}
+                    @if ($data->type === 'Material Fee')
+                        @php
+                            $materialFee = App\Models\Payment_materialfee::where(
+                                'student_id',
+                                $data->student_id,
+                            )->first();
+                        @endphp
+
+                        @if ($materialFee && $materialFee->installment > 0)
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fa-solid fa-book mr-1"></i>
+                                        Material Fee Installments ({{ $data->student->name }})
+                                    </h3>
+                                    <div class="card-tools">
+                                        <span class="badge badge-info">
+                                            Installments: {{ $materialFee->installment }}x
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content p-0">
+                                        <div class="chart tab-pane active" id="material-fee-chart"
+                                            style="position: relative;">
+                                            <div>
+                                                <div>
+                                                    <ul class="todo-list" data-widget="todo-list">
+                                                        @php
+                                                            $currentDate = date('y-m-d');
+                                                        @endphp
+                                                        @foreach ($data->material_installments as $installment)
+                                                            <li>
+                                                                <span class="handle">
+                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                                </span>
+                                                                <div class="icheck-primary d-inline ml-2">
+                                                                    <span class="text-muted">[
+                                                                        {{ date('d F Y', strtotime($installment['deadline'])) }}
+                                                                        ]</span>
+                                                                </div>
+                                                                <span class="text">
+                                                                    Rp
+                                                                    {{ number_format($installment['amount'], 0, ',', '.') }}
+                                                                    (Installment {{ $installment['number'] }} of
+                                                                    {{ $materialFee->installment }})
+                                                                    @if ($materialFee->discount > 0)
+                                                                        <span class="badge badge-warning">Discount:
+                                                                            {{ $materialFee->discount }}%</span>
+                                                                    @endif
+                                                                </span>
+
+                                                                <!-- Status based on paidOf value -->
+                                                                @if ($data->paidOf === 1)
+                                                                    <small class="badge badge-success">PAID</small>
+                                                                @else
+                                                                    <small class="badge badge-secondary">NOT YET</small>
+                                                                @endif
+
+                                                                <div class="tools">
+                                                                    <a href="/admin/bills/detail-payment/{{ $data->id }}"
+                                                                        target="_blank">
+                                                                        <i class="fas fa-search"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a target="_blank" href="/admin/bills/material-installment-pdf/{{ $data->id }}"
+                                class="btn btn-dark w-100 mb-2" id='material-report-pdf'>
+                                <i class="fa-solid fa-file-pdf fa-bounce" style="color: white; margin-right:2px;"></i>
+                                Material Fee Report PDF
+                            </a>
+                        @endif
+                    @endif
+
                 </div>
 
                 <div class="col-lg-4 p-1">
@@ -367,7 +436,6 @@
                                             <td align="right" class="p-1">
                                                 Rp. {{ number_format($el->amount, 0, ',', '.') }}
                                             </td>
-
                                         </tr>
                                     @endforeach
 
@@ -390,7 +458,6 @@
                                         <td align="right">
                                             Rp.{{ number_format($data->amount - $data->charge, 0, ',', '.') }}
                                         </td>
-
                                     </tr>
 
                                     @if ($data->dp)
@@ -401,7 +468,6 @@
                                             <td align="right">
                                                 -Rp.{{ number_format($data->dp, 0, ',', '.') }}
                                             </td>
-
                                         </tr>
                                     @endif
 
@@ -413,7 +479,6 @@
                                             <td align="right">
                                                 {{ $data->installment }}x
                                             </td>
-
                                         </tr>
                                     @endif
 
@@ -425,7 +490,6 @@
                                             <td align="right">
                                                 {{ $data->discount ? $data->discount : 0 }}%
                                             </td>
-
                                         </tr>
                                     @endif
                                     @if ($data->charge > 0)
@@ -436,7 +500,6 @@
                                             <td align="right">
                                                 + Rp. {{ number_format($data->charge, 0, ',', '.') }}
                                             </td>
-
                                         </tr>
                                     @endif
                                 @endif
@@ -520,7 +583,9 @@
                         @else
                             <a href="javascript:void(0)" id="update-status" data-id="{{ $data->id }}"
                                 data-name="{{ $data->student->name }}" data-subject="{{ $data->subject }}"
-                                class="btn btn-success w-100 mb-2">Paid success</a>
+                                data-bill-type="{{ $data->type }}" class="btn btn-success w-100 mb-2">
+                                Paid success
+                            </a>
                         @endif
                     @endif
                 </div>
@@ -531,8 +596,6 @@
     @includeIf('components.super.update-paid')
 
     @if (session('after_create'))
-        {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
-
         <script>
             var Toast = Swal.mixin({
                 toast: true,
@@ -578,26 +641,6 @@
         });
     </script>
 
-    {{-- <script>
-        $(document).ready(function() {
-            @if (session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: '{{ session('success') }}'
-                });
-            @endif
-
-            @if (session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: '{{ session('error') }}'
-                });
-            @endif
-        });
-    </script> --}}
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             @if (session('success'))
@@ -624,6 +667,4 @@
             @endif
         });
     </script>
-
-
 @endsection

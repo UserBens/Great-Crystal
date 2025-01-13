@@ -378,7 +378,69 @@ class BillController extends Controller
    // }
 
 
-   public function detailPayment($id)
+   // public function detailPayment($id)
+   // {
+   //    session()->flash('page', (object)[
+   //       'page' => 'Bills',
+   //       'child' => 'database bills'
+   //    ]);
+
+   //    try {
+   //       $accountNumbers = Accountnumber::all();
+   //       $accountCategory = Accountcategory::all();
+
+   //       $data = Bill::with([
+   //          'student' => function ($query) {
+   //             $query->with('grade')->get();
+   //          },
+   //          'bill_collection',
+   //          'bill_installments'
+   //       ])->where('id', $id)->first();
+
+   //       // Calculate material fee installments
+   //       if ($data->type === 'Material Fee') {
+   //          // Ambil data material fee untuk student ini
+   //          $materialFee = Payment_materialfee::where('student_id', $data->student_id)->first();
+
+   //          if ($materialFee && $materialFee->installment > 0) {
+   //             // Get the base installment amount from the amount_installment field
+   //             $installmentAmount = $materialFee->amount_installment > 0 ?
+   //                $materialFee->amount_installment : ($materialFee->amount - $materialFee->dp) / $materialFee->installment;
+
+   //             $installments = [];
+
+   //             // Create array of installment details berdasarkan jumlah installment dari material fee
+   //             for ($i = 1; $i <= $materialFee->installment; $i++) {
+   //                // Calculate the deadline for each installment (10th of each month)
+   //                $deadlineMonth = date('Y-m', strtotime($data->deadline_invoice . ' +' . ($i - 1) . ' months'));
+   //                $deadline = $deadlineMonth . '-10'; // Always set to the 10th of the month
+
+   //                $installments[] = [
+   //                   'number' => $i,
+   //                   'amount' => $installmentAmount,
+   //                   'student_name' => $data->student->name,
+   //                   'deadline' => $deadline,
+   //                   'paidOf' => false
+   //                ];
+   //             }
+   //             $data->material_installments = $installments;
+   //          }
+   //       }
+
+   //       return view('components.bill.spp.detail-spp', [
+   //          'data' => $data,
+   //          'accountNumbers' => $accountNumbers,
+   //          'selectedAccountId' => $data->deposit_account_id,
+   //          'accountCategory' => $accountCategory
+   //       ]);
+   //    } catch (Exception $err) {
+   //       return abort(500);
+   //    }
+   // }
+
+
+   // In BillController.php, modify the detailPayment method:
+   public function detailPayment($id, $installmentNumber = null)
    {
       session()->flash('page', (object)[
          'page' => 'Bills',
@@ -399,21 +461,17 @@ class BillController extends Controller
 
          // Calculate material fee installments
          if ($data->type === 'Material Fee') {
-            // Ambil data material fee untuk student ini
             $materialFee = Payment_materialfee::where('student_id', $data->student_id)->first();
 
             if ($materialFee && $materialFee->installment > 0) {
-               // Get the base installment amount from the amount_installment field
                $installmentAmount = $materialFee->amount_installment > 0 ?
                   $materialFee->amount_installment : ($materialFee->amount - $materialFee->dp) / $materialFee->installment;
 
                $installments = [];
 
-               // Create array of installment details berdasarkan jumlah installment dari material fee
                for ($i = 1; $i <= $materialFee->installment; $i++) {
-                  // Calculate the deadline for each installment (10th of each month)
                   $deadlineMonth = date('Y-m', strtotime($data->deadline_invoice . ' +' . ($i - 1) . ' months'));
-                  $deadline = $deadlineMonth . '-10'; // Always set to the 10th of the month
+                  $deadline = $deadlineMonth . '-10';
 
                   $installments[] = [
                      'number' => $i,
@@ -424,6 +482,9 @@ class BillController extends Controller
                   ];
                }
                $data->material_installments = $installments;
+
+               // Add current installment number to data
+               $data->current_installment = $installmentNumber ?: 1;
             }
          }
 
@@ -437,6 +498,8 @@ class BillController extends Controller
          return abort(500);
       }
    }
+
+
 
 
 

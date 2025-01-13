@@ -1312,6 +1312,123 @@ class NotificationBillCreated extends Controller
 
 
    // bisa dan digunakan
+   // public function materialFee()
+   // {
+   //    try {
+   //       $students = Student::with(['material_fee', 'relationship'])
+   //          ->whereHas('material_fee', function ($query) {
+   //             $query->whereNotNull('installment');
+   //          })->get();
+
+   //       Log::info('Data fetched: ' . $students->count() . ' students found with material fee.');
+
+   //       foreach ($students as $student) {
+   //          $materialFee = $student->material_fee;
+   //          if ($materialFee) {
+   //             // Find the latest unpaid installment
+   //             $latestUnpaidBill = Bill::where('student_id', $student->id)
+   //                ->where('type', 'Material Fee')
+   //                ->where('paidOf', false)
+   //                ->orderBy('installment', 'asc')
+   //                ->first();
+
+   //             // Get the current installment number to generate
+   //             $currentInstallment = 1;
+   //             if ($latestUnpaidBill) {
+   //                $currentInstallment = $latestUnpaidBill->installment;
+   //             } else {
+   //                // If no unpaid bills exist, find the highest paid installment
+   //                $lastPaidBill = Bill::where('student_id', $student->id)
+   //                   ->where('type', 'Material Fee')
+   //                   ->where('paidOf', true)
+   //                   ->orderBy('installment', 'desc')
+   //                   ->first();
+
+   //                if ($lastPaidBill) {
+   //                   $currentInstallment = $lastPaidBill->installment + 1;
+   //                }
+   //             }
+
+   //             // Generate bills if needed
+   //             for ($installmentNumber = 1; $installmentNumber <= $materialFee->installment; $installmentNumber++) {
+   //                // Check if bill exists for this installment
+   //                $existingBill = Bill::where('student_id', $student->id)
+   //                   ->where('type', 'Material Fee')
+   //                   ->where('installment', $installmentNumber)
+   //                   ->first();
+
+   //                if (!$existingBill) {
+   //                   // Generate new bill
+   //                   $bill = new Bill();
+   //                   $bill->student_id = $student->id;
+   //                   $bill->type = 'Material Fee';
+   //                   $bill->amount = $materialFee->amount_installment;
+   //                   $bill->deadline_invoice = Carbon::now()->addDays(9);
+   //                   $bill->installment = $installmentNumber;
+   //                   $bill->amount_installment = $materialFee->amount_installment;
+   //                   $bill->number_invoice = 'MF-' . date('Ymd') . '-' . str_pad($student->id, 4, '0', STR_PAD_LEFT) . '-' . $installmentNumber;
+   //                   $bill->save();
+
+   //                   Log::info('Generated bill for student: ' . $student->name . ' (Installment ' . $installmentNumber . ' of ' . $materialFee->installment . ')');
+   //                }
+   //             }
+
+   //             // Send email for the current unpaid installment
+   //             $billToEmail = Bill::where('student_id', $student->id)
+   //                ->where('type', 'Material Fee')
+   //                ->where('installment', $currentInstallment)
+   //                ->first();
+
+   //             if ($billToEmail && $currentInstallment <= $materialFee->installment) {
+   //                try {
+   //                   $emails = $student->relationship->pluck('email')->toArray();
+   //                   $mailData = [
+   //                      'student' => $student,
+   //                      'bill' => [$billToEmail],
+   //                      'past_due' => false,
+   //                      'charge' => false,
+   //                      'change' => false,
+   //                      'is_paid' => false,
+   //                      'installment_info' => [
+   //                         'current' => $currentInstallment,
+   //                         'total' => $materialFee->installment
+   //                      ]
+   //                   ];
+
+   //                   // $subject = "Tagihan Material Fee " . $student->name . " - " . $currentInstallment . "/" . $materialFee->installment;
+
+   //                   $subject = "Tagihan Material Fee {$student->name} bulan ini sudah dibuat";
+
+   //                   $pdf = app('dompdf.wrapper');
+   //                   $pdf->loadView('components.student.materialfee.pdf', [
+   //                      'data' => $billToEmail,
+   //                      'installment_info' => [
+   //                         'current' => $currentInstallment,
+   //                         'total' => $materialFee->installment
+   //                      ]
+   //                   ])->setPaper('a4', 'portrait');
+
+   //                   foreach ($emails as $email) {
+   //                      Mail::to($email)->send(new MaterialFeeMail($mailData, $subject, $pdf));
+   //                      Log::info('Email sent to: ' . $email . ' for installment ' . $currentInstallment);
+   //                   }
+   //                } catch (\Exception $e) {
+   //                   Log::error('Failed to send email: ' . $e->getMessage());
+   //                }
+   //             }
+   //          } else {
+   //             Log::info('No material fee found for student: ' . $student->name);
+   //          }
+   //       }
+
+   //       Log::info('Material Fee Notification process completed successfully.');
+   //    } catch (\Exception $e) {
+   //       Log::error('Material Fee Notification error: ' . $e->getMessage());
+   //    }
+   // }
+
+
+   // update terbaru
    public function materialFee()
    {
       try {
@@ -1358,12 +1475,19 @@ class NotificationBillCreated extends Controller
                      ->first();
 
                   if (!$existingBill) {
+                     // Calculate the deadline date for this installment
+                     $deadlineDate = Carbon::now()->startOfMonth();
+                     // Add months based on installment number (subtract 1 since we start from current month)
+                     $deadlineDate->addMonths($installmentNumber - 1);
+                     // Set to the 10th of the month
+                     $deadlineDate->setDay(10);
+
                      // Generate new bill
                      $bill = new Bill();
                      $bill->student_id = $student->id;
                      $bill->type = 'Material Fee';
                      $bill->amount = $materialFee->amount_installment;
-                     $bill->deadline_invoice = Carbon::now()->addDays(9);
+                     $bill->deadline_invoice = $deadlineDate;
                      $bill->installment = $installmentNumber;
                      $bill->amount_installment = $materialFee->amount_installment;
                      $bill->number_invoice = 'MF-' . date('Ymd') . '-' . str_pad($student->id, 4, '0', STR_PAD_LEFT) . '-' . $installmentNumber;
@@ -1394,8 +1518,6 @@ class NotificationBillCreated extends Controller
                            'total' => $materialFee->installment
                         ]
                      ];
-
-                     // $subject = "Tagihan Material Fee " . $student->name . " - " . $currentInstallment . "/" . $materialFee->installment;
 
                      $subject = "Tagihan Material Fee {$student->name} bulan ini sudah dibuat";
 

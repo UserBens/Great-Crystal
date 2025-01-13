@@ -413,11 +413,37 @@
                                                         role="presentation" style="vertical-align:top;"
                                                         width="100%">
                                                         <tbody>
+                                                            @php
+                                                                $fontColor = $mailData['past_due']
+                                                                    ? 'red'
+                                                                    : 'rgb(73, 73, 73)';
+
+                                                                // Calculate total amount
+                                                                $total = $mailData['bill'][0]->amount;
+                                                                if (isset($mailData['bill'][0]->amount_installment)) {
+                                                                    $total = $mailData['bill'][0]->amount_installment;
+                                                                }
+
+                                                                // Get invoice number from the bill
+                                                                $id = $mailData['bill'][0]->number_invoice;
+
+                                                                // Define the WhatsApp message text
+                                                                $textWa =
+                                                                    'Saya sudah melakukan pembayaran ' .
+                                                                    $mailData['bill'][0]->type .
+                                                                    ' dengan nomer invoice %23' .
+                                                                    $id .
+                                                                    ' untuk ' .
+                                                                    $mailData['student']->name .
+                                                                    ', dan beserta bukti transfer yang saya kirim melalui wa ini dengan nominal sebesar Rp. ' .
+                                                                    number_format($total, 0, ',', '.');
+                                                            @endphp
+
                                                             <tr>
                                                                 <td align="center"
                                                                     style="font-size:0px;padding:10px 25px;word-break:break-word;">
                                                                     <div
-                                                                        style="font-family:Roboto,Mulish,Muli,Arial,sans-serif;font-size:17px;font-weight:400;line-height:20px;text-align:center;color:{{ $mailData['past_due'] ? 'red' : 'rgb(73, 73, 73)' }};">
+                                                                        style="font-family:Roboto,Mulish,Muli,Arial,sans-serif;font-size:17px;font-weight:400;line-height:20px;text-align:center;color:{{ $fontColor }};">
                                                                         <b>{{ $mailData['past_due'] ? 'Invoice pembayaran sudah melewati jatuh tempo' : 'Invoice deadline pembayaran' }}</b>
                                                                     </div>
                                                                 </td>
@@ -470,8 +496,21 @@
                                                             <tr>
                                                                 <td align="center"
                                                                     style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                                                    <a href="#"
-                                                                        style="background-color:#ca6800;color:white;padding:10px 20px;text-decoration:none;border-radius:10px;font-family:Roboto,Arial,sans-serif;font-size:15px;display:inline-block;">
+                                                                    <a href="wa.me/+628113115984?text={{ str_replace(' ', '%20', $textWa) }}"
+                                                                        style="
+                                                                        background-color: #ca6800;
+                                                                        border: none;
+                                                                        color: white;
+                                                                        border-radius:10px;
+                                                                        padding: 10px 20px;
+                                                                        text-align: center;
+                                                                        text-decoration: none;
+                                                                        display: inline-block;
+                                                                        font-family:Roboto,Mulish, Muli, Arial, sans-serif;
+                                                                        font-size: 15px;
+                                                                        font-weight: 300;
+                                                                        margin: 4px 2px;
+                                                                        cursor: pointer;">
                                                                         Kirim Bukti Transfer
                                                                     </a>
                                                                 </td>
@@ -486,6 +525,7 @@
                                                                 </td>
                                                             </tr>
                                                         </tbody>
+
                                                     </table>
                                                 </div>
                                             </td>

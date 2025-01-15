@@ -696,11 +696,18 @@ class StudentController extends Controller
             'paid' => $paidBills
          ];
 
+         // $pdf = Pdf::loadView('components.bill.report.export-student-bill-detail', [
+         //    'student' => $student,
+         //    'bills' => $bills,
+         //    'summary' => $summary
+         // ]);
+
          $pdf = Pdf::loadView('components.bill.report.export-student-bill-detail', [
             'student' => $student,
             'bills' => $bills,
             'summary' => $summary
-         ]);
+         ])->setPaper('a4', 'landscape'); // Tambahkan setPaper('a4', 'landscape')
+
 
          // Generate filename
          $filename = 'student_bill_' . $student->name . '_' . date('Y-m-d') . '.pdf';

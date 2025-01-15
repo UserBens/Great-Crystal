@@ -222,11 +222,11 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 12%">Invoice Number</th>
-                    <th style="width: 7%">Bill Type</th>
-                    <th style="width: 10%">Amount</th>
-                    <th style="width: 16%">Due Date</th>
-                    <th style="width: 10%">Status</th>
+                    <th style="width: 15%">Invoice Number</th>
+                    <th style="width: 10%">Bill Type</th>
+                    <th style="width: 15%">Amount</th>
+                    <th style="width: 20%">Due Date</th>
+                    <th style="width: 15%">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -234,14 +234,13 @@
                     <tr>
                         <td>{{ $bill->number_invoice }}</td>
                         <td>{{ $bill->type }}</td>
-                        {{-- <td>Rp {{ number_format($bill->amount, 0, ',', '.') }}</td> --}}
-                        
-                        @if ($bill->type === 'Capital Fee')
-                            <td>Rp {{ number_format($bill->amount_installment, 0, ',', '.') }}</td>
-                        @else
-                            <td>Rp {{ number_format($bill->amount, 0, ',', '.') }}</td>
-                        @endif
-
+                        <td>
+                            @if ($bill->type === 'Capital Fee')
+                                Rp {{ number_format($bill->amount_installment, 0, ',', '.') }}
+                            @else
+                                Rp {{ number_format($bill->amount, 0, ',', '.') }}
+                            @endif
+                        </td>
                         <td>{{ \Carbon\Carbon::parse($bill->deadline_invoice)->format('j F Y') }}</td>
                         <td>
                             @if ($bill->paidOf)
@@ -254,6 +253,7 @@
                 @endforeach
             </tbody>
         </table>
+
 
         <div class="summary">
             <p>Generated on: {{ \Carbon\Carbon::now()->format('j F Y H:i:s') }}</p>

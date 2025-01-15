@@ -334,12 +334,9 @@
                     @endif
 
                     {{-- material fee --}}
-                    @if ($data->type === 'Material Fee')
+                    @if ($data->type === 'Material Fee' && $data->material_fee_installment)
                         @php
-                            $materialFee = App\Models\Payment_materialfee::where(
-                                'student_id',
-                                $data->student_id,
-                            )->first();
+                            $materialFee = $data->material_fee_installment->material_fee;
                         @endphp
 
                         @if ($materialFee && $materialFee->installment > 0)
@@ -360,50 +357,52 @@
                                         <div class="chart tab-pane active" id="material-fee-chart"
                                             style="position: relative;">
                                             <div>
-                                                <div>
-                                                    <ul class="todo-list" data-widget="todo-list">
-                                                        @php
-                                                            $currentDate = date('y-m-d');
-                                                        @endphp
-                                                        @foreach ($data->material_installments as $installment)
-                                                            <li>
-                                                                <span class="handle">
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                    <i class="fas fa-ellipsis-v"></i>
-                                                                </span>
-                                                                <div class="icheck-primary d-inline ml-2">
-                                                                    <span class="text-muted">[
-                                                                        {{ date('d F Y', strtotime($installment['deadline'])) }}
-                                                                        ]</span>
-                                                                </div>
-                                                                <span class="text">
-                                                                    Rp
-                                                                    {{ number_format($installment['amount'], 0, ',', '.') }}
-                                                                    (Installment {{ $installment['number'] }} of
-                                                                    {{ $materialFee->installment }})
-                                                                    @if ($materialFee->discount > 0)
-                                                                        <span class="badge badge-warning">Discount:
-                                                                            {{ $materialFee->discount }}%</span>
-                                                                    @endif
-                                                                </span>
-
-                                                                <!-- Status based on paidOf value -->
-                                                                @if ($data->paidOf === 1)
-                                                                    <small class="badge badge-success">PAID</small>
-                                                                @else
-                                                                    <small class="badge badge-secondary">NOT YET</small>
+                                                <ul class="todo-list" data-widget="todo-list">
+                                                    @php
+                                                        $currentDate = date('Y-m-d');
+                                                        $allInstallments = $materialFee
+                                                            ->installment_bills()
+                                                            ->with('bill')
+                                                            ->orderBy('installment_number')
+                                                            ->get();
+                                                    @endphp
+                                                    @foreach ($allInstallments as $installment)
+                                                        <li>
+                                                            <span class="handle">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </span>
+                                                            <div class="icheck-primary d-inline ml-2">
+                                                                <span class="text-muted">[
+                                                                    {{ date('d F Y', strtotime($installment->bill->deadline_invoice)) }}
+                                                                    ]</span>
+                                                            </div>
+                                                            <span class="text">
+                                                                Rp
+                                                                {{ number_format($materialFee->amount_installment, 0, ',', '.') }}
+                                                                (Installment {{ $installment->installment_number }} of
+                                                                {{ $materialFee->installment }})
+                                                                @if ($materialFee->discount > 0)
+                                                                    <span class="badge badge-warning">Discount:
+                                                                        {{ $materialFee->discount }}%</span>
                                                                 @endif
+                                                            </span>
 
-                                                                <div class="tools">
-                                                                    <a href="/admin/bills/detail-payment/{{ $data->id }}"
-                                                                        target="_blank">
-                                                                        <i class="fas fa-search"></i>
-                                                                    </a>
-                                                                </div>
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
+                                                            @if ($installment->bill->paidOf)
+                                                                <small class="badge badge-success">PAID</small>
+                                                            @else
+                                                                <small class="badge badge-secondary">NOT YET</small>
+                                                            @endif
+
+                                                            <div class="tools">
+                                                                <a href="/admin/bills/detail-payment/{{ $installment->bill->id }}"
+                                                                    target="_blank">
+                                                                    <i class="fas fa-search"></i>
+                                                                </a>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>

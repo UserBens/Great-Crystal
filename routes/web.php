@@ -111,6 +111,9 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::post('/admin/bills/create-accountnumber', [BillController::class, 'storeAccount'])->name('bills-create-accountnumber');
 
 
+      Route::get('/detail-payment/invoice/{number_invoice}', [BillController::class, 'detailPaymentByInvoice']);
+
+
       // Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
       Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
    });

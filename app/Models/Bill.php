@@ -116,4 +116,9 @@ class Bill extends Model
    {
       return $this->type === self::TYPE_MATERIAL_FEE;
    }
+
+   public function material_fee_installment()
+   {
+      return $this->hasOne(MaterialFeeInstallment::class, 'bill_id');
+   }
 }

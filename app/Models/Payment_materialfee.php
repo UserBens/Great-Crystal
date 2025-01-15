@@ -15,4 +15,9 @@ class Payment_materialfee extends Model
     {
         return $this->belongsTo(Student::class, 'student_id');
     }
+
+    public function installment_bills()
+    {
+        return $this->hasMany(MaterialFeeInstallment::class, 'material_fee_id');
+    }
 }

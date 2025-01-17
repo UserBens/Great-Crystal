@@ -31,53 +31,6 @@ class PaymentMaterialFeeController extends Controller
         }
     }
 
-    // public function listViewStudent(Request $request, $type)
-    // {
-    //     try {
-    //         session()->flash('page', (object)[
-    //             'page' => 'payments',
-    //             'child' => 'payment-materialfee',
-    //         ]);
-
-    //         $selectedGrade = $request->grade ?? 'all';
-    //         $selectedOrder = $request->sort ?? 'desc';
-    //         $selectedSort = $request->order ?? 'id';
-    //         $selectedStatus = $request->status ?? 'all';
-    //         $search = $request->search ?? '';
-
-    //         $query = Student::with(['grade', 'material_fee'])
-    //             ->where('is_active', true);
-
-    //         // Filter by grade
-    //         if ($selectedGrade !== 'all') {
-    //             $query->where('grade_id', $selectedGrade);
-    //         }
-
-    //         // Search functionality
-    //         if ($search) {
-    //             $query->where('name', 'like', '%' . $search . '%');
-    //         }
-
-    //         // Sorting
-    //         $query->orderBy($selectedSort, $selectedOrder);
-
-    //         $data = $query->paginate(20);
-    //         $grade = Grade::all();
-
-    //         $form = (object)[
-    //             'grade' => $selectedGrade,
-    //             'sort' => $selectedOrder,
-    //             'order' => $selectedSort,
-    //             'status' => $selectedStatus,
-    //             'search' => $search
-    //         ];
-
-    //         return view('components.student.materialfee.view-list-student', compact('data', 'grade', 'form', 'type'));
-    //     } catch (Exception $err) {
-    //         return dd($err);
-    //     }
-    // }
-
 
     public function listViewStudent(Request $request, $type)
     {
@@ -93,8 +46,10 @@ class PaymentMaterialFeeController extends Controller
             $selectedStatus = $request->status ?? 'all';
             $search = $request->search ?? '';
 
-            // Start with payment_materialfees and join with students and grades
-            $query = Payment_materialfee::with(['student.grade'])
+            $query = Payment_materialfee::with([
+                'student.grade',
+                'installment_bills.bill'  // Tambahkan .bill untuk eager load relasi bill
+            ])
                 ->whereHas('student', function ($q) {
                     $q->where('is_active', true);
                 })
@@ -242,23 +197,6 @@ class PaymentMaterialFeeController extends Controller
                 ->withInput();
         }
     }
-
-    // public function showStudentMaterialFees($student_id)
-    // {
-    //     try {
-    //         // Get student data
-    //         $student = Student::with(['grade'])->findOrFail($student_id);
-
-    //         // Get all material fees for this student
-    //         $materialFees = Payment_materialfee::where('student_id', $student_id)
-    //             ->orderBy('type', 'asc')
-    //             ->get();
-
-    //         return view('components.student.materialfee.show-detail', compact('student', 'materialFees'));
-    //     } catch (Exception $err) {
-    //         return dd($err);
-    //     }
-    // }
 
     public function showStudentMaterialFees($student_id)
     {

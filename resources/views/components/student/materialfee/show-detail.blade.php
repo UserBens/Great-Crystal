@@ -172,16 +172,7 @@
                             </table>
                         </div>
                     </div>
-
-                    <a href="#" class="btn btn-warning w-100 mb-2">
-                        <i class="fa-solid fa-file-pdf fa-bounce" style="color: #000000; margin-right:2px;"></i>
-                        Print PDF
-                    </a>
-
-                    <a href="#" class="btn btn-success w-100 mb-2">
-                        <i class="fas fa-check" style="margin-right:2px;"></i>
-                        Mark as Paid
-                    </a>
+                    
                 </div>
             </div>
         </div>

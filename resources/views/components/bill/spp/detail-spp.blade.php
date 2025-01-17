@@ -408,7 +408,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <a target="_blank" href="/admin/bills/material-installment-pdf/{{ $data->id }}"
+                            <a target="_blank" href="/admin/bills/material-installment-pdf/{{ $materialFee->id }}"
                                 class="btn btn-dark w-100 mb-2" id='material-report-pdf'>
                                 <i class="fa-solid fa-file-pdf fa-bounce" style="color: white; margin-right:2px;"></i>
                                 Material Fee Report PDF

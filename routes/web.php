@@ -96,6 +96,8 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::get('/intallment-paket/{bill_id}', [BillController::class, 'pagePaketInstallment']);
       Route::get('/paid/pdf/{bill_id}', [BillController::class, 'pagePdf']);
       Route::get('/installment-pdf/{bill_id}', [BillController::class, 'reportInstallmentPdf']);
+      Route::get('/material-installment-pdf/{material_fee_id}', [BillController::class, 'reportMaterialInstallmentPdf']);
+
       Route::get('/edit-installment-paket/{bill_id}', [BillController::class, 'pageEditInstallment']);
       Route::get('/status', [StatusMailSend::class, 'index']);
       Route::get('/status/{status_id}', [StatusMailSend::class, 'view']);
@@ -105,20 +107,12 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/status/{id}', [StatusMailSend::class, 'send']);
       Route::patch('/update-paid/{bill_id}/{student_id}', [BillController::class, 'paidOfBook'])->name('action.book.payment');
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
-
-      // web.php
+    
       Route::post('/admin/bills/choose-accountnumber', [BillController::class, 'chooseaccountnumber'])->name('choose-accountnumber');
       Route::post('/admin/bills/create-accountnumber', [BillController::class, 'storeAccount'])->name('bills-create-accountnumber');
-
-
       Route::get('/detail-payment/invoice/{number_invoice}', [BillController::class, 'detailPaymentByInvoice']);
-
-
-      // Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
       Route::post('/send-payment-notification/{bill_id}', [NotificationPaymentSuccess::class, 'sendPaymentSuccessNotification'])->name('admin.bills.sendPaymentNotification');
    });
-
-
 
    Route::prefix('/reports')->group(function () {
       Route::get('/', [Report::class, 'index']);
@@ -220,14 +214,6 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::get('/{id}/add-books', [PaymentBookController::class, 'pageAddBook']);
       Route::post('/{id}/add-books-action', [PaymentBookController::class, 'actionAddBook'])->name('action.add.book');
    });
-
-   // Route::prefix('material-fee')->group(function () {
-   //    Route::get('/', [PaymentMaterialFeeController::class, 'chooseTypeIndex'])->name('payment.materialfee.index');
-   //    Route::get('/create/{type}', [PaymentMaterialFeeController::class, 'listViewStudent'])->name('payment.materialfee.create');
-   //    Route::get('/material-fee/create/{student_id}/{type}', [PaymentMaterialFeeController::class, 'viewCreateForm'])->name('payment.materialfee.create-form');
-   //    Route::post('/material-fee/{student_id}/{type}', [PaymentMaterialFeeController::class, 'storePaymentMaterialFee'])
-   //       ->name('payment.materialfee.store');
-   // });
 
    Route::prefix('material-fee')->group(function () {
       Route::get('/', [PaymentMaterialFeeController::class, 'chooseTypeIndex'])->name('payment.materialfee.index');

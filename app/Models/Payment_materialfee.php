@@ -20,4 +20,14 @@ class Payment_materialfee extends Model
     {
         return $this->hasMany(MaterialFeeInstallment::class, 'material_fee_id');
     }
+
+    // Di model Payment_materialfee
+    public function getPaidInstallmentsCountAttribute()
+    {
+        return $this->installment_bills()
+            ->whereHas('bill', function ($query) {
+                $query->where('paidOf', true);
+            })
+            ->count();
+    }
 }

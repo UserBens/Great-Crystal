@@ -110,7 +110,6 @@
                                 <th style="width: 12%">Amount</th>
                                 <th style="width: 12%">Installment</th>
                                 <th style="width: 12%">Amount/Term</th>
-                                <th style="width: 7%">Type</th>
                                 <th style="width: 7%">Status</th>
                                 <th class="text-center" style="width: 30%">Actions</th>
                             </tr>
@@ -125,10 +124,26 @@
                                     <td>Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
                                     <td class="text-center">{{ $payment->installment ?? 0 }} terms</td>
                                     <td>Rp {{ number_format($payment->amount_installment, 0, ',', '.') }}</td>
-                                    <td>{{ ucfirst($payment->type) }}</td>
+                                   
                                     <td>
-                                        <span class="badge badge-success">Already set</span>
+                                        @if ($payment->installment)
+                                            @php
+                                                $paidCount = $payment->paid_installments_count;
+                                                $totalInstallments = $payment->installment;
+                                                $isComplete = $paidCount >= $totalInstallments;
+                                            @endphp
+
+                                            @if ($isComplete)
+                                                <span class="badge badge-success">Paid Off</span>
+                                            @else
+                                                <span class="badge badge-info">Progress
+                                                    {{ $paidCount }}/{{ $totalInstallments }}</span>
+                                            @endif
+                                        @else
+                                            <span class="badge badge-success">Paid Off</span>
+                                        @endif
                                     </td>
+
                                     <td class="project-actions text-center">
                                         <a class="btn btn-primary btn-sm"
                                             href="{{ route('payment.materialfee.detail', $payment->student_id) }}">

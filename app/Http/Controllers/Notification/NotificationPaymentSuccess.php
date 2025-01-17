@@ -405,7 +405,6 @@ class NotificationPaymentSuccess extends Controller
 
 
 
-
    public function sendPaymentSuccessNotification($bill_id)
    {
       try {

@@ -947,6 +947,42 @@ class BillController extends Controller
       }
    }
 
+   public function reportMaterialInstallmentPdf($material_fee_id)
+   {
+      try {
+         $data = Payment_materialfee::with([
+            'student' => function ($query) {
+               $query->with('grade');
+            },
+            'installment_bills' => function ($query) {
+               $query->with('bill')
+                  ->orderBy('installment_number');
+            }
+         ])
+            ->where('id', $material_fee_id)
+            ->first();
+
+         if (!$data || !$data->installment_bills->count()) {
+            return redirect()->back();
+         }
+
+         $nameFormatPdf = Carbon::now()->format('YmdHis') .
+            mt_rand(1000, 9999) . '_' .
+            date('d-m-Y') . '_' .
+            'MaterialFee' . '_' .
+            $data->student->name . '.pdf';
+
+         $pdf = app('dompdf.wrapper');
+         $pdf->loadView('components.bill.pdf.materialfee-installment-pdf', [
+            'data' => $data
+         ])->setPaper('a4', 'portrait');
+
+         return $pdf->stream($nameFormatPdf);
+      } catch (Exception $err) {
+         abort(500);
+      }
+   }
+
 
    public function pageEditInstallment($bill_id)
    {

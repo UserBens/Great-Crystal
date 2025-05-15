@@ -30,46 +30,6 @@ class NotificationPastDue extends Controller
 
          date_default_timezone_set('Asia/Jakarta');
 
-         // if ($charge) {
-         //    $billCharge = Bill::with('bill_installments')->where('paidOf', false)->where('deadline_invoice', '<', date('Y-m-d'))->where('type', $type)->get(['id', 'amount', 'charge', 'installment', 'amount_installment']);
-         //    foreach ($billCharge as $bill) {
-         //       # code...
-         //       Bill::where('id', $bill->id)->update([
-         //          'amount' => $bill->amount + 100_000,
-         //          'charge' => $bill->charge + 100_000,
-         //          'amount_installment' => $bill->installment ? $bill->amount_installment + 100_000 : $bill->amount_installment,
-         //       ]);
-
-         //       foreach ($bill->bill_installments as $installment) {
-
-         //          if ($installment->pivot->main_id != $installment->pivot->child_id) {
-
-         //             Bill::where('id', $installment->pivot->child_id)->update([
-         //                'amount' => $bill->amount + 100_000,
-         //             ]);
-         //          }
-         //       }
-         //    }
-         // }
-
-         // if ($charge) {
-         //    $billCharge = Bill::with('bill_installments')->where('paidOf', false)->where('deadline_invoice', '<', date('Y-m-d'))->where('type', $type)->get(['id', 'amount', 'charge', 'installment', 'amount_installment']);
-         //    foreach ($billCharge as $bill) {
-         //       # code...
-         //       Bill::where('id', $bill->id)->update([
-         //          'charge' => 100000, // Set charge menjadi 100.000
-         //       ]);
-
-         //       foreach ($bill->bill_installments as $installment) {
-         //          if ($installment->pivot->main_id != $installment->pivot->child_id) {
-         //             Bill::where('id', $installment->pivot->child_id)->update([
-         //                'charge' => 100000, // Perbarui nilai charge pada tagihan anak menjadi 100.000
-         //             ]);
-         //          }
-         //       }
-         //    }
-         // }
-
          if ($charge) {
             $billCharge = Bill::with('bill_installments')->where('paidOf', false)->where('deadline_invoice', '<', date('Y-m-d'))->where('type', $type)->get(['id', 'amount', 'charge', 'installment', 'amount_installment']);
             foreach ($billCharge as $bill) {
@@ -161,13 +121,6 @@ class NotificationPastDue extends Controller
                      if ($key == 0) $mailData['name'] = $parent->name;
 
                      array_push($array_email, $parent->email);
-                     //   return view('emails.spp-mail')->with('mailData', $mailData);
-
-                     //   return view('emails.fee-regis-mail')->with('mailData', $mailData);
-
-                     //   return view('emails.paket-mail')->with('mailData', $mailData);
-
-                     // return view('emails.book-mail')->with('mailData', $mailData);
 
                      $pdf = app('dompdf.wrapper');
                      // Perhatikan bahwa kita menggunakan $mailData['bill'][0] untuk setiap siswa

@@ -113,8 +113,7 @@
                                                     <tbody>
                                                         <tr>
                                                             <td style="width:300px;">
-                                                                <img height="auto"
-                                                                    src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fteachin.id%2Fcontent%2Fuploads%2Fphotos%2F2019%2F08%2Fa088874ec8d5dcbb729d2175e47fb08a.png&f=1&nofb=1&ipt=c3ae2572ac061d92b772c8affe4b6abd499e0b203461f80ff06ea1b1f69cf1d1&ipo=images"
+                                                                <img src="{{ $message->embedData(file_get_contents(public_path('images/logo-school.png')), 'logo_school', 'image/png') }}"
                                                                     style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;"
                                                                     width="75" />
                                                             </td>
@@ -163,7 +162,7 @@
                                                                 <tr>
                                                                     <td style="width:100%;" align="center">
                                                                         <img height="auto"
-                                                                            src="https://iili.io/JBn6n2V.jpg"
+                                                                            src="{{ $message->embedData(file_get_contents(public_path('images/late-fee.png')), 'late_fee', 'image/png') }}"
                                                                             style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" />
                                                                     </td>
                                                                 </tr>

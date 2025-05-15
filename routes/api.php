@@ -24,3 +24,5 @@ Route::post('/login', [UserController::class, 'login']);
 Route::get('/check-payment-status/{unique_id}', [PaymentStatusController::class, 'checkStatus']);
 
 Route::get('/payment-history/{unique_id}', [PaymentStatusController::class, 'getPaymentHistory']);
+
+Route::get('/payment-detail/{unique_id}/{bill_id}', [PaymentStatusController::class, 'getPaymentDetail']);

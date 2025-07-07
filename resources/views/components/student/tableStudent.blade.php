@@ -147,7 +147,18 @@
                 </div>
             </div>
         @else
-            <div class="card card-dark mt-5">
+            <div class="card-tools mb-4 mt-3">
+                <a href="{{ route('students.export') }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-envelope"></i> Export Email
+                </a>
+
+                <a href="{{ route('students.exportFull') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-id-card"></i> Export Full Profile
+                </a>
+            </div>
+
+
+            <div class="card card-dark mt-3">
                 <div class="card-header">
                     <h3 class="card-title">Student</h3>
 
@@ -264,8 +275,9 @@
                                             </a>
                                         @endif
                                         @if (session('role') == 'superadmin' && $el->is_active)
-                                            <a href="javascript:void(0)" id="delete-student" data-id="{{ $el->id }}"
-                                                data-name="{{ $el->name }}" class="btn btn-danger btn-sm">
+                                            <a href="javascript:void(0)" id="delete-student"
+                                                data-id="{{ $el->id }}" data-name="{{ $el->name }}"
+                                                class="btn btn-danger btn-sm">
                                                 <i class="fas fa fa-ban">
                                                 </i>
                                                 Deactive

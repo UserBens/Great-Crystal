@@ -107,7 +107,7 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
       Route::patch('/status/{id}', [StatusMailSend::class, 'send']);
       Route::patch('/update-paid/{bill_id}/{student_id}', [BillController::class, 'paidOfBook'])->name('action.book.payment');
       Route::patch('/update-paid/{id}', [BillController::class, 'paidOf']);
-    
+
       Route::post('/admin/bills/choose-accountnumber', [BillController::class, 'chooseaccountnumber'])->name('choose-accountnumber');
       Route::post('/admin/bills/create-accountnumber', [BillController::class, 'storeAccount'])->name('bills-create-accountnumber');
       Route::get('/detail-payment/invoice/{number_invoice}', [BillController::class, 'detailPaymentByInvoice']);
@@ -139,6 +139,9 @@ Route::middleware(['admin'])->prefix('/admin')->group(function () {
 
    Route::prefix('/list')->group(function () {
       Route::get('/', [StudentController::class, 'index']);
+      Route::get('/export', [StudentController::class, 'export'])->name('students.export');
+      Route::get('/export-full', [StudentController::class, 'exportFull'])->name('students.exportFull');
+
    });
 
 

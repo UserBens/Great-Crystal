@@ -16,6 +16,10 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Exports\StudentsExport;
+use App\Exports\StudentsFullProfileExport;
+use App\Exports\StudentsWithParentsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -82,6 +86,21 @@ class StudentController extends Controller
          //throw $th;
          return abort(500, 'Internal server error');
       }
+   }
+
+   // public function export()
+   // {
+   //    return Excel::download(new StudentsWithParentsExport, 'students_with_parents.xlsx');
+   // }
+
+   public function export()
+   {
+      return Excel::download(new StudentsWithParentsExport, 'students_with_parents.xlsx');
+   }
+
+   public function exportFull()
+   {
+      return Excel::download(new StudentsFullProfileExport, 'students_full_profiles.xlsx');
    }
 
 

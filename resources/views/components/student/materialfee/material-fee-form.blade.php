@@ -186,7 +186,7 @@
         </script>
     @endpush
 
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const amountInput = document.getElementById('amount');
             const dpInput = document.getElementById('dp');
@@ -437,6 +437,330 @@
             document.querySelector('form').addEventListener('submit', function(e) {
 
             });
+        });
+    </script> --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const amountInput = document.getElementById('amount');
+            const dpInput = document.getElementById('dp');
+            const installmentInput = document.getElementById('installment');
+            const installmentContainer = document.getElementById('installmentContainer');
+            const summaryContainer = document.getElementById('summaryContainer');
+            let installmentInputs = [];
+
+            // Format number with thousand separator
+            function formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+
+            // Remove format and convert to number
+            function unformatNumber(str) {
+                return parseInt(str.replace(/\./g, '')) || 0;
+            }
+
+            // Format currency inputs
+            [amountInput, dpInput].forEach(input => {
+                input.addEventListener('input', function(e) {
+                    let value = unformatNumber(this.value);
+                    this.value = formatNumber(value);
+                    generateInstallments();
+                });
+            });
+
+            installmentInput.addEventListener('input', generateInstallments);
+
+            function validateInstallments() {
+                const amount = unformatNumber(amountInput.value);
+                const dp = unformatNumber(dpInput.value);
+                const remainingAmount = amount - dp;
+                let currentTotal = 0;
+
+                // Get all installment inputs
+                const inputs = document.querySelectorAll('.installment-input');
+                inputs.forEach(input => {
+                    currentTotal += unformatNumber(input.value);
+                });
+
+                // Check if total matches remaining amount
+                return {
+                    isValid: currentTotal === remainingAmount,
+                    difference: remainingAmount - currentTotal
+                };
+            }
+
+            // Calculate remaining amount after installment changes
+            function updateInstallmentSummary() {
+                const amount = unformatNumber(amountInput.value);
+                const dp = unformatNumber(dpInput.value);
+                const remainingAmount = amount - dp;
+
+                // Calculate total of installments
+                let installmentTotal = 0;
+                const inputs = document.querySelectorAll('.installment-input');
+                inputs.forEach(input => {
+                    installmentTotal += unformatNumber(input.value);
+                });
+
+                // Update summary display
+                document.getElementById('summaryAmount').innerHTML = `<b>Rp. ${formatNumber(remainingAmount)}</b>`;
+                document.getElementById('summaryDP').innerHTML = `Rp. ${formatNumber(dp)}`;
+                document.getElementById('summaryTotal').innerHTML = `<strong>Rp. ${formatNumber(amount)}</strong>`;
+
+                // Update summary table
+                const summaryTable = document.getElementById('installmentSummary');
+                let summaryHtml = '';
+
+                inputs.forEach((input, index) => {
+                    summaryHtml += `
+                <tr>
+                    <td align="left">Installment ${index + 1}</td>
+                    <td align="right">Rp. ${input.value}</td>
+                </tr>
+            `;
+                });
+
+                summaryTable.innerHTML = summaryHtml;
+
+                // Show validation message if totals don't match
+                const validation = validateInstallments();
+                const validationMessage = document.getElementById('validationMessage');
+                if (validationMessage) {
+                    if (!validation.isValid) {
+                        validationMessage.textContent =
+                            `Difference from total: Rp. ${formatNumber(Math.abs(validation.difference))}`;
+                        validationMessage.style.color = 'red';
+                    } else {
+                        validationMessage.textContent = 'Total matches remaining amount';
+                        validationMessage.style.color = 'green';
+                    }
+                }
+            }
+
+            // Handle installment input changes
+            function handleInstallmentInput(e) {
+                let value = unformatNumber(e.target.value);
+                e.target.value = formatNumber(value);
+                updateInstallmentSummary();
+            }
+
+            // Generate installment fields and summary
+            function generateInstallments() {
+                const amount = unformatNumber(amountInput.value);
+                const dp = unformatNumber(dpInput.value);
+                const installments = parseInt(installmentInput.value) || 0;
+
+                // Hide containers initially
+                installmentContainer.style.display = 'none';
+                summaryContainer.style.display = 'none';
+
+                // Validation fixes:
+                // 1. Check if amount is provided
+                if (!amount || amount <= 0) {
+                    return;
+                }
+
+                // 2. If no installments, treat as full payment
+                if (!installments || installments < 1) {
+                    // Show summary for full payment scenario
+                    summaryContainer.style.display = 'block';
+
+                    // Update summary display for full payment
+                    document.getElementById('summaryAmount').innerHTML = `<b>Rp. ${formatNumber(amount)}</b>`;
+                    document.getElementById('summaryDP').innerHTML = `Rp. ${formatNumber(dp)}`;
+                    document.getElementById('summaryTotal').innerHTML =
+                        `<strong>Rp. ${formatNumber(amount)}</strong>`;
+
+                    // Clear installment summary
+                    document.getElementById('installmentSummary').innerHTML = '';
+                    return;
+                }
+
+                // 3. Validate installment range (2-12)
+                if (installments < 2 || installments > 12) {
+                    return;
+                }
+
+                // 4. Calculate remaining amount (if dp is 0, remaining = amount)
+                const remainingAmount = amount - dp;
+
+                // 5. Check if DP is not greater than amount
+                if (dp > amount) {
+                    return;
+                }
+
+                // 6. If remaining amount is 0 or negative, no installments needed
+                if (remainingAmount <= 0) {
+                    summaryContainer.style.display = 'block';
+                    document.getElementById('summaryAmount').innerHTML = `<b>Rp. ${formatNumber(amount)}</b>`;
+                    document.getElementById('summaryDP').innerHTML = `Rp. ${formatNumber(dp)}`;
+                    document.getElementById('summaryTotal').innerHTML =
+                        `<strong>Rp. ${formatNumber(amount)}</strong>`;
+                    document.getElementById('installmentSummary').innerHTML = '';
+                    return;
+                }
+
+                // Calculate installment amounts
+                const installmentAmount = Math.ceil(remainingAmount / installments);
+                const lastInstallmentAmount = remainingAmount - (installmentAmount * (installments - 1));
+
+                // Show containers
+                installmentContainer.style.display = 'block';
+                summaryContainer.style.display = 'block';
+
+                // Generate installment fields
+                const container = document.getElementById('installmentContainer');
+                let installmentHtml = `
+            <div id="validationMessage" class="mb-3"></div>
+            <input type="hidden" name="amount_installment" value="${installmentAmount}">
+        `;
+
+                for (let i = 0; i < installments; i++) {
+                    const currentAmount = i === installments - 1 ? lastInstallmentAmount : installmentAmount;
+
+                    installmentHtml += `
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <label for="installment_${i}">Installment ${i + 1}</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Rp.</span>
+                            </div>
+                            <input type="text" class="form-control installment-input" 
+                                id="installment_${i}" 
+                                name="installment_amount[]" 
+                                value="${formatNumber(currentAmount)}" 
+                                oninput="handleInstallmentInput(event)">
+                        </div>
+                    </div>
+                </div>
+            `;
+                }
+
+                container.innerHTML = installmentHtml;
+
+                // Add event listeners to new inputs
+                document.querySelectorAll('.installment-input').forEach(input => {
+                    input.addEventListener('input', handleInstallmentInput);
+                });
+
+                // Initial summary update
+                updateInstallmentSummary();
+            }
+
+            // Add form submit handler
+            const form = document.getElementById('paymentForm');
+            const submitBtn = document.querySelector('[data-target="#confirmModal"]');
+
+            submitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Validasi checkbox agree
+                const agreeCheckbox = document.getElementById('agree');
+                if (!agreeCheckbox.checked) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Agreement Required',
+                        text: 'Please agree to create this payment plan first.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+
+                // Validasi student
+                const studentSelect = document.getElementById('students');
+                if (!studentSelect.value) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Student Required',
+                        text: 'Please select a student first.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+
+                // Validasi amount
+                const amount = unformatNumber(amountInput.value);
+                if (!amount || amount <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Amount Required',
+                        text: 'Please enter a valid amount.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+
+                // Validasi DP tidak boleh lebih besar dari amount
+                const dp = unformatNumber(dpInput.value);
+                if (dp > amount) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid DP',
+                        text: 'DP cannot be greater than the total amount.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+
+                // Jika ada installment, validate totals
+                const installments = parseInt(installmentInput.value) || 0;
+                if (installments >= 2) {
+                    const validation = validateInstallments();
+                    if (!validation.isValid) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Installment Total',
+                            text: 'The sum of installments must equal the remaining amount.',
+                            confirmButtonColor: '#3085d6'
+                        });
+                        return;
+                    }
+                }
+
+                // Ambil nilai-nilai form untuk ditampilkan di konfirmasi
+                const studentName = studentSelect.options[studentSelect.selectedIndex].text;
+                const formattedAmount = formatNumber(amount);
+                const formattedDp = formatNumber(dp);
+                const installmentText = installments >= 2 ? `${installments} terms` : 'Full payment';
+
+                Swal.fire({
+                    title: 'Confirm Payment Plan',
+                    html: `
+                <div class="text-left">
+                    <p><strong>Student:</strong> ${studentName}</p>
+                    <p><strong>Amount:</strong> Rp. ${formattedAmount}</p>
+                    <p><strong>DP:</strong> Rp. ${formattedDp}</p>
+                    <p><strong>Payment Type:</strong> ${installmentText}</p>
+                </div>
+                <p class="mt-3">Are you sure you want to create this payment plan?</p>
+            `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, create it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading state
+                        Swal.fire({
+                            title: 'Processing...',
+                            html: 'Please wait while we create the payment plan.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Submit form
+                        form.submit();
+                    }
+                });
+            });
+
+            // Make handleInstallmentInput global for inline event handlers
+            window.handleInstallmentInput = handleInstallmentInput;
         });
     </script>
 @endsection

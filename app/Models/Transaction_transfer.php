@@ -13,11 +13,11 @@ class Transaction_transfer extends Model
 
     public function transferAccount()
     {
-        return $this->belongsTo(AccountNumber::class, 'transfer_account_id');
+        return $this->belongsTo(Accountnumber::class, 'transfer_account_id');
     }
 
     public function depositAccount()
     {
-        return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
+        return $this->belongsTo(Accountnumber::class, 'deposit_account_id');
     }
 }

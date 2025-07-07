@@ -120,15 +120,94 @@ class PaymentMaterialFeeController extends Controller
 
 
     // Updated Controller Method
+    // public function storePaymentMaterialFee(Request $request, $type)
+    // {
+    //     try {
+    //         // Validate the request
+    //         $validator = Validator::make($request->all(), [
+    //             'student_id' => 'required',  // Validasi untuk select2
+    //             'amount' => 'required',
+    //             'dp' => 'required',
+    //             'installment' => 'nullable|numeric|min:2|max:12',
+    //             'agree' => 'required'
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return redirect()
+    //                 ->back()
+    //                 ->withErrors($validator)
+    //                 ->withInput();
+    //         }
+
+    //         // Get student data
+    //         $student = Student::where('unique_id', $request->student_id)->firstOrFail();
+
+    //         // Format amount and dp (remove thousand separator)
+    //         $amount = (int) str_replace('.', '', $request->amount);
+    //         $dp = (int) str_replace('.', '', $request->dp);
+
+    //         // Validate formatted amount and dp
+    //         if ($dp > $amount) {
+    //             return redirect()
+    //                 ->back()
+    //                 ->withErrors(['dp' => 'DP cannot be greater than the total amount'])
+    //                 ->withInput();
+    //         }
+
+    //         // Calculate discount if applicable
+    //         $discount = $request->input('discount', 0); // Default to 0 if no discount provided
+    //         $discountedAmount = $amount - $discount;
+
+    //         // Handle installments if provided
+    //         $installment = $request->installment ?? null;
+
+    //         // Calculate amount_installment (per month installment amount)
+    //         $amount_installment = 0;
+    //         if ($installment) {
+    //             $remainingAmount = $amount - $dp;
+    //             $amount_installment = ceil($remainingAmount / $installment);
+    //         }
+
+    //         // Save to `payment_materialfees` table
+    //         Payment_materialfee::create([
+    //             'student_id' => $student->id,
+    //             'type' => $type,
+    //             'amount' => $discountedAmount,
+    //             'dp' => $dp,
+    //             'discount' => $discount,
+    //             'installment' => $installment,
+    //             'amount_installment' => $amount_installment
+    //         ]);
+
+    //         return redirect()
+    //             ->route('payment.materialfee.create', ['type' => $type])
+    //             ->with('success', 'Material fee payment plan has been created successfully');
+    //     } catch (Exception $e) {
+    //         // Log the error message to storage/logs/laravel.log
+    //         Log::error('Error in storePaymentMaterialFee:', [
+    //             'message' => $e->getMessage(),
+    //             'file' => $e->getFile(),
+    //             'line' => $e->getLine(),
+    //             'stack_trace' => $e->getTraceAsString()
+    //         ]);
+
+    //         return redirect()
+    //             ->back()
+    //             ->with('error', 'Failed to create payment plan: ' . $e->getMessage())
+    //             ->withInput();
+    //     }
+    // }
+
+
     public function storePaymentMaterialFee(Request $request, $type)
     {
         try {
             // Validate the request
             $validator = Validator::make($request->all(), [
-                'student_id' => 'required',  // Validasi untuk select2
+                'student_id' => 'required',
                 'amount' => 'required',
                 'dp' => 'required',
-                'installment' => 'nullable|numeric|min:2|max:12',
+                'installment' => 'nullable|numeric|min:0|max:12', // Installment bisa 0 untuk full payment
                 'agree' => 'required'
             ]);
 
@@ -144,9 +223,17 @@ class PaymentMaterialFeeController extends Controller
 
             // Format amount and dp (remove thousand separator)
             $amount = (int) str_replace('.', '', $request->amount);
-            $dp = (int) str_replace('.', '', $request->dp);
+            $dp = (int) str_replace('.', '', $request->dp ?? '0'); // Default DP ke 0 jika kosong
 
-            // Validate formatted amount and dp
+            // Validate formatted amount
+            if ($amount <= 0) {
+                return redirect()
+                    ->back()
+                    ->withErrors(['amount' => 'Amount must be greater than 0'])
+                    ->withInput();
+            }
+
+            // Validate DP tidak boleh lebih besar dari amount
             if ($dp > $amount) {
                 return redirect()
                     ->back()
@@ -155,17 +242,24 @@ class PaymentMaterialFeeController extends Controller
             }
 
             // Calculate discount if applicable
-            $discount = $request->input('discount', 0); // Default to 0 if no discount provided
+            $discount = $request->input('discount', 0);
             $discountedAmount = $amount - $discount;
 
-            // Handle installments if provided
-            $installment = $request->installment ?? null;
+            // Handle installments
+            $installment = $request->installment ?? 0;
+
+            // Jika installment 0 atau 1, maka tidak ada cicilan (full payment)
+            if ($installment < 2) {
+                $installment = null;
+            }
 
             // Calculate amount_installment (per month installment amount)
             $amount_installment = 0;
-            if ($installment) {
+            if ($installment && $installment >= 2) {
                 $remainingAmount = $amount - $dp;
-                $amount_installment = ceil($remainingAmount / $installment);
+                if ($remainingAmount > 0) {
+                    $amount_installment = ceil($remainingAmount / $installment);
+                }
             }
 
             // Save to `payment_materialfees` table
@@ -179,9 +273,12 @@ class PaymentMaterialFeeController extends Controller
                 'amount_installment' => $amount_installment
             ]);
 
+            // Determine success message based on payment type
+            $paymentType = $installment ? "installment payment plan ({$installment} terms)" : "full payment plan";
+
             return redirect()
                 ->route('payment.materialfee.create', ['type' => $type])
-                ->with('success', 'Material fee payment plan has been created successfully');
+                ->with('success', "Material fee {$paymentType} has been created successfully");
         } catch (Exception $e) {
             // Log the error message to storage/logs/laravel.log
             Log::error('Error in storePaymentMaterialFee:', [

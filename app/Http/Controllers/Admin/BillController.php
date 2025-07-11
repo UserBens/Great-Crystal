@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Notification\NotificationPaymentSuccess;
+use App\Mail\ChargePaymentMail;
 use App\Mail\PaymentSuccessMail;
 use App\Mail\SppMail;
 use App\Models\Accountcategory;
@@ -35,7 +36,6 @@ class BillController extends Controller
    public function index(Request $request)
    {
       try {
-
          $user = Auth::user();
          session()->flash('preloader', true);
          session()->flash('page', (object)[
@@ -76,8 +76,6 @@ class BillController extends Controller
             }
 
             if ($form->from_bill) {
-
-
                $explode_f = explode('/', $form->from_bill);
                $date_f = $explode_f[2] . '-' . $explode_f[1] . '-' . $explode_f[0];
 
@@ -88,8 +86,6 @@ class BillController extends Controller
             }
 
             if ($form->to_bill) {
-
-
                $explode_t = explode('/', $form->to_bill);
                $date_t = $explode_t[2] . '-' . $explode_t[1] . '-' . $explode_t[0];
 
@@ -100,11 +96,9 @@ class BillController extends Controller
             }
 
             if ($form->from_bill && $form->to_bill) {
-               // $fromDate = 
                $data = $data->whereRaw("created_at BETWEEN '{$f_formated}' AND '{$t_formated}'");
                $form->from_bill = $explode_f[0] . '/' . $explode_f[1] . '/' . $explode_f[2];
                $form->to_bill = $explode_t[0] . '/' . $explode_t[1] . '/' . $explode_t[2];
-
 
                $flag_date = $f_carbon->timestamp > $t_carbon->timestamp ? false : true;
             } else if ($form->from_bill) {
@@ -115,12 +109,8 @@ class BillController extends Controller
                $form->to_bill = $explode_t[0] . '/' . $explode_t[1] . '/' . $explode_t[2];
             }
 
-
-
-
             if ($form->type) {
                if (strtolower($form->type) != 'others') {
-
                   $data = $data->where('type', $form->type);
                } else {
                   $data = $data->whereNotIn('type', ['SPP', "Capital Fee", "Paket", "Uniform", "Book"]);
@@ -129,32 +119,23 @@ class BillController extends Controller
 
             if ($form->status) {
                $statusPaid = $form->status == 'true' ? true : false;
-
                $data = $data->where('paidOf', $statusPaid);
             }
 
-
-
             if ($form->invoice) {
-
                if (is_numeric($form->invoice)) {
                   $data = $data
                      ->where('deadline_invoice', '<=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays((int)$form->invoice)->format('y-m-d'))
                      ->where('deadline_invoice', '>=', Carbon::now()->setTimezone('Asia/Jakarta')->format('y-m-d'));
                } else {
-
-
                   if ($form->invoice == 'tommorow') {
                      $data = $data->where('deadline_invoice', '=', Carbon::now()->setTimezone('Asia/Jakarta')->addDays(1)->format('y-m-d'));
                   } else {
-
                      $operator = $form->invoice == 'today' ? '=' : '<';
-
                      $data = $data->where('deadline_invoice', $operator, Carbon::now()->setTimezone('Asia/Jakarta')->format('y-m-d'));
                   }
                }
             }
-
 
             if ($user->role == 'admin') {
                $data = $data->where('created_by', 'admin');
@@ -166,8 +147,7 @@ class BillController extends Controller
                });
             }
 
-
-            $data = $data->orderBy('id', 'desc')->paginate(15);
+            $data = $data->orderBy('id', 'desc')->paginate(25);
          } else {
             if ($user->role == 'admin') {
                $data = Bill::with(['student' => function ($query) {
@@ -185,8 +165,6 @@ class BillController extends Controller
             }
          }
 
-
-         // return $form;
          return view('components.bill.data-bill')
             ->with('data', $data)
             ->with('grade', $grades)
@@ -194,10 +172,84 @@ class BillController extends Controller
             ->with('bill', $bill)
             ->with('flag_date', $flag_date);
       } catch (Exception $err) {
-         //throw $th;
          return dd($err);
       }
    }
+
+   public function payCharge(Request $request, $billId)
+   {
+      try {
+         DB::beginTransaction();
+
+         $bill = Bill::with(['student.grade'])->findOrFail($billId);
+
+         if ($bill->charge <= 0) {
+            return response()->json([
+               'success' => false,
+               'message' => 'This bill has no charge to pay'
+            ], 400);
+         }
+
+         // Update bill status to paid
+         $bill->paidOf = true;
+         $bill->paid_date = Carbon::now('Asia/Jakarta');
+         $bill->save();
+
+         // Prepare email data
+         $mailData = [
+            'bill' => [$bill],
+            'student' => $bill->student,
+            'charge_amount' => $bill->charge,
+            'total_amount' => $bill->amount + $bill->charge,
+            'payment_date' => Carbon::now('Asia/Jakarta')->format('d M Y H:i:s'),
+            'invoice_number' => $bill->number_invoice,
+            'past_due' => false,
+            'charge' => true,
+            'change' => false,
+            'is_paid' => true,
+            'name' => $bill->student->name
+         ];
+
+         $subject = 'Charge Payment Notification - ' . $bill->student->name . ' - ' . $bill->type;
+
+         // Generate PDF menggunakan dompdf wrapper (sesuai dengan pattern yang ada)
+         $pdfBill = Bill::with(['student' => function ($query) {
+            $query->with('grade');
+         }, 'bill_collection', 'bill_installments'])->where('id', $billId)->first();
+
+         $pdf = app('dompdf.wrapper');
+         $pdf->loadView('components.bill.pdf.paid-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
+
+         // Optional: Generate PDF Report jika diperlukan (untuk installment)
+         $pdfReport = null;
+         if ($pdfBill->installment) {
+            $pdfReport = app('dompdf.wrapper');
+            $pdfReport->loadView('components.emails.payment-success-pdf', ['data' => $pdfBill])->setPaper('a4', 'portrait');
+         }
+
+         // Optional: Generate PDF Report jika diperlukan
+         // $pdfReport = PDF::loadView('pdf.report', $mailData);
+
+         // Send email notification dengan PDF attachment
+         Mail::to('benedictus.radyan@great.sch.id')->send(
+            new ChargePaymentMail($mailData, $subject, $pdf, $pdfReport)
+         );
+
+         DB::commit();
+
+         return response()->json([
+            'success' => true,
+            'message' => 'Charge payment processed successfully and notification sent to accounting'
+         ]);
+      } catch (Exception $e) {
+         DB::rollBack();
+         return response()->json([
+            'success' => false,
+            'message' => 'Failed to process charge payment: ' . $e->getMessage()
+         ], 500);
+      }
+   }
+
 
    public function chooseStudent(Request $request)
    {

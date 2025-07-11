@@ -210,9 +210,12 @@
                             <thead>
                                 <tr>
                                     <th style="width: 1%">
-                                        #
+                                        No
                                     </th>
-                                    <th class="text-center" style="width: 10%">
+                                    <th style="width: 12%">
+                                        Number Invoice
+                                    </th>
+                                    <th class="text-center" style="width: 5%">
                                         Type
                                     </th>
                                     <th style="width: 20%">
@@ -231,16 +234,19 @@
                                     <th class="text-center">
                                         Paid of
                                     </th>
-                                    <th style="width: 8%" class="text-center">
+                                    <th style="width: 18%" class="text-center">
                                         Invoice
                                     </th>
-                                    <th style="width: 25%">
+                                    <th style="width: 30%">
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($data as $el)
+                                @foreach ($data as $index => $el)
                                     <tr id={{ 'index_student_' . $el->id }}>
+                                        <td>
+                                            {{ $index + 1 }}
+                                        </td>
                                         <td>
                                             {{ $el->number_invoice }}
                                         </td>
@@ -260,7 +266,6 @@
                                             } else {
                                                 $amount = $el->installment ? $el->amount_installment : $el->amount;
                                             }
-
                                         @endphp
                                         <td>
                                             IDR.
@@ -269,6 +274,10 @@
                                                 <br><small class="text-muted">discount: {{ $el->discount }}%</small>
                                             @elseif ($el->installment)
                                                 <br><small class="text-muted">installment: {{ $el->installment }}x</small>
+                                            @endif
+                                            @if ($el->charge > 0)
+                                                <br><small class="text-danger">charge: IDR.
+                                                    {{ number_format($el->charge, 0, ',', '.') }}</small>
                                             @endif
                                         </td>
                                         <td>
@@ -294,14 +303,19 @@
                                                     href="/admin/bills/detail-payment/{{ $el->id }}">
                                                     <i class="fas fa-folder"></i> View
                                                 </a>
-                                                {{-- <button type="button" class="btn btn-sm btn-warning" data-toggle="modal"
-                                                    data-target="#emailModal{{ $el->id }}">
-                                                    <i class="fas fa-envelope mr-1"></i>Email
-                                                </button> --}}
                                                 <button type="button" class="btn btn-sm btn-warning email-btn"
                                                     data-id="{{ $el->id }}">
                                                     <i class="fas fa-envelope mr-1"></i>Email
                                                 </button>
+                                                {{-- Tampilkan button Pay Charge hanya jika ada charge DAN belum dibayar --}}
+                                                @if ($el->charge > 0 && !$el->paidOf)
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-danger charge-payment-btn ml-2"
+                                                        data-id="{{ $el->id }}" data-char
+                                                        ge="{{ $el->charge }}">
+                                                        <i class="fas fa-credit-card mr-1"></i>Pay Charge
+                                                    </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -547,6 +561,7 @@
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/projects.js') }}" defer></script>
 
+    {{-- MODAL KIRIM ULANG EMAIL  --}}
     <script>
         $(document).ready(function() {
             @if (session('success'))
@@ -611,5 +626,78 @@
         });
     </script>
 
+
+    {{-- MODAL CHARGE --}}
+    <script>
+        $(document).ready(function() {
+            // Handle charge payment button click
+            $('.charge-payment-btn').on('click', function() {
+                var billId = $(this).data('id');
+                var charge = $(this).data('charge');
+
+                // Show confirmation dialog
+                Swal.fire({
+                    title: 'Pay Charge?',
+                    text: 'Are you sure you want to pay the charge of IDR. ' + charge
+                        .toLocaleString() + '?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, pay it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Process payment
+                        $.ajax({
+                            url: '{{ route('pay-charge', ':billId') }}'
+                                .replace(':billId', billId),
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                bill_id: billId
+                            },
+                            beforeSend: function() {
+                                Swal.fire({
+                                    title: 'Processing...',
+                                    text: 'Please wait while we process your payment',
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading()
+                                    }
+                                });
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: 'Charge payment processed successfully and notification sent to accounting.',
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    }).then(() => {
+                                        // Refresh the page or update the row
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: response.message ||
+                                            'Failed to process payment',
+                                        icon: 'error'
+                                    });
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'An error occurred while processing payment',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 
 @endsection

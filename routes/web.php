@@ -88,6 +88,9 @@ Route::middleware(['auth.login'])->prefix('/admin')->group(function () {
 
    Route::prefix('/bills')->group(function () {
       Route::get('/', [BillController::class, 'index']);
+
+      Route::post('/pay-charge/{billId}', [BillController::class, 'payCharge'])->name('pay-charge');
+
       Route::get('/create', [BillController::class, 'chooseStudent']);
       Route::get('/create-bills/{id}', [BillController::class, 'pageCreateBill']);
       Route::get('/detail-payment/{id}', [BillController::class, 'detailPayment']);
@@ -141,7 +144,6 @@ Route::middleware(['admin'])->prefix('/admin')->group(function () {
       Route::get('/', [StudentController::class, 'index']);
       Route::get('/export', [StudentController::class, 'export'])->name('students.export');
       Route::get('/export-full', [StudentController::class, 'exportFull'])->name('students.exportFull');
-
    });
 
 

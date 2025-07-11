@@ -31,6 +31,8 @@ class Bill extends Model
       'transfer_account_id', // tambahkan field ini jika belum ada
       'deposit_account_id',  // tambahkan field ini jika belum ada
       'new_deposit_account_id',
+      'charge', // Add charge field
+      'paid_date', // Add paid_date field
    ];
 
 
@@ -120,5 +122,17 @@ class Bill extends Model
    public function material_fee_installment()
    {
       return $this->hasOne(MaterialFeeInstallment::class, 'bill_id');
+   }
+
+   // Add helper method to check if bill has charge
+   public function hasCharge()
+   {
+      return $this->charge > 0;
+   }
+
+   // Add helper method to get total amount including charge
+   public function getTotalAmountWithCharge()
+   {
+      return $this->amount + $this->charge;
    }
 }

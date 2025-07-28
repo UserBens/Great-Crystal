@@ -334,6 +334,60 @@ class BillController extends Controller
    }
 
 
+   // public function actionCreateBill(Request $request, $id)
+   // {
+   //    session()->flash('page', (object)[
+   //       'page' => 'Bills',
+   //       'child' => 'database bills'
+   //    ]);
+
+   //    session()->flash('preloader', true);
+
+   //    try {
+   //       //code...
+
+   //       $student = Student::with('relationship')->where('id', $id)->first();
+   //       date_default_timezone_set('Asia/Jakarta');
+   //       $user = Auth::user();
+   //       $dateFormat = new RegisterController;
+
+   //       $rules = [
+   //          'student_id' => $id,
+   //          'subject' => $request->subject,
+   //          'type' => $request->type,
+   //          'description' => $request->description,
+   //          'amount' => $request->amount ? (int)str_replace(".", "", $request->amount) : null,
+   //          'created_by' => $user->role == 'admin' ? 'admin' : 'accounting',
+   //          'deadline_invoice' => $request->deadline_invoice ? $dateFormat->changeDateFormat($request->deadline_invoice) : null,
+   //       ];
+
+   //       info($rules);
+
+   //       $validator = Validator::make($rules, [
+   //          'type' => 'required|string|min:3',
+   //          'subject' => 'required|string|min:3',
+   //          'description' => 'nullable|string|min: 10',
+   //          'amount' => 'required|integer|min:10000',
+   //          'deadline_invoice' => 'required:date',
+   //       ]);
+
+   //       if ($validator->fails()) {
+   //          session()->flash('page', (object)[
+   //             'page' => 'Bills',
+   //             'child' => 'create bills'
+   //          ]);
+   //          return redirect('/admin/bills/create-bills/' . $student->unique_id)->withErrors($validator->errors())->withInput($rules);
+   //       }
+
+   //       Bill::create($rules);
+
+   //       return redirect('/admin/bills');
+   //    } catch (Exception $err) {
+   //       //throw $th;
+   //       return dd($err);
+   //    }
+   // }
+
    public function actionCreateBill(Request $request, $id)
    {
       session()->flash('page', (object)[
@@ -344,8 +398,6 @@ class BillController extends Controller
       session()->flash('preloader', true);
 
       try {
-         //code...
-
          $student = Student::with('relationship')->where('id', $id)->first();
          date_default_timezone_set('Asia/Jakarta');
          $user = Auth::user();
@@ -361,14 +413,12 @@ class BillController extends Controller
             'deadline_invoice' => $request->deadline_invoice ? $dateFormat->changeDateFormat($request->deadline_invoice) : null,
          ];
 
-         info($rules);
-
          $validator = Validator::make($rules, [
             'type' => 'required|string|min:3',
             'subject' => 'required|string|min:3',
-            'description' => 'nullable|string|min: 10',
+            'description' => 'nullable|string|min:10',
             'amount' => 'required|integer|min:10000',
-            'deadline_invoice' => 'required:date',
+            'deadline_invoice' => 'required|date',
          ]);
 
          if ($validator->fails()) {
@@ -376,17 +426,37 @@ class BillController extends Controller
                'page' => 'Bills',
                'child' => 'create bills'
             ]);
-            return redirect('/admin/bills/create-bills/' . $student->unique_id)->withErrors($validator->errors())->withInput($rules);
+            return redirect('/admin/bills/create-bills/' . $student->unique_id)
+               ->withErrors($validator->errors())
+               ->withInput($rules);
          }
+
+         // Generate number_invoice unik
+         $prefix = date('Y/m');
+         $lastBill = Bill::where('number_invoice', 'like', $prefix . '/%')
+            ->orderBy('number_invoice', 'desc')
+            ->first();
+
+         if ($lastBill) {
+            $lastNumber = (int)substr($lastBill->number_invoice, strrpos($lastBill->number_invoice, '/') + 1);
+            $newNumber = $lastNumber + 1;
+         } else {
+            $newNumber = 1;
+         }
+
+         $number_invoice = $prefix . '/' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+
+         // Tambahkan ke data yang disimpan
+         $rules['number_invoice'] = $number_invoice;
 
          Bill::create($rules);
 
-         return redirect('/admin/bills');
+         return redirect('/admin/bills')->with('success', 'Bill successfully created.');
       } catch (Exception $err) {
-         //throw $th;
-         return dd($err);
+         return dd($err); // Debug jika error
       }
    }
+
 
 
    public function detailPayment($id)

@@ -36,44 +36,93 @@ class Bill extends Model
    ];
 
 
+   // protected static function boot()
+   // {
+   //    parent::boot();
+
+   //    static::creating(function ($model) {
+   //       // Perform actions before creating
+   //       date_default_timezone_set('Asia/Jakarta');
+   //       $year = date('Y');
+   //       $month = date('m');
+   //       $number = Bill::where('number_invoice', "LIKE", '%' . $year . '%')->count();
+
+   //       $model->number_invoice = $year . "/" . $month . "/" . str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+
+   //       // Set default transfer_account_id if not set
+   //       if (is_null($model->transfer_account_id)) {
+   //          $model->transfer_account_id = 110; // Default id for Piutang Monthly Fee
+   //       }
+
+   //       // Set default deposit_account_id if not set
+   //       if (is_null($model->deposit_account_id)) {
+   //          $model->deposit_account_id = 22; // Default id for Monthly Fee
+   //       }
+
+   //       static::updating(function ($model) {
+   //          if ($model->isDirty('deposit_account_id')) {
+   //             $oldDepositAccountId = $model->getOriginal('deposit_account_id');
+   //             $newDepositAccountId = $model->deposit_account_id;
+
+   //             BillDepositAccountChange::create([
+   //                'bill_id' => $model->id,
+   //                'old_deposit_account_id' => $oldDepositAccountId,
+   //                'new_deposit_account_id' => $newDepositAccountId,
+   //                'changed_at' => now(),
+   //             ]);
+   //          }
+   //       });
+   //    });
+   // }
+
    protected static function boot()
    {
       parent::boot();
 
       static::creating(function ($model) {
-         // Perform actions before creating
          date_default_timezone_set('Asia/Jakarta');
          $year = date('Y');
          $month = date('m');
-         $number = Bill::where('number_invoice', "LIKE", '%' . $year . '%')->count();
 
-         $model->number_invoice = $year . "/" . $month . "/" . str_pad($number + 1, 4, '0', STR_PAD_LEFT);
+         // Ambil number_invoice terbesar untuk bulan dan tahun ini
+         $lastInvoice = Bill::where('number_invoice', 'LIKE', "$year/$month/%")
+            ->orderByDesc('number_invoice')
+            ->first();
 
-         // Set default transfer_account_id if not set
+         if ($lastInvoice) {
+            $lastNumber = (int) substr($lastInvoice->number_invoice, -4);
+            $nextNumber = $lastNumber + 1;
+         } else {
+            $nextNumber = 1;
+         }
+
+         $model->number_invoice = $year . '/' . $month . '/' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+         // Default akun
          if (is_null($model->transfer_account_id)) {
-            $model->transfer_account_id = 110; // Default id for Piutang Monthly Fee
+            $model->transfer_account_id = 110; // Piutang Monthly Fee
          }
 
-         // Set default deposit_account_id if not set
          if (is_null($model->deposit_account_id)) {
-            $model->deposit_account_id = 22; // Default id for Monthly Fee
+            $model->deposit_account_id = 22; // Monthly Fee
          }
+      });
 
-         static::updating(function ($model) {
-            if ($model->isDirty('deposit_account_id')) {
-               $oldDepositAccountId = $model->getOriginal('deposit_account_id');
-               $newDepositAccountId = $model->deposit_account_id;
+      static::updating(function ($model) {
+         if ($model->isDirty('deposit_account_id')) {
+            $oldDepositAccountId = $model->getOriginal('deposit_account_id');
+            $newDepositAccountId = $model->deposit_account_id;
 
-               BillDepositAccountChange::create([
-                  'bill_id' => $model->id,
-                  'old_deposit_account_id' => $oldDepositAccountId,
-                  'new_deposit_account_id' => $newDepositAccountId,
-                  'changed_at' => now(),
-               ]);
-            }
-         });
+            BillDepositAccountChange::create([
+               'bill_id' => $model->id,
+               'old_deposit_account_id' => $oldDepositAccountId,
+               'new_deposit_account_id' => $newDepositAccountId,
+               'changed_at' => now(),
+            ]);
+         }
       });
    }
+
 
 
    public function student()

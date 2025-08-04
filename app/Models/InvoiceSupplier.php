@@ -18,23 +18,23 @@ class InvoiceSupplier extends Model
 
     public function transferAccount()
     {
-        return $this->belongsTo(AccountNumber::class, 'transfer_account_id');
+        return $this->belongsTo(Accountnumber::class, 'transfer_account_id');
     }
 
     public function depositAccount()
     {
-        return $this->belongsTo(AccountNumber::class, 'deposit_account_id');
+        return $this->belongsTo(Accountnumber::class, 'deposit_account_id');
     }
 
     // Relasi untuk old_transfer_account_id
     public function oldAccount()
     {
-        return $this->belongsTo(AccountNumber::class, 'old_transfer_account_id');
+        return $this->belongsTo(Accountnumber::class, 'old_transfer_account_id');
     }
 
     // Relasi untuk new_transfer_account_id
     public function newAccount()
     {
-        return $this->belongsTo(AccountNumber::class, 'new_transfer_account_id');
+        return $this->belongsTo(Accountnumber::class, 'new_transfer_account_id');
     }
 }

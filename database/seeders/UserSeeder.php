@@ -9,33 +9,38 @@ use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {
+   /**
+    * Run the database seeds.
+    */
+   public function run(): void
+   {
 
       $data = [
          [
             'username' => 'superadmin',
             'password' => Hash::make('superadmin'),
             'role' => 'superadmin',
-            
+
          ],
          [
             'username' => 'admin',
             'password' => Hash::make('admin'),
             'role' => 'admin',
-            
+
          ],
          [
             'username' => 'accounting',
             'password' => Hash::make('accounting'),
             'role' => 'accounting',
-            
+
+         ],
+         [
+            'username' => 'pajak',
+            'password' => Hash::make('pajak'),
+            'role' => 'pajak',
          ],
       ];
 
       DB::table('users')->insert($data);
-    }
+   }
 }

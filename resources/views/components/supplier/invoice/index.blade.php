@@ -56,20 +56,25 @@
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Invoice Supplier!</h3>
-                    <div class="btn-group">
-                        <a type="button" href="{{ route('create-invoice-supplier.create') }}"
-                            class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Add Invoice
-                        </a>
-                    </div>
+                    @if (Auth::user()->role != 'pajak')
+                        <div class="btn-group">
+                            <a type="button" href="{{ route('create-invoice-supplier.create') }}"
+                                class="btn btn-success btn-sm mt-3">
+                                <i class="fa-solid fa-plus"></i> Add Invoice
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         @else
-            <div class="btn-group">
-                <a type="button" href="{{ route('create-invoice-supplier.create') }}" class="btn btn-success btn-sm mt-3">
-                    <i class="fa-solid fa-plus"></i> Add Invoice
-                </a>
-            </div>
+            @if (Auth::user()->role != 'pajak')
+                <div class="btn-group">
+                    <a type="button" href="{{ route('create-invoice-supplier.create') }}"
+                        class="btn btn-success btn-sm mt-3">
+                        <i class="fa-solid fa-plus"></i> Add Invoice
+                    </a>
+                </div>
+            @endif
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-4">
                 <div class="card-header">
@@ -106,19 +111,21 @@
                                     <td>{{ \Carbon\Carbon::parse($item->deadline_invoice)->format('j F Y') }}</td>
                                     <td>{{ $item->payment_status }} </td>
                                     <td class="text-center">
-                                        <a href="{{ route('invoice-supplier.upload-proof-view', $item->id) }}"
-                                            class="btn btn-sm btn-warning"><i class="fas fa-upload"
-                                                style="margin-right: 4px"></i>Upload</a>
+                                        @if (Auth::user()->role != 'pajak')
+                                            <a href="{{ route('invoice-supplier.upload-proof-view', $item->id) }}"
+                                                class="btn btn-sm btn-warning"><i class="fas fa-upload"
+                                                    style="margin-right: 4px"></i>Upload</a>
 
-                                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
-                                            data-target="#importModal{{ $item->id }}" style="">
-                                            <i class="fas fa-eye" style="margin-right: 4px"></i>Review
-                                        </button>
+                                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal"
+                                                data-target="#importModal{{ $item->id }}" style="">
+                                                <i class="fas fa-eye" style="margin-right: 4px"></i>Review
+                                            </button>
 
-                                        <button type="button" class="btn btn-sm delete-btn btn-danger"
-                                            data-id="{{ $item->id }}">
-                                            <i class="fas fa-trash mr-1"></i>Delete
-                                        </button>
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger"
+                                                data-id="{{ $item->id }}">
+                                                <i class="fas fa-trash mr-1"></i>Delete
+                                            </button>
+                                        @endif
                                     </td>
 
                                     <td class="project-actions">

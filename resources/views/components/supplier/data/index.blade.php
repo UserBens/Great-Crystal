@@ -46,19 +46,24 @@
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Supplier Data!</h3>
-                    <div class="btn-group">
-                        <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Add Supplier
-                        </a>
-                    </div>
+                    @if (Auth::user()->role != 'pajak')
+                        <div class="btn-group">
+                            <a type="button" href="{{ route('create-supplier.create') }}"
+                                class="btn btn-success btn-sm mt-3">
+                                <i class="fa-solid fa-plus"></i> Add Supplier
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         @else
-            <div class="btn-group">
-                <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success btn-sm mt-3">
-                    <i class="fa-solid fa-plus"></i> Add Supplier
-                </a>
-            </div>
+            @if (Auth::user()->role != 'pajak')
+                <div class="btn-group">
+                    <a type="button" href="{{ route('create-supplier.create') }}" class="btn btn-success btn-sm mt-3">
+                        <i class="fa-solid fa-plus"></i> Add Supplier
+                    </a>
+                </div>
+            @endif
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-4">
                 <div class="card-header">
@@ -92,24 +97,18 @@
                                     <td>{{ $item->email }} </td>
                                     <td>{{ $item->address }} </td>
                                     <td>{{ \Carbon\Carbon::parse($item->created_at)->format('j F Y') }}</td>
-
                                     <td>
-                                        <a href="{{ route('view-supplier.update', $item->id) }}"
-                                            class="btn btn-sm btn-warning"><i class="fas fa-pen"
-                                                style="margin-right: 4px"></i>Edit</a>
+                                        @if (Auth::user()->role != 'pajak')
+                                            <a href="{{ route('view-supplier.update', $item->id) }}"
+                                                class="btn btn-sm btn-warning"><i class="fas fa-pen"
+                                                    style="margin-right: 4px"></i>Edit</a>
 
-                                        <button type="button" class="btn btn-sm delete-btn btn-danger"
-                                            data-id="{{ $item->id }}">
-                                            <i class="fas fa-trash mr-1"></i>Delete
-                                        </button>
-
-                                        {{-- <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
-                                                data-target="#importModal" data-id="{{ $item->id }}">
-                                                <i class="fas fa-upload" style="margin-right: 4px"></i>Upload
-                                            </button> --}}
-
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger"
+                                                data-id="{{ $item->id }}">
+                                                <i class="fas fa-trash mr-1"></i>Delete
+                                            </button>
+                                        @endif
                                     </td>
-
                                 </tr>
                             @endforeach
                         </tbody>
@@ -198,7 +197,7 @@
             });
 
         });
-    </script>   
+    </script>
 
     <script>
         document.getElementById('sort-select').addEventListener('change', function() {

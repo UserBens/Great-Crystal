@@ -123,16 +123,15 @@
                                         </table>
                                     </div>
                                 @endif
-
-
                             </div>
 
-                            <a href="{{ route('journal.detail.pdf', ['id' => $transaction->id, 'type' => $type]) }}"
-                                target="_blank" class="btn btn-warning btn-sm mt-2" id="print-pdf">
-                                <i class="fa-solid fa-file-pdf fa-bounce"
-                                    style="color: #000000; margin-right:2px;"></i>Print PDF
-                            </a>
-
+                            @if (Auth::user()->role != 'pajak')
+                                <a href="{{ route('journal.detail.pdf', ['id' => $transaction->id, 'type' => $type]) }}"
+                                    target="_blank" class="btn btn-warning btn-sm mt-2" id="print-pdf">
+                                    <i class="fa-solid fa-file-pdf fa-bounce"
+                                        style="color: #000000; margin-right:2px;"></i>Print PDF
+                                </a>
+                            @endif
                         </div>
                         <!-- /.card-body -->
                     </div>

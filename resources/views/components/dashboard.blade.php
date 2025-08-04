@@ -6,6 +6,7 @@
         $cardTeacher = 'col-lg-3 col-6';
         $cardBill = 'col-lg-3 col-6';
         $cardPastDue = 'col-lg-3 col-6';
+        $cardInvoiceSupplier = 'col-lg-3 col-6'; // ✅ tambahkan default di sini
         $listStudent = '';
         $listTeacher = '';
         $listBill = '';
@@ -16,11 +17,22 @@
             $cardTeacher = 'col';
             $cardBill = 'd-none';
             $cardPastDue = 'd-none';
+            $cardInvoiceSupplier = 'd-none'; // sembunyikan kalau admin
             $listStudent = '';
             $listTeacher = '';
             $listBill = 'd-none';
             $listPastDue = 'd-none';
         } elseif ($user == 'accounting') {
+            $cardStudent = 'd-none';
+            $cardTeacher = 'col';
+            $cardBill = 'col';
+            $cardPastDue = 'col';
+            $cardInvoiceSupplier = 'col';
+            $listStudent = 'd-none';
+            $listTeacher = '';
+            $listBill = '';
+            $listPastDue = '';
+        } elseif ($user == 'pajak') {
             $cardStudent = 'd-none';
             $cardTeacher = 'col';
             $cardBill = 'col';
@@ -36,7 +48,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                @if ($user == 'accounting')
+                @if (in_array($user, ['accounting', 'pajak']))
                     <div class="{{ $cardTeacher }}">
                         <!-- small box -->
                         <div class="small-box bg-success">
@@ -103,7 +115,7 @@
                 @endif
             </div>
 
-            @if ($user != 'accounting')
+            @if (!in_array($user, ['accounting', 'pajak']))
                 <div class="row">
 
                     <div class="{{ $cardStudent }}">
@@ -176,7 +188,6 @@
                                 <p>Bills Past Due</p>
                             </div>
                             <div class="icon">
-                                {{-- <i class="ion ion-pie-graph"></i> --}}
                                 <i class="fa-solid fa-calendar-xmark"></i>
                             </div>
                             @if (session('role') != 'admin')
@@ -187,12 +198,9 @@
                             @endif
                         </div>
                     </div>
-                    <!-- ./col -->
-
                 </div>
 
                 <div class="row">
-                    <!-- Left col -->
                     @if ($user == 'superadmin')
                         <section class="col-lg-7 connectedSortable">
                             <!-- Custom tabs (Charts with tabs)-->
@@ -504,17 +512,12 @@
                     @endif
                 </div>
             @endif
-
-
         </div>
     </section>
 
-
-
-
     <div class="row">
         <section class="col-lg-12 connectedSortable">
-            @if ($user == 'accounting')
+            @if (in_array($user, ['accounting', 'pajak']))
                 <div class="{{ $listBill }} card">
                     <div class="card-header">
                         <h3 class="card-title">
@@ -589,7 +592,7 @@
         </section>
 
         <section class="col-lg-12 connectedSortable">
-            @if ($user == 'accounting')
+            @if (in_array($user, ['accounting', 'pajak']))
                 <div class="card mb-3">
                     <div class="card-header">
                         Area Chart
@@ -603,7 +606,7 @@
     </div>
 
     <div class="row">
-        @if ($user == 'accounting')
+        @if (in_array($user, ['accounting', 'pajak']))
             <div class="col-md-12">
                 <div class="card mb-3">
                     <div class="card-header">
@@ -619,7 +622,7 @@
 
 
     <div class="row">
-        @if ($user == 'accounting')
+        @if (in_array($user, ['accounting', 'pajak']))
             <section class="col-lg-6 connectedSortable">
                 <div class="card mb-3\">
                 <div class="card-header">
@@ -778,9 +781,6 @@
                     yAxis: 1
                 }]
             });
-
-
-
 
             Highcharts.chart('area_chart', {
                 chart: {

@@ -47,19 +47,24 @@
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
                     <h3>Click the button below to create Transaction Receive!</h3>
-                    <div class="btn-group">
-                        <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Add Transaction
-                        </a>
-                    </div>
+                    @if (Auth::user()->role != 'pajak')
+                        <div class="btn-group">
+                            <a type="button" href="{{ route('transaction-receive.create') }}"
+                                class="btn btn-success btn-sm mt-3">
+                                <i class="fa-solid fa-plus"></i> Add Transaction
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         @else
-            <div class="btn-group">
-                <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success btn-sm mt-3">
-                    <i class="fa-solid fa-plus"></i> Add Transaction
-                </a>
-            </div>
+            @if (Auth::user()->role != 'pajak')
+                <div class="btn-group">
+                    <a type="button" href="{{ route('transaction-receive.create') }}" class="btn btn-success btn-sm mt-3">
+                        <i class="fa-solid fa-plus"></i> Add Transaction
+                    </a>
+                </div>
+            @endif
             <!-- Display Cash or Bank data in a table -->
             <div class="card card-dark mt-4">
                 <div class="card-header">
@@ -102,15 +107,17 @@
                                     <td>
                                         @if ($item->student)
                                             {{ $item->student->name }}
-                                        @endif                                        
-                                    </td>                       
+                                        @endif
+                                    </td>
                                     <td>Rp. {{ number_format($item->amount, 0, ',', '.') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->date)->format('j F Y') }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
-                                            data-id="{{ $item->id }}">
-                                            <i class="fas fa-trash mr-1"></i>Delete
-                                        </button>
+                                        @if (Auth::user()->role != 'pajak')
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger mr-2"
+                                                data-id="{{ $item->id }}">
+                                                <i class="fas fa-trash mr-1"></i>Delete
+                                            </button>
+                                        @endif
                                     </td>
                                     <td class="project-actions text-right">
                                     </td>

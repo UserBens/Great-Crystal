@@ -77,10 +77,12 @@
                 </form>
             </div>
 
-            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importModal">
-                <i class="fas fa-file-import" style="margin-right: 4px"></i>Import
-            </button>
-
+            @if (Auth::user()->role != 'pajak')
+                <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importModal">
+                    <i class="fas fa-file-import" style="margin-right: 4px"></i>Import
+                </button>
+            @endif
+            
             <div class="row justify-content-center">
                 <div class="col-12">
                     <div class="card card-dark mt-3">

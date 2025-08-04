@@ -48,20 +48,24 @@
             <div class="row h-100 my-5">
                 <div class="col-sm-12 my-auto text-center">
                     <h3>No Account Number has been created yet. Click the button below to create Account Number!</h3>
-                    <div class="btn-group">
-                        <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3">
-                            <i class="fa-solid fa-plus"></i> Add Account
-                        </a>
-                    </div>
+                    @if (Auth::user()->role != 'pajak')
+                        <div class="btn-group">
+                            <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3">
+                                <i class="fa-solid fa-plus"></i> Add Account
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         @else
-            <div class="btn-group mt-2">
-                <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3"
-                    style="margin-right: 8px">
-                    <i class="fa-solid fa-plus"></i> Add Account
-                </a>            
-            </div>
+            @if (Auth::user()->role != 'pajak')
+                <div class="btn-group mt-2">
+                    <a type="button" href="/admin/account/create-account" class="btn btn-success btn-sm mt-3"
+                        style="margin-right: 8px">
+                        <i class="fa-solid fa-plus"></i> Add Account
+                    </a>
+                </div>
+            @endif
             <div class="card card-dark mt-4">
                 <div class="card-header">
                     <h3 class="card-title">List Account Number</h3>
@@ -80,7 +84,7 @@
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Type</th>
-                                <th>Balance</th>                                
+                                <th>Balance</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -93,16 +97,18 @@
                                     <td>{{ $categories->firstWhere('id', $account->account_category_id)->category_name }}
                                     <td>{{ $account->type }}
                                     </td>
-                                    <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>                                    
+                                    <td>Rp.{{ number_format($account->amount, 0, ',', '.') }}</td>
                                     <td class="">
-                                        <a class="btn btn-warning btn-sm" style="margin-right: 4px"
-                                            href="/admin/account/{{ $account->id }}/edit">
-                                            <i class="fas fa-pencil"></i> Edit
-                                        </a>
-                                        <button type="button" class="btn btn-sm delete-btn btn-danger"
-                                            data-id="{{ $account->id }}">
-                                            <i class="fas fa-trash"></i>Delete
-                                        </button>                                        
+                                        @if (Auth::user()->role != 'pajak')
+                                            <a class="btn btn-warning btn-sm" style="margin-right: 4px"
+                                                href="/admin/account/{{ $account->id }}/edit">
+                                                <i class="fas fa-pencil"></i> Edit
+                                            </a>
+                                            <button type="button" class="btn btn-sm delete-btn btn-danger"
+                                                data-id="{{ $account->id }}">
+                                                <i class="fas fa-trash"></i>Delete
+                                            </button>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

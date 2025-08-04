@@ -245,13 +245,14 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
    });
 
    Route::prefix('/transaction')->group(function () {
+      // transfer
       Route::get('/transaction-transfer', [AccountingController::class, 'indexTransfer'])->name('transaction-transfer.index');
       Route::get('/transaction-transfer/create', [AccountingController::class, 'createTransactionTransfer'])->name('transaction-transfer.create');
       Route::post('/transaction-transfer', [AccountingController::class, 'storeTransactionTransfer'])->name('transaction-transfer.store');
       Route::post('/create-account-transfer/store', [AccountingController::class, 'storeAccountTransactionTransfer'])->name('transaction-transfer.account.store');
       Route::delete('/transaction-transfer/{id}', [AccountingController::class, 'deleteTransactionTransfer'])->name('transaction-transfer.destroy');
 
-
+      // send
       Route::get('/transaction-send', [AccountingController::class, 'indexTransactionSend'])->name('transaction-send.index');
       Route::get('/transaction-send/create', [AccountingController::class, 'createTransactionSend'])->name('transaction-send.create');
       Route::post('/transaction-send', [AccountingController::class, 'storeTransactionSend'])->name('transaction-send.store');
@@ -259,8 +260,7 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/create-transaction-send/store', [AccountingController::class, 'storeSupplierTransactionSend'])->name('transaction-send-supplier.store');
       Route::post('/create-account-send/store', [AccountingController::class, 'storeAccountTransactionSend'])->name('transaction-send.account.store');
 
-
-
+      // receive
       Route::get('/transaction-receive', [AccountingController::class, 'indexTransactionReceive'])->name('transaction-receive.index');
       Route::get('/transaction-receive/create', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
       Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
@@ -338,6 +338,113 @@ Route::middleware(['accounting'])->prefix('admin')->group(function () {
       Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplierAtInvoice'])->name('invoice-create-supplier.store');
    });
 });
+
+Route::middleware(['pajak'])->prefix('admin')->group(function () {
+   Route::prefix('/income')->group(function () {
+      Route::get('/', [FinancialController::class, 'indexIncome'])->name('income.index');
+   });
+
+   Route::prefix('/expenditure')->group(function () {
+      Route::get('/', [FinancialController::class, 'indexExpenditure'])->name('expenditure.index');
+      Route::get('/create', [FinancialController::class, 'createExpenditure'])->name('expenditure.create');
+      Route::post('/store', [FinancialController::class, 'storeExpenditure'])->name('expenditure.store');
+      Route::get('/{id}/edit', [FinancialController::class, 'editExpenditure'])->name('expenditure.edit');
+      Route::put('/{id}', [FinancialController::class, 'updateExpenditure'])->name('expenditure.update');
+      Route::delete('/{id}', [FinancialController::class, 'destroyExpenditure'])->name('expenditure.destroy');
+   });
+
+   Route::prefix('/transaction')->group(function () {
+      // transfer
+      Route::get('/transaction-transfer', [AccountingController::class, 'indexTransfer'])->name('transaction-transfer.index');
+      Route::get('/transaction-transfer/create', [AccountingController::class, 'createTransactionTransfer'])->name('transaction-transfer.create');
+      Route::post('/transaction-transfer', [AccountingController::class, 'storeTransactionTransfer'])->name('transaction-transfer.store');
+      Route::post('/create-account-transfer/store', [AccountingController::class, 'storeAccountTransactionTransfer'])->name('transaction-transfer.account.store');
+      Route::delete('/transaction-transfer/{id}', [AccountingController::class, 'deleteTransactionTransfer'])->name('transaction-transfer.destroy');
+
+      // send
+      Route::get('/transaction-send', [AccountingController::class, 'indexTransactionSend'])->name('transaction-send.index');
+      Route::get('/transaction-send/create', [AccountingController::class, 'createTransactionSend'])->name('transaction-send.create');
+      Route::post('/transaction-send', [AccountingController::class, 'storeTransactionSend'])->name('transaction-send.store');
+      Route::delete('/transaction-send/{id}', [AccountingController::class, 'deleteTransactionSend'])->name('transaction-send.destroy');
+      Route::post('/create-transaction-send/store', [AccountingController::class, 'storeSupplierTransactionSend'])->name('transaction-send-supplier.store');
+      Route::post('/create-account-send/store', [AccountingController::class, 'storeAccountTransactionSend'])->name('transaction-send.account.store');
+
+      // send
+      Route::get('/transaction-receive', [AccountingController::class, 'indexTransactionReceive'])->name('transaction-receive.index');
+      Route::get('/transaction-receive/create', [AccountingController::class, 'createTransactionReceive'])->name('transaction-receive.create');
+      Route::post('/transaction-receive', [AccountingController::class, 'storeTransactionReceive'])->name('transaction-receive.store');
+      Route::delete('/transaction-receive/{id}', [AccountingController::class, 'deleteTransactionReceive'])->name('transaction-receive.destroy');
+      Route::post('/create-account-receive/store', [AccountingController::class, 'storeAccountTransactionReceive'])->name('transaction-receive.account.store');
+   });
+
+   Route::prefix('/journal')->group(function () {
+      Route::get('/', [JournalController::class, 'indexJournal'])->name('journal.index');
+      Route::get('/detail/{id}/{type}', [JournalController::class, 'showJournalDetail'])->name('journal.detail');
+      Route::get('/detail/{id}/{type}/pdf', [JournalController::class, 'generatePdfJournalDetail'])->name('journal.detail.pdf');
+      // Route::get('/detail/selected', [JournalController::class, 'showSelectedJournalDetail'])->name('journal.detail.selected');
+      Route::get('/journal/detail', [JournalController::class, 'showFilterJournalDetail'])->name('journal.detail.selected');
+      Route::get('/journal/detail/selected/pdf', [JournalController::class, 'showFilterJournalDetailpdf'])->name('journal.detail.selected.pdf');
+      Route::get('/journal/detail/selected/excel', function (Request $request) {
+         $transactionDetails = session('transactionDetails');
+         return Excel::download(new JournalDetailExport(
+            $request->start_date,
+            $request->end_date,
+            $request->type,
+            $request->search,
+            $request->sort,
+            $request->order
+         ), 'journal-details.xlsx');
+      })->name('journal.detail.selected.excel');
+      Route::post('/journal/import', [ImportTransactionController::class, 'importExcel'])->name('journal.import');
+      Route::get('/journal/templates/import', [ImportTransactionController::class, 'downloadTemplate']);
+   });
+
+   Route::prefix('/account')->group(function () {
+      Route::get('/', [AccountingController::class, 'indexAccount'])->name('account.index');
+      Route::get('/create-account', [AccountingController::class, 'createAccount'])->name('create-account.create');
+      Route::post('/create-account/store', [AccountingController::class, 'storeAccount'])->name('account.store');
+      Route::get('/{id}/edit', [AccountingController::class, 'editAccount'])->name('account.edit');
+      Route::put('/{id}', [AccountingController::class, 'updateAccount'])->name('account.update');
+      Route::delete('/{id}', [AccountingController::class, 'destroyAccount'])->name('account.destroy');
+      Route::post('/create-account-category/store', [AccountingController::class, 'storeAccountCategory'])->name('account-category.store');
+
+      Route::get('balance', [BalanceController::class, 'indexBalance'])->name('balance.index');
+      Route::post('balance/save', [BalanceController::class, 'saveBalances'])->name('account.balance.save');
+      Route::post('/balance/post/{id}', [BalanceController::class, 'postBalances'])->name('balance.post');
+      Route::post('/balance/unpost', [BalanceController::class, 'unpostBalances'])->name('balance.unpost');
+
+      Route::get('post/balance', [BalanceController::class, 'indexPostBalance'])->name('balance-post.index');
+
+      Route::get('/account/balance-create', [BalanceController::class, 'createBalance'])->name('balance.create');
+      Route::post('/account/balance-create', [BalanceController::class, 'storeBalance'])->name('balance.store');
+      Route::delete('/account/balance/{id}', [BalanceController::class, 'deleteBalance'])->name('balance.destroy');
+   });
+
+   Route::prefix('/supplier')->group(function () {
+      Route::get('/', [InvoiceSupplierController::class, 'indexsupplier'])->name('supplier.index');
+      Route::get('/create-supplier', [InvoiceSupplierController::class, 'createSupplier'])->name('create-supplier.create');
+      Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplier'])->name('supplier.store');
+
+      Route::get('/update-supplier/{id}', [InvoiceSupplierController::class, 'viewupdateSupplier'])->name('view-supplier.update');
+      Route::post('/update-supplier/{id}', [InvoiceSupplierController::class, 'updateSupplier'])->name('supplier.update');
+
+      Route::delete('/supplier/{id}', [InvoiceSupplierController::class, 'destroySupplier'])->name('supplier.destroy');
+   });
+
+   Route::prefix('/invoice-supplier')->group(function () {
+      Route::get('/', [InvoiceSupplierController::class, 'indexInvoiceSupplier'])->name('invoice-supplier.index');
+      Route::get('/upload-proof-of-payment/{id}', [InvoiceSupplierController::class, 'uploadProofOfPaymentView'])->name('invoice-supplier.upload-proof-view');
+      Route::post('/upload-proof-of-payment/{id}', [InvoiceSupplierController::class, 'uploadProofOfPayment'])->name('invoice-supplier.upload-proof');
+      Route::get('/create-invoice-supplier', [InvoiceSupplierController::class, 'createInvoiceSupplier'])->name('create-invoice-supplier.create');
+      Route::post('/create-invoice-supplier/store', [InvoiceSupplierController::class, 'storeInvoiceSupplier'])->name('invoice-supplier.store');
+      Route::delete('/invoice-supplier/{id}', [InvoiceSupplierController::class, 'destroyInvoiceSupplier'])
+         ->name('invoice-supplier.destroy');
+      Route::post('/create-account-uploadproof/store', [InvoiceSupplierController::class, 'storeAccountatUploadProof'])->name('invoice-supplier-uploadproof.account.store');
+      Route::post('/create-account-createinvoice/store', [InvoiceSupplierController::class, 'storeAccountatCreateInvoice'])->name('invoice-supplier-createinvoice.account.store');
+      Route::post('/create-supplier/store', [InvoiceSupplierController::class, 'storeSupplierAtInvoice'])->name('invoice-create-supplier.store');
+   });
+});
+
 
 Route::middleware(['superadmin'])->prefix('admin')->group(function () {
 

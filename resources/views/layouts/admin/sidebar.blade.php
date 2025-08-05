@@ -2,8 +2,6 @@
 <aside class="main-sidebar sidebar-light-orange elevation-4">
     <!-- Brand Logo -->
     <a href="/admin/dashboard" class="brand-link text-center">
-        {{-- <img src="{{asset('template')}}/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> --}}
-        {{-- <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.dslXiO2DR5mYsNKZa8f8_gAAAA%26pid%3DApi&f=1&ipt=dadf6b59e2457fa578ca99f9f2a232f051528c0c5f50644c70ac19cb47b1766c&ipo=images" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> --}}
         <span class="brand-text font-weight-bold">Great Crystal School</span>
     </a>
 
@@ -16,11 +14,7 @@
             </div>
             <div class="info">
                 <a href="#" class="d-block brand-text" style="font-size: 1.2em;">
-                    @if (session('role') == 'superadmin')
-                        Super Admin
-                    @else
-                        {{ ucwords(session('role')) }}
-                    @endif
+                    {{ ucfirst(Auth::user()->username) }}
                 </a>
             </div>
         </div>
@@ -29,7 +23,6 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="true">
-
 
                 <li class="ml-1 nav-item">
                     <a href="{{ url('/admin/dashboard') }}"
@@ -220,8 +213,6 @@
                     </li>
                 @endif
 
-
-
                 {{-- @if (session('role') === 'accounting' || Auth::user()->role === 'pajak') --}}
                 @if (in_array(session('role'), ['superadmin', 'accounting']))
                     <li
@@ -309,7 +300,6 @@
                                 <p>Supplier</p>
                             </a>
                         </li>
-
                     </ul>
                 </li>
 
@@ -443,14 +433,5 @@
         </nav>
 
     </div>
-    <!-- /.sidebar -->
 </aside>
-{{-- <script>
-  $(".nav-item").click(function () {
 
-    console.log('masuk')
-        if($(".nav-item").hasClass("menu-open")){
-          $(".nav-item").removeClass('menu-open');
-        }
-     }) 
-</script> --}}
